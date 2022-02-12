@@ -1,0 +1,2 @@
+SRCDIRS ?= src
+INCS ?= include
