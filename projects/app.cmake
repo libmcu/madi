@@ -3,7 +3,7 @@ set(APP_SRCS
 )
 
 set(APP_INCS
-	include
+	${BASEDIR}/include
 )
 
 set(APP_DEFS
