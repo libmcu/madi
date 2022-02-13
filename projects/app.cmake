@@ -1,5 +1,6 @@
 set(APP_SRCS
 	${BASEDIR}/src/main.c
+	${BASEDIR}/ports/esp32/watchdog.c
 )
 
 set(APP_INCS
