@@ -20,25 +20,29 @@ flags: $(TESTS)
 $(TESTS):
 	$(MAKE) -f $@ $(BUILD_RULE)
 
-LCOV_INFO_FILE = $(TEST_BUILDIR)/lcov.info
-.PHONY: lcov
-$(TEST_BUILDIR)/test_coverage lcov: $(TEST_BUILDIR)
-	@lcov \
-        --base-directory . \
-        --directory . \
-        -c -o $(LCOV_INFO_FILE).tmp
-	@lcov \
-        --remove $(LCOV_INFO_FILE).tmp \
-        -o $(LCOV_INFO_FILE) \
-        '*cpputest/*' \
-        '/usr/*' \
-        '*tests/*'
+COVERAGE_FILE = $(TEST_BUILDIR)/coverage.info
+.PHONY: $(COVERAGE_FILE) $(COVERAGE_FILE).init $(COVERAGE_FILE).run
+$(COVERAGE_FILE).init: $(TEST_BUILDIR)
+	@lcov -o $@ \
+		--base-directory . --directory . -c -i
+$(COVERAGE_FILE).run:
+	@lcov -o $@ \
+		--base-directory . --directory . -c
+$(COVERAGE_FILE): $(COVERAGE_FILE).init $(COVERAGE_FILE).run
+	@lcov -o $@ \
+		-a $(COVERAGE_FILE).init -a $(COVERAGE_FILE).run
+	@lcov -o $@ \
+		--remove $@ \
+		'*cpputest/*' \
+		'/usr/*' \
+		'*tests/*' \
+		'*external/*'
+$(TEST_BUILDIR)/test_coverage: $(COVERAGE_FILE)
 	@genhtml \
-        -o test_coverage \
-        -t "coverage" \
-        --num-spaces 4 \
-        $(LCOV_INFO_FILE) \
-        -o $@
+		-o $@ \
+		-t "coverage" \
+		--num-spaces 4 \
+		$(COVERAGE_FILE)
 
 .PHONY: coverage
 coverage: $(TEST_BUILDIR)/test_coverage
