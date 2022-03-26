@@ -1,19 +1,3 @@
-target-device := $(firstword $(MAKECMDGOALS))
-
-ifneq ($(target-device),)
-ifneq ($(strip $(wildcard projects/devices/$(target-device).mk)),)
-$(MAKECMDGOALS): build-target
-	@:
-.PHONY: build-target
-build-target:
-	$(Q)DEVICE=$(target-device) $(MAKE) -f projects/rules.mk \
-		$(filter-out $(target-device), $(MAKECMDGOALS))
-done := 1
-endif
-endif
-
-ifeq ($(done),)
-
 ifeq ($(DEVICE),)
 DEVICE := $(DEFAULT_DEVICE)
 endif
@@ -117,9 +101,3 @@ ifneq ($(MAKECMDGOALS), depend)
 -include $(DEPS)
 endif
 endif
-
-.PHONY: clean
-clean:
-	$(Q)rm -fr $(OUTDIR)
-
-endif # $(done)

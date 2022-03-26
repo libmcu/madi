@@ -15,18 +15,8 @@ export BUILDIR
 export Q
 
 include projects/version.mk
+include projects/rules.mk
 
-STATIC_GOALS := flash flash_factory test coverage clean
-goals := $(filter-out $(STATIC_GOALS), $(MAKECMDGOALS))
-
-.PHONY: build
-build:
-	$(Q)$(MAKE) -f projects/rules.mk $(MAKECMDGOALS)
-$(goals): build
-	@:
-
-.PHONY: flash_factory
-flash_factory:
 .PHONY: test
 test:
 	$(Q)$(MAKE) -C tests
@@ -35,5 +25,5 @@ coverage:
 	$(Q)$(MAKE) -C tests $@
 .PHONY: clean
 clean:
-	$(Q)rm -rf $(BUILDIR)
+	$(Q)rm -fr $(BUILDIR)
 	$(Q)$(MAKE) -C tests $@

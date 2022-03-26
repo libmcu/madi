@@ -1,6 +1,5 @@
 #include "watchdog.h"
 #include "esp_task_wdt.h"
-#include "libmcu/assert.h"
 
 #define DEFAULT_WDT_TIMEOUT_SEC				5
 
