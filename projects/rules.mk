@@ -22,10 +22,8 @@ OUTINC := $(OUTDIR)/includes.txt
 OUTPUT ?= $(OUTELF) $(OUTLIB) $(OUTHEX) $(OUTBIN) $(OUTDEF) $(OUTSRC) $(OUTINC) \
 	  $(OUTELF).size $(OUTELF).dump $(OUTELF).lst $(OUTELF).sym
 
-ASMS += $(foreach dir, $(SRCDIRS), $(shell find $(dir) -type f -regex ".*\.s"))
 SRCS += $(foreach dir, $(SRCDIRS), $(shell find $(dir) -type f -regex ".*\.c"))
-OBJS += $(addprefix $(OUTDIR)/, $(ASMS:%=%.o)) \
-	$(addprefix $(OUTDIR)/, $(SRCS:%=%.o))
+OBJS += $(addprefix $(OUTDIR)/, $(SRCS:%=%.o))
 DEPS += $(OBJS:.o=.d)
 
 -include projects/app.mk
@@ -62,6 +60,14 @@ $(OUTDIR)/%.s.o: %.s Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)
 	$(info assembling  $<)
 	@mkdir -p $(@D)
 	$(Q)$(CC) -o $@ -c $< -MMD \
+		$(addprefix -D, $(DEFS)) \
+		$(addprefix -I, $(INCS)) \
+		$(CFLAGS)
+$(OUTDIR)/%.S.o: %.S Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)
+	$(info assembling  $<)
+	@mkdir -p $(@D)
+	$(Q)$(CC) -x assembler-with-cpp \
+		-o $@ -c $< -MMD \
 		$(addprefix -D, $(DEFS)) \
 		$(addprefix -I, $(INCS)) \
 		$(CFLAGS)

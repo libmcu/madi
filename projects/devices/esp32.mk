@@ -19,7 +19,7 @@ $(OUTDIR)/esp-idf: $(PORT_ROOT)/esp-idf
 		-DOUTPUT=$(DEVICE) \
 		-GNinja
 
-.PHONY: flash erase_flash monitor
+.PHONY: flash erase monitor
 flash: all
 	$(Q)python $(SDK_ROOT)/components/esptool_py/esptool/esptool.py \
 		--chip esp32 \
@@ -34,7 +34,7 @@ flash: all
 		0x8000 $(OUTDIR)/partition_table/partition-table.bin \
 		0xd000 $(OUTDIR)/ota_data_initial.bin \
 		0x10000 $(OUTDIR)/$(DEVICE).bin
-erase_flash:
+erase:
 	$(Q)python $(SDK_ROOT)/components/esptool_py/esptool/esptool.py \
 		--chip esp32 \
 		--port $(PORT) \
