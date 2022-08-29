@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.5)
-
-project(${OUTPUT})
-
 # Include for ESP-IDF build system functions
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
-# Create idf::esp32 and idf::freertos static libraries
-idf_build_process(esp32
+
+idf_build_process(${DEVICE}
 	# try and trim the build; additional components
 	# will be included as needed based on dependency tree
 	#
@@ -13,23 +9,23 @@ idf_build_process(esp32
 	# processing the component is needed for flashing related
 	# targets and file generation
 	COMPONENTS
-		esp32
+		${DEVICE}
 		freertos
 		esptool_py
-	SDKCONFIG
-		${CMAKE_CURRENT_LIST_DIR}/sdkconfig
+	SDKCONFIG_DEFAULTS
+		"${CMAKE_CURRENT_LIST_DIR}/sdkconfig.defaults"
 	BUILD_DIR
-		${OUTDIR}
+		${CMAKE_CURRENT_BINARY_DIR}
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(${BASEDIR}/projects/version.cmake)
 include(${BASEDIR}/projects/app.cmake)
 
 set(elf_file ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${elf_file}
-	start.c
+	${CMAKE_CURRENT_LIST_DIR}/start.c
+	${CMAKE_CURRENT_LIST_DIR}/watchdog.c
 	${APP_SRCS}
 )
 
@@ -39,7 +35,7 @@ target_compile_definitions(${elf_file} PRIVATE ${APP_DEFS})
 
 # Link the static libraries to the executable
 target_link_libraries(${elf_file}
-	idf::esp32
+	idf::${DEVICE}
 	idf::freertos
 	idf::spi_flash
 	idf::nvs_flash

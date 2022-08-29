@@ -5,8 +5,12 @@
 #include "esp_event.h"
 #include "esp_system.h"
 
+#if !defined(DEFAULT_TASK_PRIORITY)
 #define DEFAULT_TASK_PRIORITY				1
+#endif
+#if !defined(DEFAULT_TASK_STACK_SIZE)
 #define DEFAULT_TASK_STACK_SIZE				3072
+#endif
 
 extern int main(void);
 extern void app_main(void);

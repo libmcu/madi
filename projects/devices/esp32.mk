@@ -4,19 +4,18 @@ CROSS_COMPILE ?= xtensa-esp32-elf
 
 IDF_PATH ?= external/esp-idf
 SDK_ROOT := $(IDF_PATH)
-PORT_ROOT := ports/esp32
+PORT_ROOT := ports/esp-idf
 
 .PHONY: $(OUTPUT)
 $(OUTPUT): $(OUTDIR)/esp-idf
 	$(info building    $@)
 	$(Q)cmake --build $(OUTDIR)
 	$(Q)python $(SDK_ROOT)/tools/idf_size.py $(OUTDIR)/$(DEVICE).map
-$(OUTDIR)/esp-idf: $(PORT_ROOT)/esp-idf
+$(OUTDIR)/esp-idf: $(PORT_ROOT)
 	$(info preparing   $@)
-	$(Q)cmake $< -B$(OUTDIR) \
-		-DCMAKE_TOOLCHAIN_FILE=$(IDF_PATH)/tools/cmake/toolchain-esp32.cmake \
-		-DBASEDIR=$(BASEDIR) \
-		-DOUTPUT=$(DEVICE) \
+	$(Q)cmake $(BASEDIR) -B$(OUTDIR) \
+		-DESP_PLATFORM=1 \
+		-DDEVICE=$(DEVICE) \
 		-GNinja
 
 .PHONY: flash erase monitor

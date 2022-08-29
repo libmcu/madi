@@ -13,7 +13,7 @@
 │   └── tinyusb
 ├── include
 ├── ports
-│   ├── esp32
+│   ├── esp-idf
 │   ├── freertos
 │   ├── nrf52
 │   ├── nrf9160
