@@ -1,10 +1,6 @@
 CROSS_COMPILE ?= arm-none-eabi
 
-SDK_ROOT := external/stm32f1
 PORT_ROOT := ports/stm32/f1
-
-LD_SCRIPT := $(PORT_ROOT)/STM32F103C8Tx_FLASH.ld
-LIBS += -lc -lnosys -lm
 
 CFLAGS += \
 	-mcpu=cortex-m3 \
@@ -17,13 +13,8 @@ LDFLAGS += \
 	-mabi=aapcs \
 	--specs=nano.specs
 
-INCS += \
-	$(PORT_ROOT) \
-	$(PORT_ROOT)/sdk
-
-DEFS += \
-	USE_HAL_DRIVER \
-	STM32F103xB \
+LIBS += -lc -lnosys -lm
+INCS += $(PORT_ROOT)
 
 include $(PORT_ROOT)/sdk.mk
 
@@ -34,4 +25,3 @@ erase:
 	pyocd erase -t $(PROJECT) --chip
 gdbserver:
 	$(Q)pyocd $@ -t $(PROJECT)
-	#pyocd pack install stm32f103c8

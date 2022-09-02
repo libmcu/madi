@@ -1,3 +1,6 @@
+SDK_ROOT ?= external/nRF5_SDK_17.0.2_d674dde
+LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52832.ld
+
 NRF_SRCS = \
 	$(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
 	\
@@ -120,7 +123,26 @@ NRF_INCS = \
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus \
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus_c \
 
+NRF_DEFS = \
+	SOFTDEVICE_PRESENT \
+	S132 \
+	NRF_SD_BLE_API_VERSION=7 \
+	\
+	CUSTOM_BOARD_INC=redbear \
+	BSP_DEFINES_ONLY \
+	CONFIG_GPIO_AS_PINRESET \
+	FLOAT_ABI_HARD \
+	NRF52_PAN_74 \
+	NRF52832_XXAA \
+	NRF52 \
+	__HEAP_SIZE=8192 \
+	__STACK_SIZE=8192 \
+	APP_TIMER_V2 \
+	APP_TIMER_V2_RTC1_ENABLED \
+
 $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
 SRCS += $(NRF_SRCS)
 INCS += $(NRF_INCS)
+DEFS += $(NRF_DEFS)
+LIBDIRS += -L$(SDK_ROOT)/modules/nrfx/mdk
