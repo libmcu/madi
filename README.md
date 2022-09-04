@@ -15,8 +15,8 @@
 │   ├── esp-idf
 │   ├── freertos
 │   ├── nrf52
-│   ├── nrf9160
-│   └── stm32
+│   ├── stm32
+│   └── zephyr
 ├── projects
 ├── src
 └── tests
@@ -36,8 +36,12 @@
 | tools     | Tools and utilities                                           |
 
 ## Getting Started
+In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is Zephyr's meta tool.
+
+Instructions below are for other RTOSs or bear metal firmwares.
 
 ### A33G
+### AT32F403A
 ### ESP32
 In case of vscode, install [ESP-IDF extension](https://marketplace.visualstudio.com/items?itemName=espressif.esp-idf-extension).
 
@@ -66,6 +70,8 @@ In case of Mesh, Download the [nRF5 SDK for Mesh](https://www.nordicsemi.com/Pro
 ```shell
 $ make DEVICE=nrf52
 ```
+
+### RP2040
 
 ### STM32
 #### Prerequisite
@@ -110,7 +116,9 @@ $ make DEVICE=stm32f1
 | Manufacturer | Device Family | Core       | Note |
 | ------------ | ------------- | ---------- | ---- |
 | ABOV         | A33G5         | Cortex-M3  |      |
+| Artery       | AT32F403A     | Cortex-M4F |      |
 | Espressif    | ESP32         | Xtensa LX6 |      |
-| Nordic       | nRF52         | Cortex-M4  |      |
+| Nordic       | nRF52         | Cortex-M4F |      |
+| Raspberry Pi | RP2040        | Cortex-M0+ |      |
 | ST           | STM32F1       | Cortex-M3  |      |
-| ST           | STM32F4       | Cortex-M4  |      |
+| ST           | STM32F4       | Cortex-M4F |      |

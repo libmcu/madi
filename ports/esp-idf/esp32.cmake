@@ -20,8 +20,6 @@ idf_build_process(${DEVICE}
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(${BASEDIR}/projects/app.cmake)
-
 set(elf_file ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${elf_file}
 	${CMAKE_CURRENT_LIST_DIR}/start.c
@@ -29,7 +27,8 @@ add_executable(${elf_file}
 	${APP_SRCS}
 )
 
-target_compile_options(${elf_file} PUBLIC ${compile_options})
+target_compile_options(${elf_file} PRIVATE ${compile_options})
+target_link_options(${elf_file} PRIVATE -Wl,--print-memory-usage)
 target_include_directories(${elf_file} PRIVATE ${APP_INCS})
 target_compile_definitions(${elf_file} PRIVATE ${APP_DEFS})
 
@@ -43,7 +42,7 @@ target_link_libraries(${elf_file}
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
 target_link_libraries(${elf_file}
-	"-Wl,--cref" "-Wl,--defsym=IDF_TARGET_ESP32=0"
+	"-Wl,--cref"
 	"-Wl,--Map=\"${mapfile}\""
 )
 

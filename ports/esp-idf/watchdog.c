@@ -1,11 +1,15 @@
 #include "watchdog.h"
+#include <assert.h>
 #include "esp_task_wdt.h"
 
-#define DEFAULT_WDT_TIMEOUT_SEC				5
+#if !defined(WDT_TIMEOUT_MSEC)
+#define WDT_TIMEOUT_MSEC				5000
+#endif
 
 void watchdog_init(void)
 {
-	ESP_ERROR_CHECK(esp_task_wdt_init(DEFAULT_WDT_TIMEOUT_SEC, true));
+	assert(WDT_TIMEOUT_MSEC >= 1000);
+	ESP_ERROR_CHECK(esp_task_wdt_init(WDT_TIMEOUT_MSEC / 1000, true));
 }
 
 int watchdog_alloc(void)
