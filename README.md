@@ -8,7 +8,8 @@
 ├── docs
 ├── drivers
 ├── external
-│   ├── nRF5_Mesh_SDK
+│   ├── cbor
+│   ├── libmcu
 │   └── tinyusb
 ├── include
 ├── ports

@@ -14,7 +14,6 @@ export BASEDIR
 export BUILDIR
 export Q
 
-include projects/version.mk
 include projects/rules.mk
 
 .PHONY: test

@@ -1,6 +1,6 @@
 CROSS_COMPILE ?= arm-none-eabi
 
-PORT_ROOT := ports/stm32/f1
+PORT_ROOT := ports/stm32
 
 CFLAGS += \
 	-mcpu=cortex-m3 \
@@ -16,7 +16,7 @@ LDFLAGS += \
 LIBS += -lc -lnosys -lm
 INCS += $(PORT_ROOT)
 
-include $(PORT_ROOT)/sdk.mk
+include $(PORT_ROOT)/$(DEVICE).mk
 
 .PHONY: flash erase gdbserver
 flash: $(OUTHEX)

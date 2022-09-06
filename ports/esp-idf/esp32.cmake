@@ -23,13 +23,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(elf_file ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${elf_file}
 	${CMAKE_CURRENT_LIST_DIR}/start.c
-	${CMAKE_CURRENT_LIST_DIR}/watchdog.c
+	${CMAKE_CURRENT_LIST_DIR}/uart0.c
+	${LIBMCU_ROOT}/ports/freertos/timext.c
 	${APP_SRCS}
 )
 
 target_compile_options(${elf_file} PRIVATE ${compile_options})
 target_link_options(${elf_file} PRIVATE -Wl,--print-memory-usage)
-target_include_directories(${elf_file} PRIVATE ${APP_INCS})
+target_include_directories(${elf_file}
+	PRIVATE
+		${APP_INCS}
+		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
+		$ENV{IDF_PATH}/components/freertos/include/freertos
+)
 target_compile_definitions(${elf_file} PRIVATE ${APP_DEFS})
 
 # Link the static libraries to the executable

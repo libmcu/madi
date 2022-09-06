@@ -4,3 +4,7 @@ compile_commands.json
 tests/cpputest
 .cache
 sdkconfig
+.gdb_history
+venv
+.venv
+.DS_Store

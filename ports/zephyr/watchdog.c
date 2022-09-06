@@ -1,5 +1,5 @@
 #include "watchdog.h"
-#include <zephyr/zephyr.h>
+#include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/watchdog.h>
 #include <zephyr/task_wdt/task_wdt.h>

@@ -26,7 +26,7 @@ ifndef NDEBUG
 endif
 
 ## Compiler warnings
-STACK_LIMIT ?= 128
+STACK_LIMIT ?= 256
 MY_WARNING_FLAGS ?= \
 	-Werror \
 	-Wall \
