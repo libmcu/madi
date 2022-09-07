@@ -70,6 +70,8 @@ NRF_SRCS = \
 	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
 	\
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
+	\
+	$(PORT_ROOT)/nRF5_SDK/timext.c \
 
 NRF_INCS = \
 	$(SDK_ROOT)/components/softdevice/s132/headers/nrf52 \
@@ -139,10 +141,11 @@ NRF_DEFS = \
 	__STACK_SIZE=8192 \
 	APP_TIMER_V2 \
 	APP_TIMER_V2_RTC1_ENABLED \
+	_POSIX_C_SOURCE=200809L
 
 $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
-SRCS += $(NRF_SRCS)
-INCS += $(NRF_INCS)
-DEFS += $(NRF_DEFS)
+SRCS += $(NRF_SRCS) $(APP_SRCS)
+INCS += $(NRF_INCS) $(APP_INCS)
+DEFS += $(NRF_DEFS) $(APP_DEFS)
 LIBDIRS += -L$(SDK_ROOT)/modules/nrfx/mdk

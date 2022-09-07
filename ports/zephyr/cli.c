@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "libmcu/cli.h"
+
+#if defined(esp32)
 #include "esp32/rom/uart.h"
 
 static size_t cli_write(void const *data, size_t datasize)
@@ -22,6 +24,12 @@ static size_t cli_read(void *buf, size_t bufsize)
 
 	return len;
 }
+#elif defined(nrf52832_mdk) || defined(stm32_min_dev_blue)
+static size_t cli_write(void const *data, size_t datasize) { return 0; }
+static size_t cli_read(void *buf, size_t bufsize) { return 0; }
+#else
+#error unsupported device
+#endif
 
 struct cli_io const *cli_io_create(void)
 {

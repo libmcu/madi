@@ -9,16 +9,70 @@ on:
       - main
 
 jobs:
-  build:
-    name: Compile and Test
+  unit-test:
+    name: Unit test
     runs-on: ubuntu-latest
     steps:
-      - name: Clone Repository
-        uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: Compile
+      - name: Install test framework
+        run: make -C tests install
+  build-espidf:
+    name: ESP-IDF
+    needs: [unit-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build
         uses: docker://espressif/idf:release-v4.4
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py build"
+  #build-nrf52:
+    #name: Build NRF52
+  build-stm32:
+    name: STM32F1
+    needs: [unit-test]
+    runs-on: ubuntu-latest
+    container:
+      image: onkwon/yaos:0.8
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Clone the dependancies
+        run: git clone https://github.com/STMicroelectronics/STM32CubeF1.git external/STM32CubeF1
+      - name: Build
+        run: make DEVICE=stm32f1
+  build-zephyr:
+    name: Zephyr
+    needs: [unit-test]
+    strategy:
+      matrix:
+        target: [esp32, nrf52832_mdk, stm32_min_dev_blue]
+    runs-on: ubuntu-latest
+    container:
+      image: zephyrprojectrtos/ci:v0.24.2
+    env:
+      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.0
+    steps:
+      - name: Prepare
+        run: |
+          west init .
+          west update
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          path: ${{ github.event.repository.name }}
+      - name: Build for ${{ matrix.target }}
+        run: west build -b ${{ matrix.target }} ${{ github.event.repository.name }} -p always
