@@ -112,14 +112,15 @@ $ git submodule add https://github.com/STMicroelectronics/STM32CubeF1.git extern
 $ make DEVICE=stm32f1
 ```
 
-## Supported Microcontrollers
+## Supported Boards
 
-| Manufacturer | Device Family | Core       | Note |
-| ------------ | ------------- | ---------- | ---- |
-| ABOV         | A33G5         | Cortex-M3  |      |
-| Artery       | AT32F403A     | Cortex-M4F |      |
-| Espressif    | ESP32         | Xtensa LX6 |      |
-| Nordic       | nRF52         | Cortex-M4F |      |
-| Raspberry Pi | RP2040        | Cortex-M0+ |      |
-| ST           | STM32F1       | Cortex-M3  |      |
-| ST           | STM32F4       | Cortex-M4F |      |
+| Device  | Board              | Core       | Device Family | Manufacturer |
+| ------- | ------------------ | ---------- | ------------- | ------------ |
+| esp32   | ESP32-DevKitC      | Xtensa LX6 | ESP32         | Espressif    |
+| nrf52   | Redbear Nano v2    | Cortex-M4F | nRF52         | Nordic       |
+| rp2040  | Raspberry Pi Pico  | Cortex-M0+ | RP2040        | Raspberry Pi |
+| stm32f1 | STM32F103 BluePill | Cortex-M3  | STM32F1       | ST           |
+| stm32f4 | STM32F429I-DISC1   | Cortex-M4F | STM32F4       | ST           |
+| stm32f4 | myCortex-STM32F4   | Cortex-M4F | STM32F4       | ST           |
+|         | StarterKit A33G526 | Cortex-M3  | A33G5         | ABOV         |
+|         | WeAct BlackPill    | Cortex-M4F | AT32F403A     | Artery       |

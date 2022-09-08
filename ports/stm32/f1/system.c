@@ -1,5 +1,5 @@
-#include "stm32f1xx_hal.h"
 #include "libmcu/system.h"
+#include "stm32f1xx_hal.h"
 
 /**
   * @brief  System Clock Configuration

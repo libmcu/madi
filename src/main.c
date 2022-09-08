@@ -1,8 +1,5 @@
 #include "libmcu/system.h"
-#include "libmcu/cli.h"
-#include "libmcu/timext.h"
-
-#include "cli/cli_commands.h"
+#include "cli/cli.h"
 
 int main(void)
 {
@@ -11,9 +8,9 @@ int main(void)
 	system_init();
 
 	cli_init(&cli, cli_io_create(), cli_commands, cli_commands_len);
+	cli_run(&cli);
 
+	/* never reach down here unless cli gets terminated by exit command */
 	while (1) {
-		cli_step(&cli);
-		sleep_ms(10);
 	}
 }

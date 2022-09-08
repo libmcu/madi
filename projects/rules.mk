@@ -1,7 +1,3 @@
-ifeq ($(DEVICE),)
-DEVICE := $(DEFAULT_DEVICE)
-endif
-
 DEFS += $(DEVICE)
 LIBS +=
 LIBDIRS +=

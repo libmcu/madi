@@ -1,10 +1,15 @@
+#include "uart0.h"
 #include "driver/uart.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
 
-#include "libmcu/cli.h"
+#define BUFSIZE				256
+#define RXQUEUE_LEN			8
 
-#define RXBUF_SIZE			256
+static QueueHandle_t rxqueue;
 
-static void initialize_uart0(uint32_t baudrate)
+void uart0_init(uint32_t baudrate)
 {
 	uart_config_t uart_config = {
 		.baud_rate = baudrate,
@@ -14,32 +19,33 @@ static void initialize_uart0(uint32_t baudrate)
 		.flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
 	};
 
-	uart_driver_install(UART_NUM_0, RXBUF_SIZE, 0, 0, NULL, 0);
+	uart_driver_install(UART_NUM_0, BUFSIZE*2, BUFSIZE*2,
+		     RXQUEUE_LEN, &rxqueue, 0);
 	uart_param_config(UART_NUM_0, &uart_config);
 }
 
-static size_t uart0_write(void const *data, size_t datasize)
+size_t uart0_write_async(void const *data, size_t datasize)
 {
 	int written = uart_write_bytes(UART_NUM_0, data, datasize);
 
 	return written > 0 ? (size_t)written : 0;
 }
 
-static size_t uart0_read(void *buf, size_t bufsize)
+size_t uart0_read(void *buf, size_t bufsize)
 {
-	int len = uart_read_bytes(UART_NUM_0, buf, bufsize, 0);
+	uart_event_t evt;
+	int len = 0;
 
-	return len > 0 ? (size_t)len : 0;
-}
+	xQueueReceive(rxqueue, (void *)&evt, (TickType_t)portMAX_DELAY);
 
-struct cli_io const *cli_io_create(void)
-{
-	initialize_uart0(115200);
+	switch (evt.type) {
+	case UART_DATA:
+		len = uart_read_bytes(UART_NUM_0, buf, bufsize, 0);
+		len = len > 0 ? len : 0;
+		break;
+	default:
+		break;
+	}
 
-	static const struct cli_io io = {
-		.read = uart0_read,
-		.write = uart0_write,
-	};
-
-	return &io;
+	return (size_t)len;
 }

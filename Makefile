@@ -1,4 +1,9 @@
-PROJECT := fw-project
+DEFAULT_DEVICE ?= unknown
+ifeq ($(DEVICE),)
+DEVICE := $(DEFAULT_DEVICE)
+endif
+
+PROJECT := $(DEVICE)
 BASEDIR := $(shell pwd)
 BUILDIR := build
 

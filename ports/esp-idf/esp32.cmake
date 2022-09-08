@@ -23,8 +23,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(elf_file ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${elf_file}
 	${CMAKE_CURRENT_LIST_DIR}/start.c
+	${CMAKE_CURRENT_LIST_DIR}/system.c
 	${CMAKE_CURRENT_LIST_DIR}/uart0.c
-	${LIBMCU_ROOT}/ports/freertos/timext.c
+	${CMAKE_CURRENT_LIST_DIR}/cli.c
 	${APP_SRCS}
 )
 

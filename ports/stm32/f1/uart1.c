@@ -1,3 +1,4 @@
+#include "uart1.h"
 #include "stm32f1xx_hal.h"
 
 static UART_HandleTypeDef huart1;
@@ -48,27 +49,19 @@ static void deinitialize_uart1(void)
 	__HAL_RCC_USART1_CLK_DISABLE();
 }
 
-static size_t uart1_write(void const *data, size_t datasize)
+size_t uart1_write(void const *data, size_t datasize)
 {
 	return HAL_UART_Transmit(&huart1, data, (uint16_t)datasize, 100U)
 			== HAL_OK? datasize : 0;
 }
 
-static size_t uart1_read(void *buf, size_t bufsize)
+size_t uart1_read(void *buf, size_t bufsize)
 {
 	return HAL_UART_Receive(&huart1, buf, (uint16_t)bufsize, 0U)
 			== HAL_OK? bufsize : 0;
 }
 
-#include "libmcu/cli.h"
-struct cli_io const *cli_io_create(void)
+void uart1_init(uint32_t baudrate)
 {
-	initialize_uart1(115200);
-
-	static const struct cli_io io = {
-		.read = uart1_read,
-		.write = uart1_write,
-	};
-
-	return &io;
+	initialize_uart1(baudrate);
 }
