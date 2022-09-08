@@ -1,7 +1,7 @@
 # Include for ESP-IDF build system functions
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 
-idf_build_process(${DEVICE}
+idf_build_process(${BOARD}
 	# try and trim the build; additional components
 	# will be included as needed based on dependency tree
 	#
@@ -9,7 +9,7 @@ idf_build_process(${DEVICE}
 	# processing the component is needed for flashing related
 	# targets and file generation
 	COMPONENTS
-		${DEVICE}
+		${BOARD}
 		freertos
 		esptool_py
 	SDKCONFIG_DEFAULTS
@@ -49,7 +49,7 @@ target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE ${APP_DEFS})
 
 # Link the static libraries to the executable
 target_link_libraries(${PROJECT_EXECUTABLE}
-	idf::${DEVICE}
+	idf::${BOARD}
 	idf::freertos
 	idf::spi_flash
 	idf::nvs_flash

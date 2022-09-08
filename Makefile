@@ -1,9 +1,9 @@
-DEFAULT_DEVICE ?= unknown
-ifeq ($(DEVICE),)
-DEVICE := $(DEFAULT_DEVICE)
+DEFAULT_BOARD ?= unknown
+ifeq ($(BOARD),)
+BOARD := $(DEFAULT_BOARD)
 endif
 
-PROJECT := $(DEVICE)
+PROJECT := $(BOARD)
 BASEDIR := $(shell pwd)
 BUILDIR := build
 

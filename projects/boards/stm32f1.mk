@@ -16,12 +16,13 @@ LDFLAGS += \
 LIBS += -lc -lnosys -lm
 INCS += $(PORT_ROOT)
 
-include $(PORT_ROOT)/$(DEVICE).mk
+include $(PORT_ROOT)/$(BOARD).mk
 
 .PHONY: flash erase gdbserver
 flash: $(OUTHEX)
-	pyocd flash -t $(PROJECT) $<
+	pyocd flash -t stm32f103c8 $<
 erase:
 	pyocd erase -t $(PROJECT) --chip
 gdbserver:
-	$(Q)pyocd $@ -t $(PROJECT)
+	$(Q)pyocd $@ -t stm32f103c8
+	#pyocd pack install stm32f103c8

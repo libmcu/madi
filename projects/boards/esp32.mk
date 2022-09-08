@@ -1,4 +1,4 @@
-OUTPUT = $(OUTDIR)/$(DEVICE).elf
+OUTPUT = $(OUTDIR)/$(BOARD).elf
 
 CROSS_COMPILE ?= xtensa-esp32-elf
 
@@ -10,12 +10,12 @@ PORT_ROOT := ports/esp-idf
 $(OUTPUT): $(OUTDIR)/esp-idf
 	$(info building    $@)
 	$(Q)cmake --build $(OUTDIR)
-	$(Q)python $(SDK_ROOT)/tools/idf_size.py $(OUTDIR)/$(DEVICE).map
+	$(Q)python $(SDK_ROOT)/tools/idf_size.py $(OUTDIR)/$(BOARD).map
 $(OUTDIR)/esp-idf: $(PORT_ROOT)
 	$(info preparing   $@)
 	$(Q)cmake $(BASEDIR) -B$(OUTDIR) \
 		-DESP_PLATFORM=1 \
-		-DDEVICE=$(DEVICE) \
+		-DBOARD=$(BOARD) \
 		-GNinja
 
 .PHONY: flash erase monitor
@@ -32,7 +32,7 @@ flash: all
 		0x1000 $(OUTDIR)/bootloader/bootloader.bin \
 		0x8000 $(OUTDIR)/partition_table/partition-table.bin \
 		0xd000 $(OUTDIR)/ota_data_initial.bin \
-		0x10000 $(OUTDIR)/$(DEVICE).bin
+		0x10000 $(OUTDIR)/$(BOARD).bin
 erase:
 	$(Q)python $(SDK_ROOT)/components/esptool_py/esptool/esptool.py \
 		--chip esp32 \

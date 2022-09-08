@@ -20,8 +20,8 @@ jobs:
           fetch-depth: 0
       - name: Install test framework
         run: make -C tests install
-  build-espidf:
-    name: ESP-IDF
+  build-esp32:
+    name: ESP32
     needs: [unit-test]
     runs-on: ubuntu-latest
     steps:
@@ -34,10 +34,10 @@ jobs:
         uses: docker://espressif/idf:release-v4.4
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py build"
-  #build-nrf52:
-    #name: Build NRF52
-  build-stm32:
-    name: STM32F1
+  #build-nrf52-blenano2:
+    #name: nRF52 Nano2
+  build-stm32f1-bluepill:
+    name: STM32F103 BluePill
     needs: [unit-test]
     runs-on: ubuntu-latest
     container:
@@ -51,13 +51,13 @@ jobs:
       - name: Clone the dependancies
         run: git clone https://github.com/STMicroelectronics/STM32CubeF1.git external/STM32CubeF1
       - name: Build
-        run: make DEVICE=stm32f1
+        run: make BOARD=stm32_min_dev_blue
   build-zephyr:
     name: Zephyr
     needs: [unit-test]
     strategy:
       matrix:
-        target: [esp32, nrf52832_mdk, stm32_min_dev_blue]
+        target: [esp32, nrf52_blenano2, stm32_min_dev_blue]
     runs-on: ubuntu-latest
     container:
       image: zephyrprojectrtos/ci:v0.24.2

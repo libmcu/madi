@@ -31,3 +31,4 @@ erase:
 	pyocd erase -t $(PROJECT) --chip
 gdbserver:
 	$(Q)pyocd $@ -t $(PROJECT)
+	#pyocd pack install stm32f103c8

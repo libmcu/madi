@@ -23,10 +23,10 @@ static size_t cli_read(void *buf, size_t bufsize)
 
 	return len;
 }
-#elif defined(nrf52832_mdk) || defined(stm32_min_dev_blue)
+#elif defined(nrf52_blenano2) || defined(stm32_min_dev_blue)
 static size_t cli_read(void *buf, size_t bufsize) { return 0; }
 #else
-#error unsupported device
+#error unsupported board
 #endif
 
 struct cli_io const *cli_io_create(void)

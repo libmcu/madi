@@ -1,12 +1,12 @@
-DEFS += $(DEVICE)
+DEFS += $(BOARD)
 LIBS +=
 LIBDIRS +=
 
-OUTDIR := $(BUILDIR)/$(DEVICE)
-OUTELF := $(OUTDIR)/$(DEVICE)
-OUTLIB := $(OUTDIR)/lib$(DEVICE).a
-OUTBIN := $(OUTDIR)/$(DEVICE).bin
-OUTHEX := $(OUTDIR)/$(DEVICE).hex
+OUTDIR := $(BUILDIR)/$(BOARD)
+OUTELF := $(OUTDIR)/$(BOARD)
+OUTLIB := $(OUTDIR)/lib$(BOARD).a
+OUTBIN := $(OUTDIR)/$(BOARD).bin
+OUTHEX := $(OUTDIR)/$(BOARD).hex
 OUTDEF := $(OUTDIR)/defines.txt
 OUTSRC := $(OUTDIR)/sources.txt
 OUTINC := $(OUTDIR)/includes.txt
@@ -18,13 +18,13 @@ SRCS += $(foreach dir, $(SRCDIRS), $(shell find $(dir) -type f -regex ".*\.c"))
 OBJS += $(addprefix $(OUTDIR)/, $(SRCS:%=%.o))
 DEPS += $(OBJS:.o=.d)
 
--include projects/app.mk
--include projects/devices/$(DEVICE).mk
+include projects/app.mk
+include projects/boards/$(BOARD).mk
 include projects/toolchain.mk
 
 .DEFAULT_GOAL :=
 all:: $(OUTPUT)
-	$(info done $(PROJECT)_$(VERSION)-$(DEVICE))
+	$(info done $(PROJECT)_$(VERSION)-$(BOARD))
 
 $(OUTELF):: $(OBJS) $(EXTRA_OBJS) $(LD_SCRIPT)
 	$(info linking     $@)
