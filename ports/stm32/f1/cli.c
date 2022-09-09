@@ -7,6 +7,7 @@ struct cli_io const *cli_io_create(void)
 
 	if (!initialized) {
 		uart1_init(115200);
+		initialized = true;
 	}
 
 	static const struct cli_io io = {

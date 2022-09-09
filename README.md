@@ -42,8 +42,9 @@ In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is
 Zephyr's meta tool. Please refer to [Zephyr's Getting Started
 Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html).
 
-For other RTOSs or bear metal firmwares, please check out our getting started
-guide under [docs/getting-started](docs/getting-started).
+Please check out our getting started guide under
+[docs/getting-started](docs/getting-started) for other RTOSs or bear metal
+firmwares.
 
 ## Supported Boards
 

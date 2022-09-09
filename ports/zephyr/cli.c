@@ -1,36 +1,31 @@
-#include <stdio.h>
 #include "libmcu/cli.h"
+#if !defined(CONFIG_CONSOLE_SUBSYS) && !defined(CONFIG_CONSOLE_GETCHAR)
+#error CONFIG_CONSOLE_SUBSYS and CONFIG_CONSOLE_GETCHAR should be set
+#else
+#include <zephyr/console/console.h>
 
 static size_t cli_write(void const *data, size_t datasize)
 {
-	int len = fwrite(data, datasize, 1, stdout);
+	ssize_t len = console_write(NULL, data, datasize);
+
 	return len > 0 ? (size_t)len : 0;
 }
 
-#if defined(esp32)
-#include "esp32/rom/uart.h"
 static size_t cli_read(void *buf, size_t bufsize)
 {
-	char *p = (char *)buf;
-	size_t len = 0;
+	ssize_t len = console_read(NULL, buf, bufsize);
 
-	while (len < bufsize) {
-		if (uart_rx_one_char(&p[len]) == FAIL) {
-			break;
-		}
-		len += 1;
-	}
-
-	return len;
+	return len > 0 ? (size_t)len : 0;
 }
-#elif defined(nrf52_blenano2) || defined(stm32_min_dev_blue)
-static size_t cli_read(void *buf, size_t bufsize) { return 0; }
-#else
-#error unsupported board
-#endif
 
 struct cli_io const *cli_io_create(void)
 {
+	static bool initialized;
+
+	if (!initialized && console_init() == 0) {
+		initialized = true;
+	}
+
 	static const struct cli_io io = {
 		.read = cli_read,
 		.write = cli_write,
@@ -38,3 +33,4 @@ struct cli_io const *cli_io_create(void)
 
 	return &io;
 }
+#endif
