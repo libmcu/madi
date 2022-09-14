@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 # Include for ESP-IDF build system functions
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 

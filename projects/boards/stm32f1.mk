@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 CROSS_COMPILE ?= arm-none-eabi
 
 PORT_ROOT := ports/stm32

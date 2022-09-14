@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2022 Kyunghwan Kwon <k@mononn.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef ESP_UART0_H
 #define ESP_UART0_H
 

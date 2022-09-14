@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 include projects/version.mk
 
 LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu

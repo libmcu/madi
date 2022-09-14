@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2022 Kyunghwan Kwon <k@mononn.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs.h"

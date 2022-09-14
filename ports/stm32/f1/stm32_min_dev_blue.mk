@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 SDK_ROOT ?= external/STM32CubeF1
 LD_SCRIPT ?= $(PORT_ROOT)/f1/STM32F103C8Tx_FLASH.ld
 

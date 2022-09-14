@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 execute_process(
 	COMMAND git describe --long --tags --dirty --always
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

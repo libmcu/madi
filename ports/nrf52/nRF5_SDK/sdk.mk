@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 SDK_ROOT ?= external/nRF5_SDK_17.0.2_d674dde
 LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52832.ld
 

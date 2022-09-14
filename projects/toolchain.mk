@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 ifneq ($(CROSS_COMPILE),)
 	CROSS_COMPILE_PREFIX := $(CROSS_COMPILE)-
 endif

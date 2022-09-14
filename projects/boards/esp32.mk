@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 OUTPUT = $(OUTDIR)/$(BOARD).elf
 
 CROSS_COMPILE ?= xtensa-esp32-elf

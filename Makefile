@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 DEFAULT_BOARD ?= unknown
 ifeq ($(BOARD),)
 BOARD := $(DEFAULT_BOARD)
