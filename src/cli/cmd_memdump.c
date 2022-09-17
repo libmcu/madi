@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2021 Kyunghwan Kwon <k@mononn.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "cli_commands.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -47,7 +53,7 @@ static void print_ascii(struct cli_io const *io, uint8_t val)
 
 static void print_next_line(struct cli_io const *io)
 {
-	io->write("\n", 1);
+	io->write("\r\n", 2);
 }
 
 /* NOTE: Some of memory-mapped peripheral registers are word aligned. */

@@ -8,12 +8,9 @@
 #include "driver/uart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
 
 #define BUFSIZE				256
 #define RXQUEUE_LEN			8
-
-static QueueHandle_t rxqueue;
 
 void uart0_init(uint32_t baudrate)
 {
@@ -26,7 +23,7 @@ void uart0_init(uint32_t baudrate)
 	};
 
 	uart_driver_install(UART_NUM_0, BUFSIZE*2, BUFSIZE*2,
-		     RXQUEUE_LEN, &rxqueue, 0);
+		     RXQUEUE_LEN, NULL, 0);
 	uart_param_config(UART_NUM_0, &uart_config);
 }
 
@@ -39,19 +36,7 @@ size_t uart0_write_async(void const *data, size_t datasize)
 
 size_t uart0_read(void *buf, size_t bufsize)
 {
-	uart_event_t evt;
-	int len = 0;
-
-	xQueueReceive(rxqueue, (void *)&evt, (TickType_t)portMAX_DELAY);
-
-	switch (evt.type) {
-	case UART_DATA:
-		len = uart_read_bytes(UART_NUM_0, buf, bufsize, 0);
-		len = len > 0 ? len : 0;
-		break;
-	default:
-		break;
-	}
-
-	return (size_t)len;
+	int len = uart_read_bytes(UART_NUM_0,
+			   buf, bufsize, (TickType_t)portMAX_DELAY);
+	return len > 0 ? len : 0;
 }

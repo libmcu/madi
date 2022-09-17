@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2021 Kyunghwan Kwon <k@mononn.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "cli_commands.h"
 #include <string.h>
 #include "libmcu/cli.h"
@@ -17,7 +23,7 @@ cli_cmd_error_t cli_cmd_help(int argc, const char *argv[], const void *env)
 			cli->io->write("\t: ", 3);
 			cli->io->write(cmd->desc, strlen(cmd->desc));
 		}
-		cli->io->write("\n", 1);
+		cli->io->write("\r\n", 2);
 	}
 
 	return CLI_CMD_SUCCESS;

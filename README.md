@@ -4,7 +4,6 @@
 
 ```shell
 .
-├── common
 ├── docs
 ├── drivers
 ├── external
@@ -25,7 +24,6 @@
 
 | Directory | Description                                                   |
 | --------- | -----------                                                   |
-| common    |                                                               |
 | docs      | Project documentation, possibly auto-generated                |
 | drivers   |                                                               |
 | external  | External dependencies including all the third party libraries |
