@@ -49,7 +49,7 @@ ST_SRCS = \
 	$(SDK_ROOT)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_usart.c \
 	$(SDK_ROOT)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_wwdg.c \
 	\
-	$(PORT_ROOT)/f1/system.c \
+	$(PORT_ROOT)/f1/board.c \
 	$(PORT_ROOT)/f1/uart1.c \
 	$(PORT_ROOT)/f1/cli.c \
 

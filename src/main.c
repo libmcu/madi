@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/system.h"
+#include "libmcu/board.h"
 #include "cli/cli.h"
 
 int main(void)
 {
 	struct cli cli;
 
-	system_init();
+	board_init();
 
 	cli_init(&cli, cli_io_create(), cli_commands, cli_commands_len);
 	cli_run(&cli);

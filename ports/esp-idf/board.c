@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/system.h"
+#include "libmcu/board.h"
 #include "esp_system.h"
 #include "esp_mac.h"
 #include "esp_random.h"
 
-const char *system_get_serial_number_string(void)
+const char *board_get_serial_number_string(void)
 {
 	static char sn[18];
 
@@ -23,7 +23,7 @@ const char *system_get_serial_number_string(void)
 	return sn;
 }
 
-const char *system_get_reboot_reason_string(void)
+const char *board_get_reboot_reason_string(void)
 {
 	switch (esp_reset_reason()) {
 	case ESP_RST_POWERON:
@@ -51,26 +51,21 @@ const char *system_get_reboot_reason_string(void)
 	}
 }
 
-unsigned int system_get_free_heap_bytes(void)
+unsigned int board_get_free_heap_bytes(void)
 {
 	return esp_get_free_heap_size();
 }
 
-unsigned int system_get_heap_watermark(void)
+unsigned int board_get_heap_watermark(void)
 {
 	return esp_get_minimum_free_heap_size();
 }
 
-int system_random(void)
-{
-	return esp_random();
-}
-
-void system_reboot(void)
+void board_reboot(void)
 {
 	esp_restart();
 }
 
-void system_init(void)
+void board_init(void)
 {
 }

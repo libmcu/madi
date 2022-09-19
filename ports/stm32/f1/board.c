@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/system.h"
+#include "libmcu/board.h"
 #include "stm32f1xx_hal.h"
 
 /**
@@ -52,7 +52,7 @@ static void RCC_Init(void)
 	HAL_RCC_ClockConfig(&clkinitstruct, FLASH_LATENCY_2);
 }
 
-void system_init(void)
+void board_init(void)
 {
 	HAL_Init();
 	RCC_Init();

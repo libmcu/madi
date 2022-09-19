@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/system.h"
+#include "libmcu/board.h"
 #include "at32f403a_407.h"
 
 /**
@@ -56,7 +56,7 @@ static void initialize_clock(void)
 	system_core_clock_update(); /* update system_core_clock global variable */
 }
 
-void system_init(void)
+void board_init(void)
 {
 	initialize_clock();
 }
