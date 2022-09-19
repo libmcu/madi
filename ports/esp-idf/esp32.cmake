@@ -39,15 +39,16 @@ add_executable(${PROJECT_EXECUTABLE}
 	${APP_SRCS}
 )
 
-target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options})
+set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
 target_link_options(${PROJECT_EXECUTABLE} PRIVATE -Wl,--print-memory-usage)
+target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options})
+target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE ${APP_DEFS})
 target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
 		${APP_INCS}
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
 		$ENV{IDF_PATH}/components/freertos/include/freertos
 )
-target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE ${APP_DEFS})
 
 # Link the static libraries to the executable
 target_link_libraries(${PROJECT_EXECUTABLE}
@@ -55,12 +56,8 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	idf::freertos
 	idf::spi_flash
 	idf::nvs_flash
-)
-
-set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
-target_link_libraries(${PROJECT_EXECUTABLE}
-	"-Wl,--cref"
-	"-Wl,--Map=\"${mapfile}\""
+	-Wl,--cref
+	-Wl,--Map=\"${mapfile}\"
 )
 
 # Attach additional targets to the executable file for flashing,

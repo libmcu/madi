@@ -1,27 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
-CROSS_COMPILE ?= arm-none-eabi
-
 PORT_ROOT := ports/at32
-
-CFLAGS += \
-	-mcpu=cortex-m4 \
-	-mthumb \
-	-mabi=aapcs \
-	-mfloat-abi=hard \
-	-mfpu=fpv4-sp-d16
-
-LDFLAGS += \
-	-mcpu=cortex-m4 \
-	-mthumb \
-	-mabi=aapcs \
-	-mfloat-abi=hard \
-	-mfpu=fpv4-sp-d16 \
-	--specs=nano.specs
-
-LIBS += -lc -lnosys -lm
 INCS += $(PORT_ROOT)
 
+include projects/arch/cm4f.mk
 include $(PORT_ROOT)/f403a/$(BOARD).mk
 
 .PHONY: flash erase gdbserver
