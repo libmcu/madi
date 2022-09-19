@@ -20,6 +20,22 @@ jobs:
           fetch-depth: 0
       - name: Install test framework
         run: make -C tests install
+  build-at32f403a-blackpill:
+    name: AT32F403A BalckPill
+    needs: [unit-test]
+    runs-on: ubuntu-latest
+    container:
+      image: onkwon/yaos:0.8
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Clone the dependancies
+        run: git clone https://github.com/ArteryTek/framework-at32firmlib.git external/at32sdk
+      - name: Build
+        run: make BOARD=blackpill_at32f403a
   build-esp32:
     name: ESP32
     needs: [unit-test]
