@@ -37,6 +37,7 @@ add_executable(${PROJECT_EXECUTABLE}
 	${CMAKE_CURRENT_LIST_DIR}/uart0.c
 	${CMAKE_CURRENT_LIST_DIR}/cli.c
 	${APP_SRCS}
+	${CMAKE_SOURCE_DIR}/drivers/wifi/esp32.c
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")

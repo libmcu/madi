@@ -1,6 +1,4 @@
-# FPL
-
-## Directory Structure
+## Project Layout
 
 ```shell
 .
@@ -34,8 +32,7 @@
 | tests     | Automated tests                                               |
 | tools     | Tools and utilities                                           |
 
-## Getting Started
-### Build
+## Build
 In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is
 Zephyr's meta tool. Please refer to [Zephyr's Getting Started
 Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html).

@@ -8,12 +8,14 @@ include(${LIBMCU_ROOT}/projects/modules.cmake)
 
 set(APP_SRCS
 	${BASEDIR}/src/main.c
+	${BASEDIR}/common/wifi.c
 	${BASEDIR}/src/cli/cli_commands.c
 	${BASEDIR}/src/cli/cmd_exit.c
 	${BASEDIR}/src/cli/cmd_help.c
 	${BASEDIR}/src/cli/cmd_info.c
 	${BASEDIR}/src/cli/cmd_memdump.c
 	${BASEDIR}/src/cli/cmd_reboot.c
+	${BASEDIR}/src/cli/cmd_wifi.c
 	${LIBMCU_MODULES_SRCS}
 )
 

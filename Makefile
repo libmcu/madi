@@ -33,3 +33,6 @@ coverage:
 clean:
 	$(Q)rm -fr $(BUILDIR)
 	$(Q)$(MAKE) -C tests $@
+.PHONY: docs
+docs:
+	@LD_LIBRARY_PATH=$$(llvm-config --libdir) $(MAKE) -C $@ html
