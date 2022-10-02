@@ -14,7 +14,7 @@ import os
 cautodoc_clang = '-I' + os.path.abspath('../../include')
 
 import subprocess
-subprocess.call('cd ../../ ; doxygen docs/Doxyfile', shell=True)
+subprocess.call('cd ../../ ; doxygen docs/doxygen/Doxyfile', shell=True)
 
 breathe_projects = { "fpl": "../build/doxygen/xml" }
 breathe_default_project = "fpl"
