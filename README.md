@@ -2,6 +2,7 @@
 
 ```shell
 .
+├── common
 ├── docs
 ├── drivers
 ├── external
@@ -20,17 +21,18 @@
 └── tests
 ```
 
-| Directory | Description                                                   |
-| --------- | -----------                                                   |
-| docs      | Project documentation, possibly auto-generated                |
-| drivers   |                                                               |
-| external  | External dependencies including all the third party libraries |
-| include   | Public headers                                                |
-| ports     |                                                               |
-| projects  |                                                               |
-| src       |                                                               |
-| tests     | Automated tests                                               |
-| tools     | Tools and utilities                                           |
+| Directory | Description                                                                    |
+| --------- | -----------                                                                    |
+| common    | Reusable components invoked by various systems, like middleware and subsystem  |
+| docs      | Project documentation, possibly auto-generated                                 |
+| drivers   | Device drivers                                                                 |
+| external  | External dependencies including all the third party libraries                  |
+| include   | Public headers                                                                 |
+| ports     | Adapter codes for a specific hardware or platform                              |
+| projects  | Build rules                                                                    |
+| src       | Main sources representing the business logic, including private headers        |
+| tests     | Automated tests                                                                |
+| tools     | Tools and utilities                                                            |
 
 ## Build
 In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is

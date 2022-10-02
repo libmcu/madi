@@ -30,7 +30,9 @@ static void handle_scan_result_core(uint16_t n, const wifi_ap_record_t *scanned)
 		res.rssi = scanned[i].rssi;
 		res.channel = scanned[i].primary;
 		res.security = WIFI_SEC_TYPE_NONE;
-		if (scanned[i].authmode > WIFI_AUTH_OPEN) {
+		if (scanned[i].authmode == WIFI_AUTH_WEP) {
+			res.security = WIFI_SEC_TYPE_WEP;
+		} else if (scanned[i].authmode > WIFI_AUTH_OPEN) {
 			res.security = WIFI_SEC_TYPE_PSK;
 		}
 		res.mac_len = WIFI_MAC_ADDR_LEN;
@@ -193,6 +195,8 @@ int wifi_connect(wifi_iface_t iface, const struct wifi_conf *param)
 
 	if (param->security == WIFI_SEC_TYPE_NONE) {
 		conf.sta.threshold.authmode = WIFI_AUTH_OPEN;
+	} else if (param->security == WIFI_SEC_TYPE_WEP) {
+		conf.sta.threshold.authmode = WIFI_AUTH_WEP;
 	}
 
 	if (esp_wifi_set_config(WIFI_IF_STA, &conf) != ESP_OK) {
@@ -272,6 +276,9 @@ int wifi_get_ap_info(wifi_iface_t iface, struct wifi_ap_info *info)
 	switch (esp_info.authmode) {
 	case WIFI_AUTH_OPEN:
 		sec = WIFI_SEC_TYPE_NONE;
+		break;
+	case WIFI_AUTH_WEP:
+		sec = WIFI_SEC_TYPE_WEP;
 		break;
 	case WIFI_AUTH_WPA_PSK:
 	case WIFI_AUTH_WPA2_PSK:

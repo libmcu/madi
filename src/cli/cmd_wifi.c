@@ -37,6 +37,8 @@ static inline const char *stringify_security(enum wifi_security sec)
 	switch (sec) {
 	case WIFI_SEC_TYPE_NONE:
 		return "Open";
+	case WIFI_SEC_TYPE_WEP:
+		return "WEP";
 	case WIFI_SEC_TYPE_PSK:
 		return "PSK";
 	case WIFI_SEC_TYPE_PSK_SHA256:
