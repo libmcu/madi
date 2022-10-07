@@ -7,7 +7,7 @@
 #include "cli.h"
 #include <stdio.h>
 #include <string.h>
-#include "common/wifi.h"
+#include "net/wifi.h"
 #include "libmcu/hexdump.h"
 #include "libmcu/compiler.h"
 
@@ -50,44 +50,6 @@ static inline const char *stringify_security(enum wifi_security sec)
 	}
 }
 
-static inline const char *stringify_mode(enum wifi_mode mode)
-{
-	switch (mode) {
-	case WIFI_MODE_INFRA:
-		return "Infra";
-	case WIFI_MODE_ACCESS_POINT:
-		return "AP";
-	case WIFI_MODE_MESH:
-		return "Mesh";
-	default:
-		return "Unknown";
-	}
-}
-
-static inline const char *stringify_state(enum wifi_state state)
-{
-	switch (state) {
-	case WIFI_STATE_DISABLED:
-		return "Disabled";
-	case WIFI_STATE_DISCONNECTING:
-		return "Disconnecting";
-	case WIFI_STATE_DISCONNECTED:
-		return "Disconnected";
-	case WIFI_STATE_INACTIVE:
-		return "Inactive";
-	case WIFI_STATE_SCANNING:
-		return "Scanning";
-	case WIFI_STATE_AUTHENTICATING:
-		return "Authenticating";
-	case WIFI_STATE_ASSOCIATING:
-		return "Associating";
-	case WIFI_STATE_ASSOCIATED:
-		return "Associated";
-	default:
-		return "Unknown";
-	}
-}
-
 static void print_scan_result(const struct wifi_scan_result *entry)
 {
 	if (entry == NULL) {
@@ -99,8 +61,8 @@ static void print_scan_result(const struct wifi_scan_result *entry)
 
 	if (scan_index == 0) {
 		snprintf(buf, sizeof(buf),
-				"\r\n%-4s | %-32s | %-13s | %-4s | %-10s | %s\r\n",
-				"No.", "SSID", "Chan (Band)", "RSSI", "Security", "BSSID");
+			"\r\n%-4s | %-32s | %-13s | %-4s | %-10s | %s\r\n",
+			"No.", "SSID", "Chan (Band)", "RSSI", "Security", "BSSID");
 		io->write(buf, strlen(buf));
 	}
 
@@ -111,12 +73,12 @@ static void print_scan_result(const struct wifi_scan_result *entry)
 			"%-4d | %.*s%s | %-4u (%-6s) | %-4d | %-10s | %s\r\n",
 			scan_index, entry->ssid_len, entry->ssid,
 			&"                                "[entry->ssid_len],
-			entry->channel, stringify_band(entry->band), entry->rssi,
-			stringify_security(entry->security), mac);
+			entry->channel, stringify_band(entry->band),
+			entry->rssi, stringify_security(entry->security), mac);
 	io->write(buf, strlen(buf));
 }
 
-static void on_wifi_events(const wifi_iface_t iface,
+static void on_wifi_events(const struct wifi *iface,
 			   enum wifi_event evt, const void *data)
 {
 	unused(iface);
@@ -138,68 +100,87 @@ static void on_wifi_events(const wifi_iface_t iface,
 	}
 }
 
-static void print_wifi_info(const wifi_iface_t iface)
+static void print_wifi_info(struct wifi *iface)
 {
+	struct wifi_iface_info info;
+
 	if (iface == NULL) {
 		return;
 	}
 
-	const char *str = stringify_mode((enum wifi_mode)iface->mode);
-	size_t len = (size_t)strlen(str);
-	io->write(str, len);
-	io->write("\r\n", 2);
-	str = stringify_state((enum wifi_state)iface->state);
-	len = (size_t)strlen(str);
-	io->write(str, len);
-	io->write("\r\n", 2);
-
-	wifi_get_ap_info(iface, 0);
+	wifi_get_status(iface, &info);
 	char buf[WIFI_MAC_ADDR_LEN*2+4/*dots*/+2/*crlf*/];
-	hexdump(buf, sizeof(buf), iface->mac, sizeof(iface->mac));
+	hexdump(buf, sizeof(buf), info.mac, sizeof(info.mac));
 	io->write(buf, (size_t)strlen(buf));
 	io->write("\r\n", 2);
 	snprintf(buf, sizeof(buf), "%d.%d.%d.%d\r\n",
 			iface->ip.v4[0], iface->ip.v4[1],
 			iface->ip.v4[2], iface->ip.v4[3]);
 	io->write(buf, (size_t)strlen(buf));
-	snprintf(buf, sizeof(buf), "rssi %d\r\n", iface->rssi);
+	snprintf(buf, sizeof(buf), "rssi %d\r\n", info.rssi);
 	io->write(buf, (size_t)strlen(buf));
+}
+
+static struct wifi *handle_single_param(const char *argv[], struct wifi *iface)
+{
+	if (strcmp(argv[1], "init") == 0) {
+		iface = wifi_create_default();
+	} else if (iface == NULL) {
+		return iface;
+	}
+
+	if (strcmp(argv[1], "start") == 0) {
+		wifi_start(iface);
+		wifi_register_event_callback(iface, on_wifi_events);
+	} else if (strcmp(argv[1], "stop") == 0) {
+		wifi_stop(iface);
+	} else if (strcmp(argv[1], "scan") == 0) {
+		if (wifi_scan(iface) == 0) {
+			scan_index = 0;
+		}
+	} else if (strcmp(argv[1], "disconnect") == 0) {
+		wifi_disconnect(iface);
+	}
+
+	return iface;
+}
+
+static void handle_multi_params(int argc, const char *argv[], struct wifi *iface)
+{
+	if (strcmp(argv[1], "connect") == 0 && argc >= 3) {
+		struct wifi_conn_param param = {
+			.ssid = (const uint8_t *)argv[2],
+			.ssid_len = (uint8_t)strlen(argv[2]),
+			.security = WIFI_SEC_TYPE_NONE,
+		};
+
+		if (argc >= 4) {
+			param.psk = (const uint8_t *)argv[3];
+			param.psk_len = (uint8_t)strlen(argv[3]);
+			param.security = WIFI_SEC_TYPE_PSK;
+		}
+
+		if (argc == 5 && strcmp(argv[4], "wep") == 0) {
+			param.security = WIFI_SEC_TYPE_WEP;
+		}
+
+		wifi_connect(iface, &param);
+	}
 }
 
 cli_cmd_error_t cli_cmd_wifi(int argc, const char *argv[], const void *env)
 {
-	static wifi_iface_t iface;
+	static struct wifi *iface;
 	struct cli const *cli = (struct cli const *)env;
 
 	io = cli->io;
 
-	if (argc == 2 && strcmp(argv[1], "init") == 0) {
-		iface = wifi_create();
-		wifi_register_event_callback(iface, on_wifi_events);
-	} else if (argc > 1 && iface) {
-		if (strcmp(argv[1], "scan") == 0) {
-			if (wifi_scan(iface) == 0) {
-				scan_index = 0;
-			}
-		} else if (strcmp(argv[1], "disconnect") == 0) {
-			wifi_disconnect(iface);
-		} else if (strcmp(argv[1], "connect") == 0) {
-			struct wifi_conf param = {
-				.ssid = (const uint8_t *)argv[2],
-				.ssid_len = (uint8_t)strlen(argv[2]),
-				.security = WIFI_SEC_TYPE_NONE,
-			};
-
-			if (argc == 4) {
-				param.psk = (const uint8_t *)argv[3];
-				param.psk_len = (uint8_t)strlen(argv[3]);
-				param.security = WIFI_SEC_TYPE_PSK;
-			}
-
-			wifi_connect(iface, &param);
-		}
-	} else if (argc == 1) { /* info */
+	if (argc == 1 && iface) {
 		print_wifi_info(iface);
+	} else if (argc == 2) {
+		iface = handle_single_param(argv, iface);
+	} else if (argc > 1 && iface) {
+		handle_multi_params(argc, argv, iface);
 	}
 
 	return CLI_CMD_SUCCESS;

@@ -6,16 +6,12 @@ LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
 LIBMCU_MODULES := cli
 include $(LIBMCU_ROOT)/projects/modules.mk
 
+fpl-src-dirs := src stubs
+FPL_SRCS = $(foreach dir, $(addprefix $(BASEDIR)/, $(fpl-src-dirs)), \
+	$(shell find $(dir) -type f -regex ".*\.c"))
+
 APP_SRCS = \
-	$(BASEDIR)/src/main.c \
-	$(BASEDIR)/common/wifi.c \
-	$(BASEDIR)/src/cli/cli_commands.c \
-	$(BASEDIR)/src/cli/cmd_exit.c \
-	$(BASEDIR)/src/cli/cmd_help.c \
-	$(BASEDIR)/src/cli/cmd_info.c \
-	$(BASEDIR)/src/cli/cmd_memdump.c \
-	$(BASEDIR)/src/cli/cmd_reboot.c \
-	$(BASEDIR)/src/cli/cmd_wifi.c \
+	$(FPL_SRCS) \
 	$(LIBMCU_MODULES_SRCS) \
 
 APP_INCS = \

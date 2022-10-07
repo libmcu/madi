@@ -18,6 +18,7 @@
 │   └── zephyr
 ├── projects
 ├── src
+├── stubs
 └── tests
 ```
 
@@ -31,6 +32,7 @@
 | ports     | Adapter codes for a specific hardware or platform                              |
 | projects  | Build rules                                                                    |
 | src       | Main sources representing the business logic, including private headers        |
+| stubs     | Non-functionality glue code to make be compiled without error                  |
 | tests     | Automated tests                                                                |
 | tools     | Tools and utilities                                                            |
 

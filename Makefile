@@ -1,10 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
-DEFAULT_BOARD ?= unknown
-ifeq ($(BOARD),)
-BOARD := $(DEFAULT_BOARD)
-endif
-
 PROJECT := $(BOARD)
 BASEDIR := $(shell pwd)
 BUILDIR := build
@@ -21,7 +16,12 @@ export BASEDIR
 export BUILDIR
 export Q
 
+ifneq ($(BOARD),)
 include projects/rules.mk
+else
+all:
+	$(info Specify BOARD or target)
+endif
 
 .PHONY: test
 test:

@@ -6,16 +6,14 @@ set(LIBMCU_ROOT ${BASEDIR}/external/libmcu)
 list(APPEND LIBMCU_MODULES cli)
 include(${LIBMCU_ROOT}/projects/modules.cmake)
 
+set(fpl-src-dirs src stubs)
+foreach(dir ${fpl-src-dirs})
+	file(GLOB_RECURSE fpl_${dir}_SRCS RELATIVE ${BASEDIR} ${dir}/*.c)
+	list(APPEND FPL_SRCS ${fpl_${dir}_SRCS})
+endforeach()
+
 set(APP_SRCS
-	${BASEDIR}/src/main.c
-	${BASEDIR}/common/wifi.c
-	${BASEDIR}/src/cli/cli_commands.c
-	${BASEDIR}/src/cli/cmd_exit.c
-	${BASEDIR}/src/cli/cmd_help.c
-	${BASEDIR}/src/cli/cmd_info.c
-	${BASEDIR}/src/cli/cmd_memdump.c
-	${BASEDIR}/src/cli/cmd_reboot.c
-	${BASEDIR}/src/cli/cmd_wifi.c
+	${FPL_SRCS}
 	${LIBMCU_MODULES_SRCS}
 )
 

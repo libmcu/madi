@@ -15,7 +15,7 @@
 #define DEFAULT_TASK_PRIORITY				1
 #endif
 #if !defined(DEFAULT_TASK_STACK_SIZE)
-#define DEFAULT_TASK_STACK_SIZE				3072
+#define DEFAULT_TASK_STACK_SIZE				4096
 #endif
 
 extern int main(void);

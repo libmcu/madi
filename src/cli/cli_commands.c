@@ -12,7 +12,11 @@ const struct cli_cmd cli_commands[] = {
 	{"info", cli_cmd_info, "info [version|sn|build] to get device info" },
 	{"reboot", cli_cmd_reboot, "Reboot the device" },
 	{"md", cli_cmd_memdump, "md <addr> <len>" },
-	{"wifi", cli_cmd_wifi, "wifi [scan|connect|disconnect] <ssid> <pass>" },
+	{"wifi", cli_cmd_wifi,
+		"wifi [init|start|stop|scan|connect|disconnect] <ssid> <pass>" },
+	{"mqtt", cli_cmd_mqtt,
+		"mqtt [init|connect|disconnect|publish|subscribe]" },
+	{"test", cli_cmd_test, "test" },
 };
 
 const size_t cli_commands_len = sizeof(cli_commands) / sizeof(*cli_commands);
