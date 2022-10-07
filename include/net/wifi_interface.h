@@ -42,9 +42,9 @@ enum wifi_security {
 };
 
 enum wifi_mfp {
-	WIFI_MFP_DISABLED,
 	WIFI_MFP_OPTIONAL,
 	WIFI_MFP_REQUIRED,
+	WIFI_MFP_DISABLED,
 };
 
 struct wifi_conn_param {

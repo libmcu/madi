@@ -32,7 +32,7 @@
 | ports     | Adapter codes for a specific hardware or platform                              |
 | projects  | Build rules                                                                    |
 | src       | Main sources representing the business logic, including private headers        |
-| stubs     | Non-functionality glue code to make be compiled without error                  |
+| stubs     | Non-functional glue code for build to be done without error                    |
 | tests     | Automated tests                                                                |
 | tools     | Tools and utilities                                                            |
 
@@ -40,6 +40,8 @@
 In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is
 Zephyr's meta tool. Please refer to [Zephyr's Getting Started
 Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html).
+Zephyr kernel configurations and devicetree overlays for a board can be found
+under [docs/boards](docs/boards).
 
 Please check out our getting started guide under [docs/boards](docs/boards) for
 other RTOSs or bear metal firmwares.

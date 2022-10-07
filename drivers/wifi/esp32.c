@@ -330,7 +330,7 @@ struct wifi *esp_wifi_create(void)
 		return NULL;
 	}
 
-	esp_efuse_mac_get_default(static_esp_iface.base.status.mac);
+	esp_read_mac(static_esp_iface.base.status.mac, ESP_MAC_WIFI_STA);
 	static_esp_iface.base.status.mac_len = WIFI_MAC_ADDR_LEN;
 
 	return (struct wifi *)&static_esp_iface;
