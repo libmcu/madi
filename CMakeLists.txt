@@ -17,6 +17,7 @@ endif()
 
 project(${BOARD})
 
+include(${BASEDIR}/projects/version.cmake)
 include(${BASEDIR}/projects/app.cmake)
 
 if (DEFINED ESP_PLATFORM)

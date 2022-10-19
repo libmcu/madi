@@ -24,14 +24,14 @@
 
 | Directory | Description                                                                    |
 | --------- | -----------                                                                    |
-| common    | Reusable components invoked by various systems, like middleware and subsystem  |
+| common    | Reusable components invoked by various systems. non-application-specific code  |
 | docs      | Project documentation, possibly auto-generated                                 |
 | drivers   | Device drivers                                                                 |
 | external  | External dependencies including all the third party libraries                  |
 | include   | Public headers                                                                 |
 | ports     | Adapter codes for a specific hardware or platform                              |
 | projects  | Build rules                                                                    |
-| src       | Main sources representing the business logic, including private headers        |
+| src       | The application-specific code, including private headers                       |
 | stubs     | Non-functional glue code for build to be done without error                    |
 | tests     | Automated tests                                                                |
 | tools     | Tools and utilities                                                            |

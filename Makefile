@@ -16,6 +16,7 @@ export BASEDIR
 export BUILDIR
 export Q
 
+include projects/version.mk
 ifneq ($(BOARD),)
 include projects/rules.mk
 else
@@ -36,3 +37,6 @@ clean:
 .PHONY: docs
 docs:
 	@LD_LIBRARY_PATH=$$(llvm-config --libdir) $(MAKE) -C $@ html
+.PHONY: version
+version:
+	$(info $(VERSION_TAG), $(VERSION))

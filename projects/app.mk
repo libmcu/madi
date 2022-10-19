@@ -1,9 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
-include projects/version.mk
-
 LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
-LIBMCU_MODULES := cli
+LIBMCU_MODULES := cli logging
 include $(LIBMCU_ROOT)/projects/modules.mk
 
 fpl-src-dirs := src stubs

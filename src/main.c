@@ -5,14 +5,21 @@
  */
 
 #include "libmcu/board.h"
+#include "libmcu/logging.h"
+
 #include "cli/cli.h"
 
 int main(void)
 {
-	struct cli cli;
-
+	logging_init();
 	board_init();
 
+	info("\n\n[%s] %s %s",
+			board_get_reboot_reason_string(),
+			board_get_serial_number_string(),
+			board_get_version_string());
+
+	struct cli cli;
 	cli_init(&cli, cli_io_create(), cli_commands, cli_commands_len);
 	cli_run(&cli);
 

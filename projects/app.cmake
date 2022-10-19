@@ -1,9 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
-include(${BASEDIR}/projects/version.cmake)
-
 set(LIBMCU_ROOT ${BASEDIR}/external/libmcu)
-list(APPEND LIBMCU_MODULES cli)
+list(APPEND LIBMCU_MODULES cli logging)
 include(${LIBMCU_ROOT}/projects/modules.cmake)
 
 set(fpl-src-dirs src stubs)
