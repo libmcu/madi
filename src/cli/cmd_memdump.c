@@ -18,6 +18,12 @@
 #define MIN(x, y)			(((x) > (y))? (y) : (x))
 #endif
 
+static void println(const struct cli_io *io, const char *str)
+{
+	io->write(str, strlen(str));
+	io->write("\n", 1);
+}
+
 static void print_addr(struct cli_io const *io, uintptr_t addr)
 {
 	char buf[BUFSIZE] = { 0, };
@@ -53,7 +59,7 @@ static void print_ascii(struct cli_io const *io, uint8_t val)
 
 static void print_next_line(struct cli_io const *io)
 {
-	io->write("\r\n", 2);
+	io->write("\n", 1);
 }
 
 /* NOTE: Some of memory-mapped peripheral registers are word aligned. */
@@ -119,6 +125,10 @@ cli_cmd_error_t cli_cmd_memdump(int argc, const char *argv[], const void *env)
 #endif
 		break;
 	case 2: // with cached length
+		if (strcmp(argv[1], "help") == 0) {
+			println(cli->io, "md <addr> <len>");
+			return CLI_CMD_SUCCESS;
+		}
 		addr = (uintptr_t)strtoll(argv[1], NULL, 16);
 		break;
 	case 3:

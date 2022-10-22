@@ -5,19 +5,24 @@
  */
 
 #include "cli.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <semaphore.h>
+
 #include "net/wifi.h"
+
 #include "libmcu/hexdump.h"
 #include "libmcu/compiler.h"
 
 static const struct cli_io *io;
 static unsigned int scan_index;
+static sem_t events;
 
 static void println(const char *str)
 {
 	io->write(str, strlen(str));
-	io->write("\r\n", 2);
+	io->write("\n", 1);
 }
 
 static inline const char *stringify_band(enum wifi_frequency_band band)
@@ -63,7 +68,7 @@ static void print_scan_result(const struct wifi_scan_result *entry)
 
 	if (scan_index == 0) {
 		snprintf(buf, sizeof(buf),
-			"\r\n%-4s | %-32s | %-13s | %-4s | %-10s | %s",
+			"\n%-4s | %-32s | %-13s | %-4s | %-10s | %s",
 			"No.", "SSID", "Chan (Band)", "RSSI", "Security", "BSSID");
 		println(buf);
 	}
@@ -90,13 +95,14 @@ static void on_wifi_events(const struct wifi *iface,
 	case WIFI_EVT_SCAN_RESULT:
 		print_scan_result((const struct wifi_scan_result *)data);
 		break;
-	case WIFI_EVT_SCAN_DONE:
-	case WIFI_EVT_STARTED:
-	case WIFI_EVT_DISCONNECTED:
-	case WIFI_EVT_CONNECTED:
+	case WIFI_EVT_SCAN_DONE: /* fall through */
+	case WIFI_EVT_STARTED: /* fall through */
+	case WIFI_EVT_DISCONNECTED: /* fall through */
+	case WIFI_EVT_CONNECTED: /* fall through */
 	default:
 		snprintf(buf, sizeof(buf), "WIFI EVT: %x", evt);
 		println(buf);
+		sem_post(&events);
 		break;
 	}
 }
@@ -123,7 +129,11 @@ static void print_wifi_info(struct wifi *iface)
 
 static struct wifi *handle_single_param(const char *argv[], struct wifi *iface)
 {
-	if (strcmp(argv[1], "init") == 0) {
+	if (strcmp(argv[1], "help") == 0) {
+		println("subcommands:\n\n\tinit\n\tstart\n\tstop\n\tscan" \
+			"\n\tconnect\t: <ssid> <pass>\n\tdisconnect");
+		return iface;
+	} else if (strcmp(argv[1], "init") == 0) {
 		return wifi_create_default();
 	} else if (iface == NULL) {
 		return NULL;
@@ -147,6 +157,7 @@ static struct wifi *handle_single_param(const char *argv[], struct wifi *iface)
 	}
 
 	if (wait_on_events) {
+		sem_wait(&events);
 	}
 
 	return iface;
@@ -172,6 +183,7 @@ static void handle_multi_params(int argc, const char *argv[], struct wifi *iface
 		}
 
 		wifi_connect(iface, &param);
+		sem_wait(&events);
 	}
 }
 
@@ -182,6 +194,10 @@ cli_cmd_error_t cli_cmd_wifi(int argc, const char *argv[], const void *env)
 
 	io = cli->io;
 
+	if (sem_init(&events, 0, 0) != 0) {
+		goto out;
+	}
+
 	if (argc == 1 && iface) {
 		print_wifi_info(iface);
 	} else if (argc == 2) {
@@ -189,6 +205,9 @@ cli_cmd_error_t cli_cmd_wifi(int argc, const char *argv[], const void *env)
 	} else if (argc > 1 && iface) {
 		handle_multi_params(argc, argv, iface);
 	}
+
+out:
+	sem_destroy(&events);
 
 	return CLI_CMD_SUCCESS;
 }

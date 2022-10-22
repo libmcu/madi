@@ -33,6 +33,12 @@
 #define MQTT_TEST_TIMEOUT_MS	10000
 #define MQTT_TEST_BUF_SIZE	1024
 
+static void println(const struct cli_io *io, const char *str)
+{
+	io->write(str, strlen(str));
+	io->write("\n", 1);
+}
+
 static void on_mqtt_events(struct mqtt_client *ctx, struct mqtt_event *evt)
 {
 	(void)ctx;
@@ -124,7 +130,7 @@ static int do_listen(struct mqtt_client *mqtt, const struct cli_io *io)
 #if defined(CLI_ASYNC)
 	char ch = 0;
 
-	io->write("type q to quit\r\n", 16);
+	io->write("type q to quit\n", 15);
 #endif
 
 	do {
@@ -149,7 +155,10 @@ static void process(int argc, const char *argv[], const struct cli_io *io)
 		return;
 	}
 
-	if (strcmp(argv[1], "init") == 0) {
+	if (strcmp(argv[1], "help") == 0) {
+		println(io, "subcommands:\n\n\tinit\n\tconnect\n\tdisconnect" \
+			"\n\tpublish\n\tsubscribe");
+	} else if (strcmp(argv[1], "init") == 0) {
 		rc = do_init(&mqtt);
 	} else if (strcmp(argv[1], "connect") == 0) {
 		rc = mqtt_connect(mqtt);
@@ -168,7 +177,7 @@ static void process(int argc, const char *argv[], const struct cli_io *io)
 	}
 
 	char buf[16];
-	snprintf(buf, sizeof(buf)-1, "RC: %d\r\n", rc);
+	snprintf(buf, sizeof(buf)-1, "RC: %d\n", rc);
 	io->write(buf, strlen(buf));
 }
 

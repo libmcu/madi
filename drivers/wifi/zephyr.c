@@ -61,6 +61,10 @@ static enum wifi_security security_from_zephyr(uint8_t sec)
 
 static void handle_scan_result(struct net_mgmt_event_callback *cb)
 {
+	if (cb == NULL || cb->info == NULL) {
+		return;
+	}
+
 	const struct wifi_scan_result *entry =
 		(const struct wifi_scan_result *)cb->info;
 	struct fpl_wifi_scan_result res = {
@@ -102,6 +106,8 @@ static void handle_disconnect_result(struct net_mgmt_event_callback *cb)
 	const struct wifi_status *status = (const struct wifi_status *)cb->info;
 
 	net_dhcpv4_stop(static_wifi_iface.iface);
+	memset(&static_wifi_iface.base.ip, 0,
+			sizeof(static_wifi_iface.base.ip));
 	raise_event_with_data(&static_wifi_iface.base,
 		WIFI_EVT_DISCONNECTED, 0);
 }
