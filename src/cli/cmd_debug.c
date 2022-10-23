@@ -19,14 +19,19 @@ static void println(const struct cli_io *io, const char *str)
 LIBMCU_NO_INSTRUMENT
 static void trace_callback(const struct trace *entry, void *ctx)
 {
+	char buf[34] = { 0, };
 	const struct cli_io *io = (const struct cli_io *)ctx;
 
+	snprintf(buf, sizeof(buf), "%12lu %8x %5u ",
+			entry->timestamp, (uintptr_t)entry->thread,
+			entry->stack_usage);
+	io->write(buf, strlen(buf));
+
 	for (uint8_t i = 0; i < entry->depth; i++) {
-		io->write("|  ", 3);
+		io->write("  ", 2);
 	}
 
-	char buf[34] = { 0, };
-	snprintf(buf, sizeof(buf), "|- %p (from %p)",
+	snprintf(buf, sizeof(buf), "%p (from %p)",
 			entry->callee, entry->caller);
 	println(io, buf);
 }
@@ -43,6 +48,8 @@ static void print_trace(const struct cli_io *io)
 		const struct cli_io *cio;
 		void *p;
 	} t = { .cio = io, };
+
+	println(io, " timestamp    thread  stack function");
 
 	trace_iterate(trace_callback, t.p, -1);
 	trace_clear();
