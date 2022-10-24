@@ -13,7 +13,7 @@
 static void println(const struct cli_io *io, const char *str)
 {
 	io->write(str, strlen(str));
-	io->write("\r\n", 2);
+	io->write("\n", 1);
 }
 
 LIBMCU_NO_INSTRUMENT

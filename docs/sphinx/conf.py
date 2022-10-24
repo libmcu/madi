@@ -22,7 +22,7 @@ breathe_default_project = "fpl"
 # -- Project information -----------------------------------------------------
 
 project = 'fpl'
-copyright = '2022, mononn'
+copyright = '2022, libmcu'
 author = 'Kyunghwan Kwon'
 
 # The full version, including alpha/beta/rc tags
