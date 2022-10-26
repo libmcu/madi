@@ -7,7 +7,8 @@ include(${LIBMCU_ROOT}/projects/modules.cmake)
 set(fpl-src-dirs src stubs)
 foreach(dir ${fpl-src-dirs})
 	file(GLOB_RECURSE fpl_${dir}_SRCS RELATIVE ${BASEDIR} ${dir}/*.c)
-	list(APPEND FPL_SRCS ${fpl_${dir}_SRCS})
+	file(GLOB_RECURSE fpl_${dir}_CPP_SRCS RELATIVE ${BASEDIR} ${dir}/*.cpp)
+	list(APPEND FPL_SRCS ${fpl_${dir}_SRCS} ${fpl_${dir}_CPP_SRCS})
 endforeach()
 
 set(APP_SRCS

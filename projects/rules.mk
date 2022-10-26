@@ -22,6 +22,13 @@ $(OUTDIR)/%.c.o: %.c Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)
 		$(addprefix -D, $(DEFS)) \
 		$(addprefix -I, $(INCS)) \
 		$(CFLAGS)
+$(OUTDIR)/%.cpp.o: %.cpp Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)
+	$(info compiling   $<)
+	@mkdir -p $(@D)
+	$(Q)$(CC) -o $@ -c $< -MMD \
+		$(addprefix -D, $(DEFS)) \
+		$(addprefix -I, $(INCS)) \
+		$(CXXFLAGS)
 $(OUTDIR)/%.s.o: %.s Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)
 	$(info assembling  $<)
 	@mkdir -p $(@D)
