@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-SDK_ROOT ?= external/nRF5_SDK_17.0.2_d674dde
+SDK_ROOT ?= external/nRF5_SDK_17.1.0_ddde560
 LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52832.ld
 
 NRF_SRCS = \
@@ -147,7 +147,14 @@ NRF_DEFS = \
 
 $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
-SRCS += $(NRF_SRCS) $(APP_SRCS)
-INCS += $(NRF_INCS) $(APP_INCS)
-DEFS += $(NRF_DEFS) $(APP_DEFS)
-LIBDIRS += -L$(SDK_ROOT)/modules/nrfx/mdk
+INCS += $(NRF_INCS)
+DEFS += $(NRF_DEFS)
+
+NRF_OUTPUT := $(OUTDIR)/libnrf52.a
+NRF_OBJS := $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o))
+DEPS += $(NRF_OBJS:.o=.d)
+LIBS += -Wl,--whole-archive -lnrf52 -Wl,--no-whole-archive
+LIBDIRS += $(SDK_ROOT)/modules/nrfx/mdk
+
+$(OUTELF):: $(NRF_OUTPUT)
+$(eval $(call generate_lib, $(NRF_OUTPUT), $(NRF_OBJS)))

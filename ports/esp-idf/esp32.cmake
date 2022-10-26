@@ -39,18 +39,15 @@ add_executable(${PROJECT_EXECUTABLE}
 	${CMAKE_CURRENT_LIST_DIR}/cli.c
 	${CMAKE_CURRENT_LIST_DIR}/tls.c
 	${LIBMCU_ROOT}/ports/freertos/semaphore.c
-	${APP_SRCS}
 	${CMAKE_SOURCE_DIR}/drivers/wifi/esp32.c
 	${CMAKE_SOURCE_DIR}/ports/coreMQTT/mqtt.c
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
-target_link_options(${PROJECT_EXECUTABLE} PRIVATE -Wl,--print-memory-usage)
 target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options} -finstrument-functions)
-target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE ${APP_DEFS} WIFI_DEFAULT_INTERFACE=esp)
+target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE WIFI_DEFAULT_INTERFACE=esp)
 target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
-		${APP_INCS}
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
 		$ENV{IDF_PATH}/components/freertos/include/freertos
 )
@@ -71,6 +68,7 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	idf::nvs_flash
 	idf::esp-tls
 	core_mqtt
+	fpl_app
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"
 )

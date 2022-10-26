@@ -33,7 +33,8 @@ static void trace_callback(const struct trace *entry, void *ctx)
 
 	snprintf(buf, sizeof(buf), "%p (from %p)",
 			entry->callee, entry->caller);
-	println(io, buf);
+	io->write(buf, strlen(buf));
+	io->write("\n", 1);
 }
 
 static void print_trace(const struct cli_io *io)

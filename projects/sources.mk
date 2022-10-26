@@ -4,20 +4,27 @@ LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
 LIBMCU_MODULES := cli logging trace
 include $(LIBMCU_ROOT)/projects/modules.mk
 
-fpl-src-dirs := src stubs
-FPL_SRCS = $(foreach dir, $(addprefix $(BASEDIR)/, $(fpl-src-dirs)), \
+app-src-dirs := src stubs
+APP_SRCS = $(foreach dir, $(addprefix $(BASEDIR)/, $(app-src-dirs)), \
 	$(shell find $(dir) -type f -regex ".*\.c"))
 
-APP_SRCS = \
-	$(FPL_SRCS) \
+SRCS += \
+	$(APP_SRCS) \
 	$(LIBMCU_MODULES_SRCS) \
 
-APP_INCS = \
+INCS += \
 	$(BASEDIR)/include \
 	$(LIBMCU_MODULES_INCS) \
 
-APP_DEFS = \
+DEFS += \
 	$(BOARD) \
 	BUILD_DATE=$(BUILD_DATE) \
 	VERSION_TAG=$(VERSION_TAG) \
 	VERSION=$(VERSION)
+
+OBJS += $(addprefix $(OUTDIR)/, $(SRCS:%=%.o))
+LIBDIRS += $(OUTDIR)
+
+ifndef NDEBUG
+$(addprefix $(OUTDIR)/, $(SRCS:%=%.o)): CFLAGS+=-finstrument-functions
+endif

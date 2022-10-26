@@ -35,6 +35,13 @@ $ git submodule add https://github.com/STMicroelectronics/STM32CubeF1.git extern
 ## STM32F103 BluePill
 ### Build
 
+#### Make
 ```shell
 $ make BOARD=stm32_min_dev_blue
+```
+
+#### CMake
+```shell
+$ cmake -S . -B build -DBOARD=stm32_min_dev_blue -DCMAKE_TOOLCHAIN_FILE=projects/arm-none-eabi-gcc.cmake
+$ cmake --build build
 ```

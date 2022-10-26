@@ -17,27 +17,50 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          fetch-depth: 0
       - name: Install test framework
         run: make -C tests install
-  build-at32f403a-blackpill:
-    name: AT32F403A BalckPill
+  build:
+    name: Build with Make and CMake
     needs: [unit-test]
+    strategy:
+      matrix:
+        include:
+          - target: blackpill_at32f403a
+            repo: ArteryTek/framework-at32firmlib
+            path: external/at32sdk
+          - target: stm32_min_dev_blue
+            repo: STMicroelectronics/STM32CubeF1
+            path: external/STM32CubeF1
+          - target: nrf52_blenano2
+            repo: libmcu/nRF5_SDK_17.1.0_ddde560
+            path: external/nRF5_SDK_17.1.0_ddde560
     runs-on: ubuntu-latest
     container:
-      image: onkwon/yaos:0.8
+      image: libmcu/ci:latest
     steps:
       - name: Clone
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          fetch-depth: 0
       - name: Clone the dependancies
-        run: git clone https://github.com/ArteryTek/framework-at32firmlib.git external/at32sdk
-      - name: Build
-        run: make BOARD=blackpill_at32f403a
-  build-esp32:
-    name: ESP32
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ matrix.repo }}
+          path: ${{ matrix.path }}
+          ssh-key: ${{ secrets.SSH_KEY }}
+      - name: Fix git safe.directory in container
+        run: git config --global --add safe.directory /__w/firmware-project-layout/firmware-project-layout
+      - name: Build with Make
+        run: |
+          ls
+          make BOARD=${{ matrix.target }}
+          make clean
+      - name: Build with CMake
+        run: |
+          cmake -S . -B build -DBOARD=${{ matrix.target }} -DCMAKE_TOOLCHAIN_FILE=projects/arm-none-eabi-gcc.cmake
+          cmake --build build
+  build-for-esp32-with-esp-idf:
+    name: Build for ESP32 with ESP-IDF
     needs: [unit-test]
     runs-on: ubuntu-latest
     steps:
@@ -45,40 +68,21 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          fetch-depth: 0
       - name: Build
         uses: docker://espressif/idf:release-v4.4
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py build"
-  #build-nrf52-blenano2:
-    #name: nRF52 Nano2
-  build-stm32f1-bluepill:
-    name: STM32F103 BluePill
-    needs: [unit-test]
-    runs-on: ubuntu-latest
-    container:
-      image: onkwon/yaos:0.8
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - name: Clone the dependancies
-        run: git clone https://github.com/STMicroelectronics/STM32CubeF1.git external/STM32CubeF1
-      - name: Build
-        run: make BOARD=stm32_min_dev_blue
-  build-zephyr:
-    name: Zephyr
+  build-with-zephyr:
+    name: Build with Zephyr
     needs: [unit-test]
     strategy:
       matrix:
         target: [esp32, nrf52_blenano2, stm32_min_dev_blue]
     runs-on: ubuntu-latest
     container:
-      image: zephyrprojectrtos/ci:v0.24.2
+      image: zephyrprojectrtos/ci:latest
     env:
-      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.0
+      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.1
     steps:
       - name: Prepare
         run: |
@@ -88,7 +92,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          fetch-depth: 0
           path: ${{ github.event.repository.name }}
       - name: Build for ${{ matrix.target }}
         run: west build -b ${{ matrix.target }} ${{ github.event.repository.name }} -p always

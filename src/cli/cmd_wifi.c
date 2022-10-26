@@ -25,7 +25,7 @@ static void println(const char *str)
 	io->write("\n", 1);
 }
 
-static inline const char *stringify_band(enum wifi_frequency_band band)
+static const char *stringify_band(enum wifi_frequency_band band)
 {
 	switch (band) {
 	case WIFI_FREQ_2_4_GHZ:
@@ -39,7 +39,7 @@ static inline const char *stringify_band(enum wifi_frequency_band band)
 	}
 }
 
-static inline const char *stringify_security(enum wifi_security sec)
+static const char *stringify_security(enum wifi_security sec)
 {
 	switch (sec) {
 	case WIFI_SEC_TYPE_NONE:

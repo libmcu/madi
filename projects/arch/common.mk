@@ -11,4 +11,4 @@ LDFLAGS += \
 	-mabi=aapcs \
 	--specs=nano.specs \
 
-LIBS += -lc -lnosys -lm
+STDLIBS += -lc -lnosys -lm

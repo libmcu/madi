@@ -48,7 +48,6 @@ MY_WARNING_FLAGS ?= \
 	-Wformat-nonliteral \
 	-Wdouble-promotion \
 	-Wfloat-equal \
-	-Winline \
 	-Wundef \
 	-Wunused-macros \
 	-Wshadow \

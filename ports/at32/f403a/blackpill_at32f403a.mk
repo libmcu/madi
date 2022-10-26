@@ -39,7 +39,7 @@ AT_INCS = \
 	$(SDK_ROOT)/cmsis/cm4/device_support \
 	$(SDK_ROOT)/drivers/inc \
 	\
-	$(PORT_ROOT)/f403a
+	$(PORT_ROOT)/f403a \
 
 AT_DEFS = \
 	AT32F403ACGU7 \
@@ -49,6 +49,13 @@ AT_DEFS = \
 
 $(addprefix $(OUTDIR)/, $(AT_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
-SRCS += $(AT_SRCS) $(APP_SRCS)
-INCS += $(AT_INCS) $(APP_INCS)
-DEFS += $(AT_DEFS) $(APP_DEFS)
+INCS += $(AT_INCS)
+DEFS += $(AT_DEFS)
+
+AT_OUTPUT := $(OUTDIR)/libat32.a
+AT_OBJS := $(addprefix $(OUTDIR)/, $(AT_SRCS:%=%.o))
+DEPS += $(AT_OBJS:.o=.d)
+LIBS += -Wl,--whole-archive -lat32 -Wl,--no-whole-archive
+
+$(OUTELF):: $(AT_OUTPUT)
+$(eval $(call generate_lib, $(AT_OUTPUT), $(AT_OBJS)))

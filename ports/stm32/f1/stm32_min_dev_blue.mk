@@ -71,6 +71,13 @@ ST_DEFS = \
 
 $(addprefix $(OUTDIR)/, $(ST_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
-SRCS += $(ST_SRCS) $(APP_SRCS)
-INCS += $(ST_INCS) $(APP_INCS)
-DEFS += $(ST_DEFS) $(APP_DEFS)
+INCS += $(ST_INCS)
+DEFS += $(ST_DEFS)
+
+ST_OUTPUT := $(OUTDIR)/libstm32.a
+ST_OBJS := $(addprefix $(OUTDIR)/, $(ST_SRCS:%=%.o))
+DEPS += $(ST_OBJS:.o=.d)
+LIBS += -Wl,--whole-archive -lstm32 -Wl,--no-whole-archive
+
+$(OUTELF):: $(ST_OUTPUT)
+$(eval $(call generate_lib, $(ST_OUTPUT), $(ST_OBJS)))

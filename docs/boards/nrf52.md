@@ -9,8 +9,15 @@ In case of Mesh, Download the [nRF5 SDK for Mesh](https://www.nordicsemi.com/Pro
 ## Redbear Nano v2
 ### Build
 
+#### Make
 ```shell
 $ make BOARD=nrf52_blenano2
+```
+
+#### CMake
+```shell
+$ cmake -S . -B build -DBOARD=nrf52_blenano2 -DCMAKE_TOOLCHAIN_FILE=projects/arm-none-eabi-gcc.cmake
+$ cmake --build build
 ```
 
 ## Zephyr

@@ -63,7 +63,7 @@ size_t uart1_write(void const *data, size_t datasize)
 
 size_t uart1_read(void *buf, size_t bufsize)
 {
-	return HAL_UART_Receive(&huart1, buf, (uint16_t)bufsize, 0U)
+	return HAL_UART_Receive(&huart1, buf, (uint16_t)bufsize, HAL_MAX_DELAY)
 			== HAL_OK? bufsize : 0;
 }
 
