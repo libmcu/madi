@@ -14,6 +14,7 @@ SRCS += \
 
 INCS += \
 	$(BASEDIR)/include \
+	$(BASEDIR)/drivers/include \
 	$(LIBMCU_MODULES_INCS) \
 
 DEFS += \

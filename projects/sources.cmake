@@ -18,6 +18,7 @@ set(APP_SRCS
 
 set(APP_INCS
 	${BASEDIR}/include
+	${BASEDIR}/drivers/include
 	${LIBMCU_MODULES_INCS}
 )
 
