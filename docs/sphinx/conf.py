@@ -16,12 +16,9 @@ cautodoc_clang = '-I' + os.path.abspath('../../include')
 import subprocess
 subprocess.call('cd ../../ ; doxygen docs/doxygen/Doxyfile', shell=True)
 
-breathe_projects = { "fpl": "../build/doxygen/xml" }
-breathe_default_project = "fpl"
-
 # -- Project information -----------------------------------------------------
 
-project = 'fpl'
+project = 'libmcu'
 copyright = '2022, libmcu'
 author = 'Kyunghwan Kwon'
 
@@ -44,6 +41,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.imgmath',
     'sphinx.ext.todo',
+    'sphinxcontrib.plantuml'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,6 +51,13 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['external/*']
+
+breathe_projects = { "fpl": "../build/doxygen/xml" }
+breathe_default_project = "fpl"
+
+plantuml_output_format = 'svg'
+plantuml_latex_output_format = 'pdf'
+plantuml_syntax_error_image = True
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -70,5 +75,13 @@ html_static_path = ['_static']
 html_favicon = 'favicon.ico'
 
 html_css_files = [
-    'custom.css'
+    'css/custom.css'
 ]
+
+html_show_sphinx = False
+
+html_logo = '_static/logo.png'
+html_theme_options = {
+        "logo_only": True,
+        "display_version": True,
+}
