@@ -13,7 +13,7 @@ jobs:
     name: Build Documentation
     runs-on: ubuntu-latest
     container:
-      image: musicscience37/sphinx-doxygen
+      image: libmcu/sphinx
     steps:
       - name: Clone
         uses: actions/checkout@v3
@@ -22,9 +22,7 @@ jobs:
       - name: Fix git safe.directory in container
         run: git config --global --add safe.directory /__w/firmware-project-layout/firmware-project-layout
       - name: Install dependencies
-        run: |
-          pip install m2r2 sphinx_markdown_tables sphinx_rtd_theme
-          mkdir -p docs/build/doxygen
+        run: mkdir -p docs/build/doxygen
       - name: Build
         run: make docs
       - name: Upload artifact

@@ -23,6 +23,15 @@
 | Gross Weight          |                                                     |
 | Product Size          | 39mm x 31.75mm                                      |
 
+- [ESP32-WROOM-32E-N4](https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf)
+  - [ESP32-D0WD-V3](https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf)
+- IN 입력 전압은 2.7 ~ 5.5VDC(최대값은 -0.3 ~ 25VDC)
+- IN 최대 허용 전류는 1.1A
+- SYS 출력 전압은 4.4 ~ 4.9VDC
+- SYS 최대 허용 전류는 1.5A
+  - 순간(<20ms) 최대 허용 전류는 2.5A
+- SYS 최대 입력 전압은 1.8 ~ 5.5VDC
+
 #### USB Type-C Connector
 
 | Pin  | Func. |
@@ -41,7 +50,10 @@
 | GND  |       |
 
 #### LED
-A user green LED : `IO2` low active
+
+- A user green LED
+  - `IO2`
+  - low active
 
 #### PMU
 
