@@ -1,3 +1,10 @@
+![Build Status](https://github.com/libmcu/firmware-project-layout/workflows/build/badge.svg)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=coverage)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=bugs)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
+
 ## Project Layout
 
 ```shell

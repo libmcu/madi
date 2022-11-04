@@ -7,6 +7,7 @@
 #include "cli.h"
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 #include "libmcu/compiler.h"
 #include "libmcu/trace.h"
 
@@ -22,7 +23,7 @@ static void trace_callback(const struct trace *entry, void *ctx)
 	char buf[34] = { 0, };
 	const struct cli_io *io = (const struct cli_io *)ctx;
 
-	snprintf(buf, sizeof(buf), "%12lu %8x %5u ",
+	snprintf(buf, sizeof(buf), "%12" PRIu32 " %8" PRIxPTR " %5zu ",
 			entry->timestamp, (uintptr_t)entry->thread,
 			entry->stack_usage);
 	io->write(buf, strlen(buf));
@@ -56,7 +57,7 @@ static void print_trace(const struct cli_io *io)
 	trace_clear();
 
 	char buf[16] = { 0, };
-	snprintf(buf, sizeof(buf), "%u / %u", n, TRACE_MAXLEN);
+	snprintf(buf, sizeof(buf), "%zu / %u", n, TRACE_MAXLEN);
 	println(io, buf);
 }
 
