@@ -38,6 +38,7 @@ add_executable(${PROJECT_EXECUTABLE}
 	${CMAKE_CURRENT_LIST_DIR}/uart0.c
 	${CMAKE_CURRENT_LIST_DIR}/cli.c
 	${CMAKE_CURRENT_LIST_DIR}/tls.c
+	${CMAKE_CURRENT_LIST_DIR}/i2c0.c
 	${LIBMCU_ROOT}/ports/freertos/semaphore.c
 	${CMAKE_SOURCE_DIR}/drivers/wifi/esp32.c
 	${CMAKE_SOURCE_DIR}/ports/coreMQTT/mqtt.c

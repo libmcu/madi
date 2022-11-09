@@ -38,8 +38,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.mathjax',
+    'sphinx_math_dollar',
     'sphinx.ext.viewcode',
-    'sphinx.ext.imgmath',
     'sphinx.ext.todo',
     'sphinxcontrib.plantuml'
 ]

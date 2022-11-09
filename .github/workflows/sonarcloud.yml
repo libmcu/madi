@@ -43,7 +43,14 @@ jobs:
       - name: Run build-wrapper
         run: |
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} \
-              make BOARD=host
+              make BOARD=native
+      - name: Build coverage results
+        run: |
+          make -C tests install
+          make -C tests
+          make -C tests gcov
+          mkdir -p coverage_report
+          cp -R tests/gcov/*.gcov coverage_report/
       - name: Run sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,4 +63,5 @@ jobs:
               --define sonar.sources=drivers,ports,src \
               --define sonar.tests=tests \
               --define sonar.test.inclusions=**/*_test.cpp \
-              --define sonar.exclusions=external/**
+              --define sonar.exclusions=external/** \
+              --define sonar.cfamily.gcov.reportsPath=coverage_report

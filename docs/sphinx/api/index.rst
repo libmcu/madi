@@ -5,4 +5,5 @@ API Reference
    :maxdepth: 2
 
    network
+   pmu
    watchdog
