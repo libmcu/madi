@@ -11,19 +11,29 @@
 extern "C" {
 #endif
 
-#include <stddef.h>
-#include <stdint.h>
+#include "drivers/i2c.h"
 
-struct i2c;
+static inline int i2c_init(struct i2c *self)
+{
+	return ((struct i2c_api *)self)->init(self);
+}
 
-struct i2c_interface {
-	int (*init)(struct i2c *self);
-	int (*read)(struct i2c *self, uint8_t addr, uint8_t reg,
-			void *buf, size_t bufsize);
-	int (*write)(struct i2c *self, uint8_t addr, uint8_t reg,
-			const void *data, size_t data_len);
-	int (*deinit)(struct i2c *self);
-};
+static inline int i2c_deinit(struct i2c *self)
+{
+	return ((struct i2c_api *)self)->deinit(self);
+}
+
+static inline int i2c_write(struct i2c *self, uint8_t addr, uint8_t reg,
+			    const void *data, size_t data_len)
+{
+	return ((struct i2c_api *)self)->write(self, addr, reg, data, data_len);
+}
+
+static inline int i2c_read(struct i2c *self, uint8_t addr, uint8_t reg,
+			   void *buf, size_t bufsize)
+{
+	return ((struct i2c_api *)self)->read(self, addr, reg, buf, bufsize);
+}
 
 #if defined(__cplusplus)
 }

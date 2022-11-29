@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef FPL_BLE_INTERFACE_H
-#define FPL_BLE_INTERFACE_H
+#ifndef FPL_BLE_H
+#define FPL_BLE_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -20,7 +20,9 @@ extern "C" {
 		(37U - 6U/*advertiser address*/ - 2U/*header+length*/)
 #endif
 #define BLE_TIME_FOREVER			UINT32_MAX
-#define BLE_ADDR_LEN				6
+#define BLE_ADDR_LEN				6U
+#define BLE_ADV_MIN_INTERVAL_MS			20U
+#define BLE_ADV_MAX_INTERVAL_MS			10028U
 
 enum ble_adv_mode {
 	BLE_ADV_IND,         /**< connectable     scannable     undirected */
@@ -70,7 +72,7 @@ enum ble_gatt_op {
 struct ble;
 struct ble_gatt_service;
 
-typedef void (*ble_event_callback_t)(struct ble *iface,
+typedef void (*ble_event_callback_t)(struct ble *self,
 		uint8_t evt, const void *msg);
 
 struct ble_handler_context {
@@ -92,28 +94,28 @@ struct ble_gatt_characteristic {
 	uint16_t op;
 };
 
-struct ble_interface {
-	int (*enable)(struct ble *iface, enum ble_device_addr addr_type,
+struct ble_api {
+	int (*enable)(struct ble *self, enum ble_device_addr addr_type,
 			uint8_t addr[BLE_ADDR_LEN]);
-	int (*disable)(struct ble *iface);
-	enum ble_device_addr (*get_device_address)(struct ble *iface,
+	int (*disable)(struct ble *self);
+	enum ble_device_addr (*get_device_address)(struct ble *self,
 			uint8_t addr[BLE_ADDR_LEN]);
 
-	void (*register_gap_event_callback)(struct ble *iface,
+	void (*register_gap_event_callback)(struct ble *self,
 			ble_event_callback_t cb);
-	void (*register_gatt_event_callback)(struct ble *iface,
+	void (*register_gatt_event_callback)(struct ble *self,
 			ble_event_callback_t cb);
 
-	int (*adv_init)(struct ble *iface, enum ble_adv_mode mode);
-	int (*adv_set_interval)(struct ble *iface,
+	int (*adv_init)(struct ble *self, enum ble_adv_mode mode);
+	int (*adv_set_interval)(struct ble *self,
 			uint16_t min_ms, uint16_t max_ms);
-	int (*adv_set_duration)(struct ble *iface, uint32_t msec);
-	int (*adv_set_payload)(struct ble *iface,
+	int (*adv_set_duration)(struct ble *self, uint32_t msec);
+	int (*adv_set_payload)(struct ble *self,
 			const struct ble_adv_payload *payload);
-	int (*adv_set_scan_response)(struct ble *iface,
+	int (*adv_set_scan_response)(struct ble *self,
 			const struct ble_adv_payload *payload);
-	int (*adv_start)(struct ble *iface);
-	int (*adv_stop)(struct ble *iface);
+	int (*adv_start)(struct ble *self);
+	int (*adv_stop)(struct ble *self);
 
 	struct ble_gatt_service *(*gatt_create_service)(void *mem, uint16_t memsize,
 			const uint8_t *uuid, uint8_t uuid_len,
@@ -124,12 +126,14 @@ struct ble_interface {
 	int (*gatt_register_service)(struct ble_gatt_service *svc);
 	int (*gatt_response)(struct ble_handler_context *ctx,
 			const void *data, uint16_t datasize);
-	int (*gatt_notify)(struct ble *iface, const void *attr_handle,
+	int (*gatt_notify)(struct ble *self, const void *attr_handle,
 			const void *data, uint16_t datasize);
 };
+
+#include "drivers/net/ble_interface.h"
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* FPL_BLE_INTERFACE_H */
+#endif /* FPL_BLE_H */

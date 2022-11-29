@@ -1,4 +1,4 @@
-#include "net/ble.h"
+#include "drivers/net/ble.h"
 #include <string.h>
 #include <errno.h>
 
@@ -23,12 +23,4 @@ int ble_adv_payload_add(struct ble_adv_payload *buf, uint8_t type,
 	memcpy(&p[2], data, data_len);
 
 	return 0;
-}
-
-#include "libmcu/compiler.h"
-
-LIBMCU_WEAK
-struct ble *ble_create_default(void)
-{
-	return NULL;
 }

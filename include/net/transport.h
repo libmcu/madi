@@ -11,8 +11,8 @@
 extern "C" {
 #endif
 
-#include "net/transport_interface.h"
 #include <stdint.h>
+#include <stddef.h>
 
 enum transport_event {
 	TRANSPORT_EVT_UNKNOWN,
@@ -35,42 +35,16 @@ struct transport_conn_param {
 	size_t client_key_len;
 };
 
-static inline int transport_connect(struct transport_interface *self)
-{
-	return self->connect(self);
-}
+struct transport;
+struct transport_api {
+	int (*connect)(struct transport *self);
+	int (*disconnect)(struct transport *self);
+	int (*write)(struct transport *self,
+			const void *data, size_t data_len);
+	int (*read)(struct transport *self, void *buf, size_t bufsize);
+};
 
-static inline int transport_disconnect(struct transport_interface *self)
-{
-	return self->disconnect(self);
-}
-
-static inline int transport_write(struct transport_interface *self,
-				  const void *data, size_t data_len)
-{
-	return self->write(self, data, data_len);
-}
-
-static inline int transport_read(struct transport_interface *self,
-				 void *buf, size_t bufsize)
-{
-	return self->read(self, buf, bufsize);
-}
-
-#define transport_set_ca_cert(p_conf, p_ca, l)		\
-		((p_conf)->ca_cert = (p_ca), (p_conf)->ca_cert_len = (l))
-#define transport_set_client_cert(p_conf, p_cert, l)	\
-		((p_conf)->client_cert = (p_cert), \
-			(p_conf)->client_cert_len = (l))
-#define transport_set_client_key(p_conf, p_key, l)	\
-		((p_conf)->client_key = (p_key), (p_conf)->client_key_len = (l))
-#define transport_set_endpoint(p_conf, p_url, l, p)	\
-		((p_conf)->endpoint = (p_url), (p_conf)->endpoint_len = (l), \
-			(p_conf)->port = (p))
-
-struct transport_interface *tls_transport_create(
-		const struct transport_conn_param *param);
-void tls_transport_delete(struct transport_interface *instance);
+#include "net/transport_interface.h"
 
 #if defined(__cplusplus)
 }

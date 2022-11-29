@@ -202,9 +202,9 @@ static int deinitialize_wifi(struct esp_wifi *ctx)
 	return esp_wifi_deinit() == ESP_OK ? 0 : -EBUSY;
 }
 
-static int do_connect(struct wifi *iface, const struct wifi_conn_param *param)
+static int do_connect(struct wifi *self, const struct wifi_conn_param *param)
 {
-	struct esp_wifi *ctx = (struct esp_wifi *)iface;
+	struct esp_wifi *ctx = (struct esp_wifi *)self;
 
 	wifi_config_t conf = {
 		.sta = {
@@ -247,16 +247,16 @@ static int do_connect(struct wifi *iface, const struct wifi_conn_param *param)
 		return -ENOTCONN;
 	}
 
-	memcpy(iface->status.ssid, param->ssid, param->ssid_len);
-	iface->status.ssid_len = param->ssid_len;
-	iface->status.security = param->security;
+	memcpy(self->status.ssid, param->ssid, param->ssid_len);
+	self->status.ssid_len = param->ssid_len;
+	self->status.security = param->security;
 
 	return 0;
 }
 
-static int do_disconnect(struct wifi *iface)
+static int do_disconnect(struct wifi *self)
 {
-	struct esp_wifi *ctx = (struct esp_wifi *)iface;
+	struct esp_wifi *ctx = (struct esp_wifi *)self;
 
 	if (ctx->state != ESP32_STATE_STA_CONNECTED &&
 			ctx->state != ESP32_STATE_STA_CONNECTING) {
@@ -270,9 +270,9 @@ static int do_disconnect(struct wifi *iface)
 	return 0;
 }
 
-static int do_scan(struct wifi *iface)
+static int do_scan(struct wifi *self)
 {
-	struct esp_wifi *ctx = (struct esp_wifi *)iface;
+	struct esp_wifi *ctx = (struct esp_wifi *)self;
 
 	if (esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK ||
 			esp_wifi_scan_start(&(wifi_scan_config_t) {
@@ -284,26 +284,26 @@ static int do_scan(struct wifi *iface)
 	return 0;
 }
 
-static int do_start(struct wifi *iface)
+static int do_start(struct wifi *self)
 {
 	return esp_wifi_start() == ESP_OK ? 0 : -EAGAIN;
 }
 
-static int do_stop(struct wifi *iface)
+static int do_stop(struct wifi *self)
 {
 	return esp_wifi_stop() == ESP_OK ? 0 : -EBUSY;
 }
 
-static int do_get_status(struct wifi *iface, struct wifi_iface_info *info)
+static int do_get_status(struct wifi *self, struct wifi_iface_info *info)
 {
-	memcpy(info, &iface->status, sizeof(iface->status));
+	memcpy(info, &self->status, sizeof(self->status));
 	return 0;
 }
 
-static int do_register_event_callback(struct wifi *iface,
+static int do_register_event_callback(struct wifi *self,
 		const wifi_event_callback_t cb)
 {
-	iface->callback = cb;
+	self->callback = cb;
 	return 0;
 }
 
@@ -336,9 +336,9 @@ struct wifi *esp_wifi_create(void)
 	return (struct wifi *)&static_esp_iface;
 }
 
-void esp_wifi_destroy(struct wifi *iface)
+void esp_wifi_destroy(struct wifi *inst)
 {
-	struct esp_wifi *ctx = (struct esp_wifi *)iface;
+	struct esp_wifi *ctx = (struct esp_wifi *)inst;
 
 	ctx->state = ESP32_STATE_UNKNOWN;
 }

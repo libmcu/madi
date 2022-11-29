@@ -69,7 +69,7 @@ static int i2c0_deinit(struct i2c *self)
 
 struct i2c *i2c0_create(void)
 {
-	static struct i2c_interface iface = {
+	static struct i2c_api iface = {
 		.init = i2c0_init,
 		.deinit = i2c0_deinit,
 		.write = i2c0_write,

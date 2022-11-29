@@ -29,7 +29,7 @@ LIBMCU_ASSERT(BLE_GAP_EVT_MAX < UINT8_MAX);
 #endif
 
 struct ble {
-	struct ble_interface api;
+	struct ble_api api;
 
 	ble_event_callback_t gap_event_callback;
 	ble_event_callback_t gatt_event_callback;
@@ -73,8 +73,8 @@ struct ble_gatt_service {
 };
 
 static struct ble *onair;
-static int adv_start(struct ble *iface);
-static int adv_stop(struct ble *iface);
+static int adv_start(struct ble *self);
+static int adv_stop(struct ble *self);
 
 static void svc_mem_init(struct ble_gatt_service *svc, void *mem, uint16_t memsize)
 {
@@ -260,59 +260,59 @@ static void ble_spp_server_host_task(void *param)
 	nimble_port_freertos_deinit();
 }
 
-static int adv_set_interval(struct ble *iface, uint16_t min_ms, uint16_t max_ms)
+static int adv_set_interval(struct ble *self, uint16_t min_ms, uint16_t max_ms)
 {
 	assert(min_ms >= BLE_ADV_MIN_INTERVAL_MS &&
 			max_ms <= BLE_ADV_MAX_INTERVAL_MS);
 
-	iface->adv.min_ms = min_ms;
-	iface->adv.max_ms = max_ms;
+	self->adv.min_ms = min_ms;
+	self->adv.max_ms = max_ms;
 
 	return 0;
 }
 
-static int adv_set_duration(struct ble *iface, uint32_t msec)
+static int adv_set_duration(struct ble *self, uint32_t msec)
 {
-	iface->adv.duration_ms = msec;
+	self->adv.duration_ms = msec;
 	return 0;
 }
 
-static void register_gap_event_callback(struct ble *iface,
+static void register_gap_event_callback(struct ble *self,
 					ble_event_callback_t cb)
 {
-	iface->gap_event_callback = cb;
+	self->gap_event_callback = cb;
 }
 
-static void register_gatt_event_callback(struct ble *iface,
+static void register_gatt_event_callback(struct ble *self,
 					 ble_event_callback_t cb)
 {
-	iface->gatt_event_callback = cb;
+	self->gatt_event_callback = cb;
 }
 
-static int adv_set_payload(struct ble *iface,
+static int adv_set_payload(struct ble *self,
 			   const struct ble_adv_payload *payload)
 {
-	memcpy(&iface->adv.payload, payload, sizeof(*payload));
+	memcpy(&self->adv.payload, payload, sizeof(*payload));
 	return 0;
 }
 
-static int adv_set_scan_response(struct ble *iface,
+static int adv_set_scan_response(struct ble *self,
 				 const struct ble_adv_payload *payload)
 {
-	memcpy(&iface->adv.scan_response, payload, sizeof(*payload));
+	memcpy(&self->adv.scan_response, payload, sizeof(*payload));
 	return 0;
 }
 
-static int adv_start(struct ble *iface)
+static int adv_start(struct ble *self)
 {
-	if (!iface->ready) {
+	if (!self->ready) {
 		return -EAGAIN;
 	}
 
-	int rc = ble_gap_adv_set_data(iface->adv.payload.payload,
-			       iface->adv.payload.index);
-	rc |= ble_gap_adv_rsp_set_data(iface->adv.scan_response.payload,
-			       iface->adv.scan_response.index);
+	int rc = ble_gap_adv_set_data(self->adv.payload.payload,
+			       self->adv.payload.index);
+	rc |= ble_gap_adv_rsp_set_data(self->adv.scan_response.payload,
+			       self->adv.scan_response.index);
 	if (rc != 0) {
 		return -EINVAL;
 	}
@@ -320,11 +320,11 @@ static int adv_start(struct ble *iface)
 	struct ble_gap_adv_params adv_params = {
 		.conn_mode = BLE_GAP_CONN_MODE_UND,
 		.disc_mode = BLE_GAP_DISC_MODE_GEN,
-		.itvl_min = iface->adv.min_ms * 1000 / BLE_HCI_ADV_ITVL,
-		.itvl_max = iface->adv.max_ms * 1000 / BLE_HCI_ADV_ITVL,
+		.itvl_min = self->adv.min_ms * 1000 / BLE_HCI_ADV_ITVL,
+		.itvl_max = self->adv.max_ms * 1000 / BLE_HCI_ADV_ITVL,
 	};
 
-	switch (iface->adv.mode) {
+	switch (self->adv.mode) {
 	case BLE_ADV_DIRECT_IND:
 		adv_params.conn_mode = BLE_GAP_CONN_MODE_DIR;
 		adv_params.disc_mode = BLE_GAP_DISC_MODE_LTD;
@@ -341,24 +341,24 @@ static int adv_start(struct ble *iface)
 		break;
 	}
 
-	rc = ble_gap_adv_start(iface->addr_type, NULL,
-			(int32_t)iface->adv.duration_ms,
-			&adv_params, on_gap_event, iface);
+	rc = ble_gap_adv_start(self->addr_type, NULL,
+			(int32_t)self->adv.duration_ms,
+			&adv_params, on_gap_event, self);
 	if (rc != 0) {
 		error("adv failure: %d", rc);
 		return -EFAULT;
 	}
 
-	enum ble_device_addr type = read_device_address(iface->addr);
-	if (type != iface->addr_type) {
+	enum ble_device_addr type = read_device_address(self->addr);
+	if (type != self->addr_type) {
 		warn("addr type mismatch: %d expected but %d",
-				iface->addr_type, type);
+				self->addr_type, type);
 	}
 
 	return 0;
 }
 
-static int adv_stop(struct ble *iface)
+static int adv_stop(struct ble *self)
 {
 	if (!ble_gap_adv_active()) {
 		return 0;
@@ -367,15 +367,15 @@ static int adv_stop(struct ble *iface)
 	return ble_gap_adv_stop();
 }
 
-static int adv_init(struct ble *iface, enum ble_adv_mode mode)
+static int adv_init(struct ble *self, enum ble_adv_mode mode)
 {
-	memset(&iface->adv, 0, sizeof(iface->adv));
+	memset(&self->adv, 0, sizeof(self->adv));
 
-	iface->adv.mode = mode;
+	self->adv.mode = mode;
 
-	iface->adv.min_ms = 0;
-	iface->adv.max_ms = 0;
-	iface->adv.duration_ms = BLE_HS_FOREVER;
+	self->adv.min_ms = 0;
+	self->adv.max_ms = 0;
+	self->adv.duration_ms = BLE_HS_FOREVER;
 
 	return 0;
 }
@@ -472,14 +472,14 @@ static int gatt_response(struct ble_handler_context *ctx,
 	return os_mbuf_append(p->om, data, sizeof(datasize));
 }
 
-static int gatt_notify(struct ble *iface, const void *attr_handle,
+static int gatt_notify(struct ble *self, const void *attr_handle,
 		const void *data, uint16_t datasize)
 {
 	uint16_t attr = *((uint16_t *)attr_handle);
 	struct os_mbuf *om;
 	om = ble_hs_mbuf_from_flat(data, datasize);
 
-	return ble_gattc_notify_custom(iface->connection_handle, attr, om);
+	return ble_gattc_notify_custom(self->connection_handle, attr, om);
 }
 
 static enum ble_device_addr get_device_address(struct ble *iface,
@@ -515,28 +515,28 @@ static void initialize(struct ble *iface)
 	nimble_port_freertos_init(ble_spp_server_host_task);
 }
 
-static int enable_device(struct ble *iface,
+static int enable_device(struct ble *self,
 		enum ble_device_addr addr_type, uint8_t addr[BLE_ADDR_LEN])
 {
 	if (!onair) {
-		iface->addr_type = addr_type;
+		self->addr_type = addr_type;
 		if (addr) {
-			memcpy(iface->addr, addr, sizeof(iface->addr));
+			memcpy(self->addr, addr, sizeof(self->addr));
 		}
 
-		initialize(iface);
-		onair = iface;
+		initialize(self);
+		onair = self;
 	}
 
 	return 0;
 }
 
-static int disable_device(struct ble *iface)
+static int disable_device(struct ble *self)
 {
 	int rc = 0;
 
-	if (iface->addr_type == BLE_ADDR_PRIVATE_RPA ||
-			iface->addr_type == BLE_ADDR_PRIVATE_NRPA) {
+	if (self->addr_type == BLE_ADDR_PRIVATE_RPA ||
+			self->addr_type == BLE_ADDR_PRIVATE_NRPA) {
 		extern int ble_hs_pvcy_rpa_config(uint8_t enable);
 		rc = ble_hs_pvcy_rpa_config(0);
 	}
@@ -551,7 +551,7 @@ static int disable_device(struct ble *iface)
 
 struct ble *esp_ble_create(void)
 {
-	static struct ble iface = {
+	static struct ble self = {
 		.api = {
 			.enable = enable_device,
 			.disable = disable_device,
@@ -575,5 +575,10 @@ struct ble *esp_ble_create(void)
 		},
 	};
 
-	return &iface;
+	return &self;
+}
+
+void esp_ble_destroy(struct ble *self)
+{
+	memset(self, 0, sizeof(*self));
 }

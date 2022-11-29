@@ -241,8 +241,7 @@ int mqtt_connect(struct mqtt_client *client)
 	};
 
 	struct core_mqtt_ctx *ctx = (struct core_mqtt_ctx *)client;
-	struct transport_interface *iface = (struct transport_interface *)
-			ctx->base.transport;
+	struct transport *iface = (struct transport *)ctx->base.transport;
 	bool session_present;
 	MQTTStatus_t res;
 
@@ -266,8 +265,7 @@ int mqtt_connect(struct mqtt_client *client)
 int mqtt_disconnect(struct mqtt_client *client)
 {
 	struct core_mqtt_ctx *ctx = (struct core_mqtt_ctx *)client;
-	struct transport_interface *iface = (struct transport_interface *)
-			client->transport;
+	struct transport *iface = (struct transport *)client->transport;
 	int rc;
 
 	pthread_mutex_lock(&ctx->lock);
@@ -303,8 +301,7 @@ int mqtt_client_init(struct mqtt_client *client, mqtt_event_callback_t cb)
 		return -EINVAL;
 	}
 
-	struct transport_interface *iface = (struct transport_interface *)
-			client->transport;
+	struct transport_api *iface = (struct transport_api *)client->transport;
 
 	TransportInterface_t transport = {
 		.pNetworkContext = client->transport,

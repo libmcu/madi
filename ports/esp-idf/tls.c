@@ -14,24 +14,24 @@ enum tls_state {
 	TLS_STATE_DISCONNECTED,
 };
 
-struct tls_transport {
-	struct transport_interface base;
+struct transport {
+	struct transport_api base;
 	struct transport_conn_param param;
 	enum tls_state state;
 	esp_tls_t *ctx;
 };
 
-static bool is_connected(struct tls_transport *tls)
+static bool is_connected(struct transport *tls)
 {
 	return tls->state == TLS_STATE_CONNECTED;
 }
 
-static bool is_disconnected(struct tls_transport *tls)
+static bool is_disconnected(struct transport *tls)
 {
 	return tls->state == TLS_STATE_DISCONNECTED;
 }
 
-static void disconnect_internal(struct tls_transport *tls)
+static void disconnect_internal(struct transport *tls)
 {
 	tls->state = TLS_STATE_DISCONNECTED;
 	esp_tls_conn_destroy(tls->ctx);
@@ -39,7 +39,7 @@ static void disconnect_internal(struct tls_transport *tls)
 	tls->ctx = NULL;
 }
 
-static int connect_internal(struct tls_transport *tls)
+static int connect_internal(struct transport *tls)
 {
 	int rc = -ENOMEM;
 
@@ -73,10 +73,9 @@ out_err:
 	return rc;
 }
 
-static int write_impl(struct transport_interface *self,
-		const void *data, size_t data_len)
+static int write_impl(struct transport *self, const void *data, size_t data_len)
 {
-	struct tls_transport *iface = (struct tls_transport *)self;
+	struct transport *iface = (struct transport *)self;
 	const uint8_t *p = (const uint8_t *)data;
 	int bytes_sent = 0;
 	int rc = 0;
@@ -102,10 +101,9 @@ static int write_impl(struct transport_interface *self,
 	return rc;
 }
 
-static int read_impl(struct transport_interface *self,
-		void *buf, size_t bufsize)
+static int read_impl(struct transport *self, void *buf, size_t bufsize)
 {
-	struct tls_transport *p = (struct tls_transport *)self;
+	struct transport *p = (struct transport *)self;
 
 	if (!is_connected(p)) {
 		return -ENOTCONN;
@@ -121,9 +119,9 @@ static int read_impl(struct transport_interface *self,
 	return rc;
 }
 
-static int connect_impl(struct transport_interface *self)
+static int connect_impl(struct transport *self)
 {
-	struct tls_transport *iface = (struct tls_transport *)self;
+	struct transport *iface = (struct transport *)self;
 
 	if (is_connected(iface)) {
 		return -EISCONN;
@@ -132,9 +130,9 @@ static int connect_impl(struct transport_interface *self)
 	return connect_internal(iface);
 }
 
-static int disconnect_impl(struct transport_interface *self)
+static int disconnect_impl(struct transport *self)
 {
-	struct tls_transport *iface = (struct tls_transport *)self;
+	struct transport *iface = (struct transport *)self;
 
 	if (is_disconnected(iface)) {
 		return -ENOTCONN;
@@ -145,11 +143,10 @@ static int disconnect_impl(struct transport_interface *self)
 	return 0;
 }
 
-struct transport_interface *tls_transport_create(
+struct transport *tls_transport_create(
 		const struct transport_conn_param *param)
 {
-	struct tls_transport *iface =
-		(struct tls_transport *)calloc(1, sizeof(*iface));
+	struct transport *iface = (struct transport *)calloc(1, sizeof(*iface));
 
 	if (iface == NULL) {
 		return NULL;
@@ -162,11 +159,11 @@ struct transport_interface *tls_transport_create(
 	iface->base.connect = connect_impl;
 	iface->base.disconnect = disconnect_impl;
 
-	return &iface->base;
+	return iface;
 }
 
-void tls_transport_delete(struct transport_interface *instance)
+void tls_transport_delete(struct transport *instance)
 {
-	struct tls_transport *iface = (struct tls_transport *)instance;
+	struct transport *iface = (struct transport *)instance;
 	free(iface);
 }

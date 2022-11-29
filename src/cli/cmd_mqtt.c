@@ -72,7 +72,7 @@ static int do_init(struct mqtt_client **mqtt)
 			MQTT_TEST_KEY, sizeof(MQTT_TEST_KEY));
 	// transport_set_endpoint(v, len, port)
 
-	struct transport_interface *tls = tls_transport_create(&transport_conf);
+	struct transport *tls = transport_create_default(&transport_conf);
 
 	*mqtt = mqtt_client_create();
 	mqtt_set_transport(*mqtt, tls);
