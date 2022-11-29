@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 #include "net/wifi_interface.h"
+#include "net/util.h"
 
 struct wifi {
 	struct wifi_interface api;
@@ -76,11 +77,6 @@ static inline int wifi_register_event_callback(struct wifi *iface,
 {
 	return iface->api.register_event_callback(iface, cb);
 }
-
-#if !defined(CONCAT)
-#define CONCAT_INTERNAL(a, b)	a ## b
-#define CONCAT(a, b)		CONCAT_INTERNAL(a, b)
-#endif
 
 #if defined(WIFI_DEFAULT_INTERFACE)
 #define wifi_create_default	CONCAT(WIFI_DEFAULT_INTERFACE, _wifi_create)

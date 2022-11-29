@@ -10,5 +10,6 @@ LDFLAGS += \
 	-mthumb \
 	-mabi=aapcs \
 	--specs=nano.specs \
+	--specs=nosys.specs \
 
 STDLIBS += -lc -lnosys -lm

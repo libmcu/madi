@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "cli_commands.h"
+#include "cli.h"
 #include <string.h>
-#include "libmcu/cli.h"
 #include "libmcu/board.h"
 
 typedef enum {

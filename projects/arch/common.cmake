@@ -20,6 +20,7 @@ add_link_options(
 	-mthumb
 	-mabi=aapcs
 	--specs=nano.specs
+	--specs=nosys.specs
 
 	-flto
 	-Wl,--gc-sections

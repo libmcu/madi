@@ -17,7 +17,7 @@ jobs:
         with:
           submodules: recursive
       - name: Fix git safe.directory in container
-        run: git config --global --add safe.directory /__w/firmware-project-layout/firmware-project-layout
+        run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
       - name: Install dependencies
         run: mkdir -p docs/build/doxygen
       - name: Build

@@ -31,34 +31,34 @@ jobs:
         include:
           - target: blackpill_at32f403a
             repo: ArteryTek/framework-at32firmlib
-            path: external/at32sdk
+            path: ${{ github.event.repository.name }}/external/at32sdk
           - target: stm32_min_dev_blue
             repo: STMicroelectronics/STM32CubeF1
-            path: external/STM32CubeF1
+            path: ${{ github.event.repository.name }}/external/STM32CubeF1
           - target: nrf52_blenano2
             repo: libmcu/nRF5_SDK_17.1.0_ddde560
-            path: external/nRF5_SDK_17.1.0_ddde560
+            path: ${{ github.event.repository.name }}/external/nRF5_SDK_17.1.0_ddde560
     steps:
       - name: Clone
         uses: actions/checkout@v3
         with:
           submodules: recursive
+          path: ${{ github.event.repository.name }}
       - name: Clone the dependancies
         uses: actions/checkout@v3
         with:
           repository: ${{ matrix.repo }}
           path: ${{ matrix.path }}
           ssh-key: ${{ secrets.SSH_KEY }}
-      - name: Fix git safe.directory in container
-        run: git config --global --add safe.directory /__w/firmware-project-layout/firmware-project-layout
       - name: Build with Make
         run: |
-          ls
-          make BOARD=${{ matrix.target }}
-          make clean
+          make -C ${{ github.event.repository.name }} BOARD=${{ matrix.target }}
+          make -C ${{ github.event.repository.name }} clean
       - name: Build with CMake
         run: |
-          cmake -S . -B build -DBOARD=${{ matrix.target }} -DCMAKE_TOOLCHAIN_FILE=projects/arm-none-eabi-gcc.cmake
+          cmake -S ${{ github.event.repository.name }} -B build \
+                -DBOARD=${{ matrix.target }} \
+                -DCMAKE_TOOLCHAIN_FILE=projects/arm-none-eabi-gcc.cmake
           cmake --build build
   build-for-esp32-with-esp-idf:
     name: Build for ESP32 with ESP-IDF
@@ -83,7 +83,7 @@ jobs:
     container:
       image: zephyrprojectrtos/ci:latest
     env:
-      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.1
+      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.2
     steps:
       - name: Prepare
         run: |

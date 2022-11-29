@@ -22,6 +22,7 @@ cli_cmd_error_t cli_cmd_memdump(int argc, const char *argv[], const void *env);
 cli_cmd_error_t cli_cmd_debug(int argc, const char *argv[], const void *env);
 cli_cmd_error_t cli_cmd_wifi(int argc, const char *argv[], const void *env);
 cli_cmd_error_t cli_cmd_mqtt(int argc, const char *argv[], const void *env);
+cli_cmd_error_t cli_cmd_ble(int argc, const char *argv[], const void *env);
 
 extern struct cli_cmd const cli_commands[];
 extern const size_t cli_commands_len;

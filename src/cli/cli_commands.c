@@ -15,6 +15,7 @@ const struct cli_cmd cli_commands[] = {
 	{"dbg",    cli_cmd_debug,   "Debug functions such as trace" },
 	{"wifi",   cli_cmd_wifi,    "WiFi functions" },
 	{"mqtt",   cli_cmd_mqtt,    "MQTT functions" },
+	{"ble",    cli_cmd_ble,     "BLE functions" },
 };
 
 const size_t cli_commands_len = sizeof(cli_commands) / sizeof(*cli_commands);
