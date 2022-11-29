@@ -16,9 +16,9 @@ int ble_adv_payload_add(struct ble_adv_payload *buf, uint8_t type,
 	}
 
 	uint8_t *p = &buf->payload[buf->index];
-	buf->index += (uint8_t)(data_len + 2);
+	buf->index = (uint8_t)(buf->index + data_len + 2);
 
-	p[0] = data_len + 1/*type*/;
+	p[0] = (uint8_t)(data_len + 1/*type*/);
 	p[1] = type;
 	memcpy(&p[2], data, data_len);
 
