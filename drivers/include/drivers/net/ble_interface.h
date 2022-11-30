@@ -12,18 +12,6 @@ extern "C" {
 #endif
 
 #include "drivers/net/ble.h"
-#include "util.h"
-
-#if defined(BLE_DEFAULT_INTERFACE)
-#define ble_create_default	CONCAT(BLE_DEFAULT_INTERFACE, _ble_create)
-#define ble_destroy_default	CONCAT(BLE_DEFAULT_INTERFACE, _ble_destroy)
-
-struct ble *ble_create_default(void);
-void ble_destroy_default(struct ble *inst);
-#else
-#define ble_create_default()	0
-#define ble_destroy_default(x)
-#endif
 
 void ble_adv_payload_init(struct ble_adv_payload *buf);
 int ble_adv_payload_add(struct ble_adv_payload *buf, uint8_t type,

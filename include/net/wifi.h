@@ -12,6 +12,18 @@ extern "C" {
 #endif
 
 #include "drivers/net/wifi.h"
+#include "util.h"
+
+#if defined(WIFI_DEFAULT_INTERFACE)
+#define wifi_create_default	CONCAT(WIFI_DEFAULT_INTERFACE, _wifi_create)
+#define wifi_destroy_default	CONCAT(WIFI_DEFAULT_INTERFACE, _wifi_destroy)
+
+struct wifi *wifi_create_default(void);
+void wifi_destroy_default(struct wifi *inst);
+#else
+#define wifi_create_default()	0
+#define wifi_destroy_default(x)
+#endif
 
 #if defined(__cplusplus)
 }

@@ -12,18 +12,6 @@ extern "C" {
 #endif
 
 #include "drivers/net/wifi.h"
-#include "util.h"
-
-#if defined(WIFI_DEFAULT_INTERFACE)
-#define wifi_create_default	CONCAT(WIFI_DEFAULT_INTERFACE, _wifi_create)
-#define wifi_destroy_default	CONCAT(WIFI_DEFAULT_INTERFACE, _wifi_destroy)
-
-struct wifi *wifi_create_default(void);
-void wifi_destroy_default(struct wifi *inst);
-#else
-#define wifi_create_default()	0
-#define wifi_destroy_default(x)
-#endif
 
 static inline int wifi_connect(struct wifi *self,
 			       const struct wifi_conn_param *param)
@@ -41,14 +29,14 @@ static inline int wifi_scan(struct wifi *self)
 	return self->api.scan(self);
 }
 
-static inline int wifi_start(struct wifi *self)
+static inline int wifi_enable(struct wifi *self)
 {
-	return self->api.start(self);
+	return self->api.enable(self);
 }
 
-static inline int wifi_stop(struct wifi *self)
+static inline int wifi_disable(struct wifi *self)
 {
-	return self->api.stop(self);
+	return self->api.disable(self);
 }
 
 static inline int wifi_get_status(struct wifi *self,

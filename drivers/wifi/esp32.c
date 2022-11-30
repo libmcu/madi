@@ -318,8 +318,8 @@ struct wifi *esp_wifi_create(void)
 	static_esp_iface.base.api.connect = do_connect;
 	static_esp_iface.base.api.disconnect = do_disconnect;
 	static_esp_iface.base.api.scan = do_scan;
-	static_esp_iface.base.api.start = do_start;
-	static_esp_iface.base.api.stop = do_stop;
+	static_esp_iface.base.api.enable = do_start;
+	static_esp_iface.base.api.disable = do_stop;
 	static_esp_iface.base.api.get_status = do_get_status;
 	static_esp_iface.base.api.register_event_callback =
 			do_register_event_callback;

@@ -97,8 +97,8 @@ struct wifi_api {
 	int (*connect)(struct wifi *self, const struct wifi_conn_param *param);
 	int (*disconnect)(struct wifi *self);
 	int (*scan)(struct wifi *self);
-	int (*start)(struct wifi *self);
-	int (*stop)(struct wifi *self);
+	int (*enable)(struct wifi *self);
+	int (*disable)(struct wifi *self);
 	int (*get_status)(struct wifi *self, struct wifi_iface_info *info);
 	int (*register_event_callback)(struct wifi *self,
 				const wifi_event_callback_t cb);

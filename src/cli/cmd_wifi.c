@@ -130,7 +130,7 @@ static void print_wifi_info(struct wifi *iface)
 static struct wifi *handle_single_param(const char *argv[], struct wifi *iface)
 {
 	if (strcmp(argv[1], "help") == 0) {
-		println("subcommands:\n\n\tinit\n\tstart\n\tstop\n\tscan" \
+		println("subcommands:\n\n\tinit\n\tenable\n\tdisable\n\tscan" \
 			"\n\tconnect\t: <ssid> <pass>\n\tdisconnect");
 		return iface;
 	} else if (strcmp(argv[1], "init") == 0) {
@@ -141,11 +141,11 @@ static struct wifi *handle_single_param(const char *argv[], struct wifi *iface)
 
 	bool wait_on_events = true;
 
-	if (strcmp(argv[1], "start") == 0) {
+	if (strcmp(argv[1], "enable") == 0) {
 		wifi_register_event_callback(iface, on_wifi_events);
-		wifi_start(iface);
-	} else if (strcmp(argv[1], "stop") == 0) {
-		wifi_stop(iface);
+		wifi_enable(iface);
+	} else if (strcmp(argv[1], "disable") == 0) {
+		wifi_disable(iface);
 	} else if (strcmp(argv[1], "scan") == 0) {
 		if (wifi_scan(iface) == 0) {
 			scan_index = 0;
