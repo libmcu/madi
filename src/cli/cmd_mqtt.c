@@ -87,7 +87,7 @@ static int do_publish(struct mqtt_client *mqtt,
 {
 	struct mqtt_message msg = {
 		.topic = {
-			.pathname = (const uint8_t *)topic,
+			.pathname = topic,
 			.pathname_len = strlen(topic),
 			.qos = 0,
 		},
@@ -103,7 +103,7 @@ static int do_publish(struct mqtt_client *mqtt,
 static int do_subscribe(struct mqtt_client *mqtt, const char *topic)
 {
 	struct mqtt_topic msg = {
-		.pathname = (const uint8_t *)topic,
+		.pathname = topic,
 		.pathname_len = strlen(topic),
 		.qos = 0,
 	};
@@ -114,7 +114,7 @@ static int do_subscribe(struct mqtt_client *mqtt, const char *topic)
 static int do_unsubscribe(struct mqtt_client *mqtt, const char *topic)
 {
 	struct mqtt_topic msg = {
-		.pathname = (const uint8_t *)topic,
+		.pathname = topic,
 		.pathname_len = strlen(topic),
 		.qos = 0,
 	};

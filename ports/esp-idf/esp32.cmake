@@ -65,7 +65,7 @@ target_compile_definitions(fpl_app
 )
 
 include(FetchContent)
-FetchContent_Declare(core_mqtt_src URL https://github.com/FreeRTOS/coreMQTT/archive/refs/tags/v2.0.0.zip)
+FetchContent_Declare(core_mqtt_src URL https://github.com/FreeRTOS/coreMQTT/archive/refs/tags/v2.1.1.zip)
 FetchContent_Populate(core_mqtt_src)
 include(${core_mqtt_src_SOURCE_DIR}/mqttFilePaths.cmake)
 add_library(core_mqtt ${MQTT_SOURCES} ${MQTT_SERIALIZER_SOURCES})
@@ -85,6 +85,11 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"
 )
+
+set(idf_size ${python} $ENV{IDF_PATH}/tools/idf_size.py)
+add_custom_target(size DEPENDS ${mapfile} COMMAND ${idf_size} ${mapfile})
+add_custom_target(size-files DEPENDS ${mapfile} COMMAND ${idf_size} --files ${mapfile})
+add_custom_target(size-components DEPENDS ${mapfile} COMMAND ${idf_size} --archives ${mapfile})
 
 # Attach additional targets to the executable file for flashing,
 # linker script generation, partition_table generation, etc.

@@ -38,7 +38,7 @@ enum mqtt_event_status {
 };
 
 struct mqtt_topic {
-	const uint8_t *pathname;
+	const char *pathname;
 	size_t pathname_len;
 	uint8_t qos;
 };

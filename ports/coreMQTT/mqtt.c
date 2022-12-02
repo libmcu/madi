@@ -9,19 +9,26 @@
 #include <errno.h>
 #include <string.h>
 #include <pthread.h>
+#include <time.h>
 
 #include "core_mqtt.h"
 #include "core_mqtt_state.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
 #include "net/transport.h"
+
+#if !defined(MQTT_MAX_CONCURRENT_TX_MSG)
+#define MQTT_MAX_CONCURRENT_TX_MSG		4
+#endif
+#if !defined(MQTT_MAX_CONCURRENT_RX_MSG)
+#define MQTT_MAX_CONCURRENT_RX_MSG		4
+#endif
 
 static struct core_mqtt_ctx {
 	struct mqtt_client base;
 	mqtt_event_callback_t callback;
 	MQTTContext_t core_mqtt;
+	MQTTPubAckInfo_t qos_pool_tx[MQTT_MAX_CONCURRENT_TX_MSG];
+	MQTTPubAckInfo_t qos_pool_rx[MQTT_MAX_CONCURRENT_RX_MSG];
 	bool active;
 	pthread_mutex_t lock;
 } static_instance;
@@ -53,24 +60,24 @@ static int get_errno_from_status(MQTTStatus_t status)
 
 static enum mqtt_event_type get_evt_from_packet_type(uint8_t packet_type)
 {
-	switch (packet_type) {
-	case MQTT_PACKET_TYPE_CONNACK:
+	switch (packet_type & 0xf0U) {
+	case MQTT_PACKET_TYPE_CONNACK & 0xf0U:
 		return MQTT_EVT_CONNACK;
-	case MQTT_PACKET_TYPE_PUBLISH:
+	case MQTT_PACKET_TYPE_PUBLISH & 0xf0U:
 		return MQTT_EVT_PUBLISH;
-	case MQTT_PACKET_TYPE_PUBACK:
+	case MQTT_PACKET_TYPE_PUBACK & 0xf0U:
 		return MQTT_EVT_PUBACK;
-	case MQTT_PACKET_TYPE_PUBREC:
+	case MQTT_PACKET_TYPE_PUBREC & 0xf0U:
 		return MQTT_EVT_PUBREC;
-	case MQTT_PACKET_TYPE_PUBREL:
+	case MQTT_PACKET_TYPE_PUBREL & 0xf0U:
 		return MQTT_EVT_PUBREL;
-	case MQTT_PACKET_TYPE_PUBCOMP:
+	case MQTT_PACKET_TYPE_PUBCOMP & 0xf0U:
 		return MQTT_EVT_PUBCOMP;
-	case MQTT_PACKET_TYPE_SUBACK:
+	case MQTT_PACKET_TYPE_SUBACK & 0xf0U:
 		return MQTT_EVT_SUBACK;
-	case MQTT_PACKET_TYPE_UNSUBACK:
+	case MQTT_PACKET_TYPE_UNSUBACK & 0xf0U:
 		return MQTT_EVT_UNSUBACK;
-	case MQTT_PACKET_TYPE_PINGRESP:
+	case MQTT_PACKET_TYPE_PINGRESP & 0xf0U:
 		return MQTT_EVT_PINGRESP;
 	default:
 		return MQTT_EVT_UNKNOWN;
@@ -100,7 +107,9 @@ static enum mqtt_event_status get_subscribe_result(MQTTPacketInfo_t *packet)
 
 static uint32_t get_unixtime_ms(void)
 {
-	return xTaskGetTickCount() * 1000 / configTICK_RATE_HZ;
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (uint32_t)((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
 /* Mutual exclusion is guaranteed because an event gets raised by calling
@@ -322,6 +331,15 @@ int mqtt_client_init(struct mqtt_client *client, mqtt_event_callback_t cb)
 
 		res = MQTT_Init(&ctx->core_mqtt,
 				&transport, get_unixtime_ms, on_events, &buf);
+		if (res == MQTTSuccess) {
+			res = MQTT_InitStatefulQoS(&ctx->core_mqtt,
+					ctx->qos_pool_tx,
+					sizeof(ctx->qos_pool_tx) /
+					sizeof(ctx->qos_pool_tx[0]),
+					ctx->qos_pool_rx,
+					sizeof(ctx->qos_pool_rx) /
+					sizeof(ctx->qos_pool_rx[0]));
+		}
 	}
 	pthread_mutex_unlock(&ctx->lock);
 
