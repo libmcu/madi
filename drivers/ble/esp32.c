@@ -246,9 +246,11 @@ static void on_sync(void)
 	if (onair->addr_type == BLE_ADDR_PRIVATE_RPA ||
 			onair->addr_type == BLE_ADDR_PRIVATE_NRPA) {
 		uint8_t type = onair->addr_type - 1;/*1:RPA, 2:NRPA, 0:disable*/
+#if !defined(esp32s3)
 		extern int ble_hs_pvcy_rpa_config(uint8_t enable);
 		rc = ble_hs_pvcy_rpa_config(type);
 		assert(rc == 0);
+#endif
 	}
 
 	onair->ready = true;
@@ -537,8 +539,10 @@ static int disable_device(struct ble *self)
 
 	if (self->addr_type == BLE_ADDR_PRIVATE_RPA ||
 			self->addr_type == BLE_ADDR_PRIVATE_NRPA) {
+#if !defined(esp32s3)
 		extern int ble_hs_pvcy_rpa_config(uint8_t enable);
 		rc = ble_hs_pvcy_rpa_config(0);
+#endif
 	}
 
 	rc |= nimble_port_stop();

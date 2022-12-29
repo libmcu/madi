@@ -6,7 +6,6 @@
 
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
-#include "libmcu/cli.h"
 
 #include <pthread.h>
 
