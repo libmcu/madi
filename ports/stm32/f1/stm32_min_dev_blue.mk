@@ -52,6 +52,8 @@ ST_SRCS = \
 	$(PORT_ROOT)/f1/board.c \
 	$(PORT_ROOT)/f1/uart1.c \
 	$(PORT_ROOT)/f1/cli.c \
+	\
+	$(LIBMCU_ROOT)/ports/stubs/semaphore.c
 
 ST_INCS = \
 	$(SDK_ROOT)/Drivers/STM32F1xx_HAL_Driver/Inc \

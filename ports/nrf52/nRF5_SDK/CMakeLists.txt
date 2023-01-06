@@ -73,6 +73,8 @@ set(NRF_SRCS
 	${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 
 	${CMAKE_CURRENT_SOURCE_DIR}/timext.c
+
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
 )
 set(NRF_INCS
 	${SDK_ROOT}/components/softdevice/s132/headers/nrf52

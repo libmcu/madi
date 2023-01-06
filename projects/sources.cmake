@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-set(fpl-src-dirs src stubs)
+set(fpl-src-dirs src)
 foreach(dir ${fpl-src-dirs})
 	file(GLOB_RECURSE fpl_${dir}_SRCS RELATIVE ${BASEDIR} ${dir}/*.c)
 	file(GLOB_RECURSE fpl_${dir}_CPP_SRCS RELATIVE ${BASEDIR} ${dir}/*.cpp)

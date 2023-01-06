@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-app-src-dirs := src stubs
+app-src-dirs := src
 APP_SRCS = $(foreach dir, $(addprefix $(BASEDIR)/, $(app-src-dirs)), \
 	$(shell find $(dir) -type f \( -iname \*.c -o -iname \*.cpp \)))
 

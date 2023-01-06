@@ -33,6 +33,8 @@ AT_SRCS = \
 	$(SDK_ROOT)/drivers/src/at32f403a_407_xmc.c \
 	\
 	$(PORT_ROOT)/f403a/board.c \
+	\
+	$(LIBMCU_ROOT)/ports/stubs/semaphore.c
 
 AT_INCS = \
 	$(SDK_ROOT)/cmsis/cm4/core_support \

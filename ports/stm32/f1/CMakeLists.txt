@@ -51,6 +51,8 @@ set(ST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/board.c
 	${CMAKE_CURRENT_SOURCE_DIR}/uart1.c
 	${CMAKE_CURRENT_SOURCE_DIR}/cli.c
+
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
 )
 set(ST_INCS
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Inc

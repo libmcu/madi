@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "net/protocols/mqtt.h"
-#include "net/transport.h"
+#include "pmqtt/mqtt.h"
+#include "pl4/transport.h"
 
 #if !defined(MQTT_TEST_ENDPOINT)
 #define MQTT_TEST_ENDPOINT	""

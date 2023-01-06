@@ -7,3 +7,9 @@
 [submodule "external/pwifi"]
 	path = external/pwifi
 	url = https://github.com/libmcu/pwifi.git
+[submodule "external/pmqtt"]
+	path = external/pmqtt
+	url = https://github.com/libmcu/pmqtt.git
+[submodule "external/pl4"]
+	path = external/pl4
+	url = https://github.com/libmcu/pl4.git
