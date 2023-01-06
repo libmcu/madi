@@ -1,15 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
+if(PREREQUISITE_ONLY STREQUAL true)
 include(${BASEDIR}/projects/arch/cm4f.cmake)
+return()
+endif()
 
-add_executable(${PROJECT_NAME} ${APP_SRCS})
+add_executable(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PRIVATE ${APP_INCS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${APP_DEFS})
-target_compile_options(${PROJECT_NAME} PRIVATE -finstrument-functions)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/ports/at32/f403a)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE c nosys m)
+target_link_libraries(${PROJECT_NAME} PRIVATE c nosys m fpl_app)
 
 add_custom_target(${PROJECT_NAME}.bin ALL DEPENDS ${PROJECT_NAME})
 add_custom_target(${PROJECT_NAME}.hex ALL DEPENDS ${PROJECT_NAME})

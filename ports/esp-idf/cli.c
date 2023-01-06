@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/cli.h"
+#include "libmcu/cli_overrides.h"
 
 #if defined(esp32s3)
 #include "usb_serial_jtag.h"

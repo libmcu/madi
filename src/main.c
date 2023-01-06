@@ -6,8 +6,7 @@
 
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
-
-#include "cli/cli.h"
+#include "libmcu/cli.h"
 
 int main(void)
 {
@@ -20,7 +19,9 @@ int main(void)
 			board_get_version_string());
 
 	struct cli cli;
-	cli_init(&cli, cli_io_create(), cli_commands, cli_commands_len);
+	DEFINE_CLI_CMD_LIST(cli_commands,
+			help, exit, info, reboot, md, wifi, ble, mqtt);
+	cli_init(&cli, cli_io_create(), cli_commands);
 	cli_run(&cli);
 
 	/* never reach down here unless cli gets terminated by exit command */

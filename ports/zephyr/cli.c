@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/cli.h"
+#include "libmcu/cli_overrides.h"
 
 #if !defined(CONFIG_CONSOLE_SUBSYS) && !defined(CONFIG_CONSOLE_GETCHAR)
 #error CONFIG_CONSOLE_SUBSYS and CONFIG_CONSOLE_GETCHAR should be set

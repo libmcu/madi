@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "cli.h"
+#include "libmcu/cli.h"
 #include <string.h>
 #include "libmcu/board.h"
 
@@ -65,8 +65,7 @@ static void print_build_date(struct cli_io const *io)
 	println(io, board_get_build_date_string());
 }
 
-cli_cmd_error_t cli_cmd_info(int argc, const char *argv[], const void *env)
-{
+DEFINE_CLI_CMD(info, "Display device info") {
 	if (argc > 2) {
 		return CLI_CMD_INVALID_PARAM;
 	}

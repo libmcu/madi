@@ -46,4 +46,4 @@ monitor:
 	$(Q)$(SDK_ROOT)/tools/idf_monitor.py $(OUTPUT) \
 		--port $(PORT)
 
-PORT ?= /dev/tty.usbmodem101
+PORT ?= /dev/tty.usbmodem1101

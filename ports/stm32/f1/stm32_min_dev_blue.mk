@@ -65,9 +65,6 @@ ST_DEFS = \
 	USE_HAL_DRIVER \
 	STM32F103xB \
 	HSE_VALUE=8000000U \
-	\
-	_POSIX_THREADS \
-	_POSIX_C_SOURCE=200809L
 
 $(addprefix $(OUTDIR)/, $(ST_SRCS:%=%.o)): CFLAGS+=-Wno-error
 

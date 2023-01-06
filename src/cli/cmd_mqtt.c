@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "cli.h"
+#include "libmcu/cli.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -181,8 +181,7 @@ static void process(int argc, const char *argv[], const struct cli_io *io)
 	io->write(buf, strlen(buf));
 }
 
-cli_cmd_error_t cli_cmd_mqtt(int argc, const char *argv[], const void *env)
-{
+DEFINE_CLI_CMD(mqtt, "MQTT functions") {
 	struct cli const *cli = (struct cli const *)env;
 
 	process(argc, argv, cli->io);

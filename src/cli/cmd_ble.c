@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "cli.h"
+#include "libmcu/cli.h"
 #include <string.h>
 #include <stdlib.h>
-#include "net/ble.h"
+#include "pble/ble.h"
 
 static void println(const struct cli_io *io, const char *str)
 {
@@ -17,7 +17,7 @@ static void println(const struct cli_io *io, const char *str)
 
 static void print_help(const struct cli_io *io)
 {
-	println(io, "subcommands:\n\n\tinit\n\tadv");
+	println(io, "subcommands:\n\n\tinit\n\tenable\n\tdisable\n\tadv");
 }
 
 static void print_help_adv(const struct cli_io *io)
@@ -48,8 +48,7 @@ static void process_adv(struct ble *ble, int argc, const char *argv[],
 	}
 }
 
-cli_cmd_error_t cli_cmd_ble(int argc, const char *argv[], const void *env)
-{
+DEFINE_CLI_CMD(ble, "BLE functions") {
 	static struct ble *ble;
 	struct cli const *cli = (struct cli const *)env;
 
@@ -66,10 +65,17 @@ cli_cmd_error_t cli_cmd_ble(int argc, const char *argv[], const void *env)
 		} else {
 			ble = ble_create_default();
 		}
+	}
+
+	if (!ble) {
+		println(cli->io, "should be initialized first");
+		goto out;
+	} else if (strcmp("enable", argv[1]) == 0) {
+		ble_enable(ble, BLE_ADDR_PRIVATE_RPA, 0);
+	} else if (strcmp("disable", argv[1]) == 0) {
+		ble_disable(ble);
 	} else if (strcmp("adv", argv[1]) == 0) {
-		if (!ble) {
-			println(cli->io, "init first");
-		} else if (argc == 2) {
+		if (argc == 2) {
 			print_help_adv(cli->io);
 		} else {
 			process_adv(ble, argc, argv, cli->io);
@@ -78,5 +84,6 @@ cli_cmd_error_t cli_cmd_ble(int argc, const char *argv[], const void *env)
 		println(cli->io, "Unknown subcommand");
 	}
 
+out:
 	return CLI_CMD_SUCCESS;
 }

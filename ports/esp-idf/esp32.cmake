@@ -33,6 +33,11 @@ configure_file("${IDF_PATH}/tools/cmake/project_description.json.in"
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+target_link_libraries(pble idf::bt)
+target_link_libraries(pwifi idf::esp_wifi)
+
+set(LIBMCU_ROOT ${PROJECT_SOURCE_DIR}/external/libmcu)
+
 add_executable(${PROJECT_EXECUTABLE}
 	${CMAKE_CURRENT_LIST_DIR}/start.c
 	${CMAKE_CURRENT_LIST_DIR}/board.c
@@ -42,27 +47,17 @@ add_executable(${PROJECT_EXECUTABLE}
 	${CMAKE_CURRENT_LIST_DIR}/tls.c
 	${CMAKE_CURRENT_LIST_DIR}/i2c0.c
 	${LIBMCU_ROOT}/ports/freertos/semaphore.c
-	${CMAKE_SOURCE_DIR}/drivers/wifi/esp32.c
-	${CMAKE_SOURCE_DIR}/drivers/ble/esp32.c
+	${LIBMCU_ROOT}/ports/esp-idf/board.c
 	${CMAKE_SOURCE_DIR}/ports/coreMQTT/mqtt.c
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
-target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options} -finstrument-functions)
+target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options})
+target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE ESP_PLATFORM=1)
 target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
 		$ENV{IDF_PATH}/components/freertos/include/freertos
-)
-target_compile_definitions(${PROJECT_EXECUTABLE}
-	PRIVATE
-		WIFI_DEFAULT_INTERFACE=esp
-		BLE_DEFAULT_INTERFACE=esp
-)
-target_compile_definitions(fpl_app
-	PRIVATE
-		WIFI_DEFAULT_INTERFACE=esp
-		BLE_DEFAULT_INTERFACE=esp
 )
 
 include(FetchContent)
@@ -80,7 +75,6 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	idf::spi_flash
 	idf::nvs_flash
 	idf::esp-tls
-	idf::bt
 	core_mqtt
 	fpl_app
 	-Wl,--cref

@@ -43,9 +43,6 @@ AT_INCS = \
 
 AT_DEFS = \
 	AT32F403ACGU7 \
-	\
-	_POSIX_THREADS \
-	_POSIX_C_SOURCE=200809L
 
 $(addprefix $(OUTDIR)/, $(AT_SRCS:%=%.o)): CFLAGS+=-Wno-error
 

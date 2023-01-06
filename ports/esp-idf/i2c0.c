@@ -3,8 +3,8 @@
 #include <string.h>
 #include "driver/i2c.h" /* esp-idf */
 
-#define I2C0_SDA_PIN			21
-#define I2C0_SCL_PIN			22
+#define I2C0_SDA_PIN			17
+#define I2C0_SCL_PIN			18
 #define I2C0_FREQ			100000
 
 static int i2c0_read(struct i2c *self, uint8_t addr, uint8_t reg,

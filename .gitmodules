@@ -1,3 +1,9 @@
 [submodule "external/libmcu"]
 	path = external/libmcu
 	url = https://github.com/libmcu/libmcu.git
+[submodule "external/pble"]
+	path = external/pble
+	url = https://github.com/libmcu/pble.git
+[submodule "external/pwifi"]
+	path = external/pwifi
+	url = https://github.com/libmcu/pwifi.git

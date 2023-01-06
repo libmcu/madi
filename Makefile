@@ -19,7 +19,7 @@ export Q
 include projects/version.mk
 ifneq ($(BOARD),)
 include projects/defines.mk
-include projects/sources.mk
+include projects/app.mk
 include projects/boards/$(BOARD).mk
 include projects/toolchain.mk
 include projects/rules.mk

@@ -1,32 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
-LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
-LIBMCU_MODULES := cli logging trace
-include $(LIBMCU_ROOT)/projects/modules.mk
-
 app-src-dirs := src stubs
 APP_SRCS = $(foreach dir, $(addprefix $(BASEDIR)/, $(app-src-dirs)), \
 	$(shell find $(dir) -type f \( -iname \*.c -o -iname \*.cpp \)))
 
-SRCS += \
-	$(APP_SRCS) \
-	$(LIBMCU_MODULES_SRCS) \
-	$(BASEDIR)/drivers/ble/common.c \
-
-INCS += \
-	$(BASEDIR)/include \
-	$(BASEDIR)/drivers/include \
-	$(LIBMCU_MODULES_INCS) \
-
+SRCS += $(APP_SRCS)
+INCS += $(BASEDIR)/include
 DEFS += \
 	$(BOARD) \
 	BUILD_DATE=$(BUILD_DATE) \
 	VERSION_TAG=$(VERSION_TAG) \
-	VERSION=$(VERSION)
+	VERSION=$(VERSION) \
+	\
+	_POSIX_THREADS \
+	_POSIX_C_SOURCE=200809L \
 
 OBJS += $(addprefix $(OUTDIR)/, $(SRCS:%=%.o))
 LIBDIRS += $(OUTDIR)
-
-ifndef NDEBUG
-$(addprefix $(OUTDIR)/, $(SRCS:%=%.o)): CFLAGS+=-finstrument-functions
-endif
