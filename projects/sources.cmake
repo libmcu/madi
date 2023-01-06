@@ -8,7 +8,7 @@ foreach(dir ${fpl-src-dirs})
 endforeach()
 
 set(APP_SRCS ${FPL_SRCS})
-set(APP_INCS ${BASEDIR}/include ${BASEDIR}/drivers/include)
+set(APP_INCS ${BASEDIR}/include)
 set(APP_DEFS
 	${BOARD}
 	BUILD_DATE=${BUILD_DATE}

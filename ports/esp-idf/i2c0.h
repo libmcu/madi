@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-#include "drivers/i2c.h"
+#include "pi2c/i2c.h"
 
 struct i2c *i2c0_create(void);
 void i2c0_delete(struct i2c *self);

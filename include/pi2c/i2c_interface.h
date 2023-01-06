@@ -1,17 +1,17 @@
 /*
  * SPDX-FileCopyrightText: 2022 Kyunghwan Kwon <k@mononn.com>
  *
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: MIT
  */
 
-#ifndef FPL_I2C_INTERFACE_H
-#define FPL_I2C_INTERFACE_H
+#ifndef LIBMCU_I2C_INTERFACE_H
+#define LIBMCU_I2C_INTERFACE_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#include "drivers/i2c.h"
+#include "pi2c/i2c.h"
 
 static inline int i2c_init(struct i2c *self)
 {
@@ -39,4 +39,4 @@ static inline int i2c_read(struct i2c *self, uint8_t addr, uint8_t reg,
 }
 #endif
 
-#endif /* FPL_I2C_INTERFACE_H */
+#endif /* LIBMCU_I2C_INTERFACE_H */

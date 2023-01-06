@@ -9,7 +9,6 @@
 
 ```shell
 .
-├── common
 ├── docs
 ├── drivers
 ├── external
@@ -25,7 +24,6 @@
 │   └── zephyr
 ├── projects
 ├── src
-├── stubs
 └── tests
 ```
 

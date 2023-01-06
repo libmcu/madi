@@ -1,11 +1,11 @@
 /*
  * SPDX-FileCopyrightText: 2022 Kyunghwan Kwon <k@mononn.com>
  *
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: MIT
  */
 
-#ifndef FPL_I2C_H
-#define FPL_I2C_H
+#ifndef LIBMCU_I2C_H
+#define LIBMCU_I2C_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -25,10 +25,10 @@ struct i2c_api {
 	int (*deinit)(struct i2c *self);
 };
 
-#include "drivers/i2c_interface.h"
+#include "pi2c/i2c_interface.h"
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* FPL_I2C_H */
+#endif /* LIBMCU_I2C_H */
