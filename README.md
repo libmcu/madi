@@ -46,7 +46,7 @@ In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is
 Zephyr's meta tool. Please refer to [Zephyr's Getting Started
 Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html).
 Zephyr kernel configurations and devicetree overlays for a board can be found
-under [docs/boards](docs/boards).
+at [https://docs.libmcu.org/boards/](https://docs.libmcu.org/boards/).
 
-Please check out our getting started guide under [docs/boards](docs/boards) for
-other RTOSs or bear metal firmwares.
+Please check out our [getting started guide](https://docs.libmcu.org/boards/)
+for other RTOSs or bear metal firmwares.
