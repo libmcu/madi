@@ -22,6 +22,9 @@ size_t serial_jtag_write_async(void const *data, size_t datasize)
 {
 	if (datasize == 0) {
 		return 0;
+	} else if (datasize == 1 && ((const char *)data)[0] == '\n') {
+		usb_serial_jtag_write_bytes(" \b\n", 3, 0);
+		return 1;
 	}
 
 	int written = usb_serial_jtag_write_bytes(data, datasize, 0);

@@ -29,8 +29,12 @@ void uart0_init(uint32_t baudrate)
 
 size_t uart0_write_async(void const *data, size_t datasize)
 {
-	int written = uart_write_bytes(UART_NUM_0, data, datasize);
+	if (datasize == 1 && ((const char *)data)[0] == '\n') {
+		uart_write_bytes(UART_NUM_0, " \b\n", 3);
+		return 1;
+	}
 
+	int written = uart_write_bytes(UART_NUM_0, data, datasize);
 	return written > 0 ? (size_t)written : 0;
 }
 
