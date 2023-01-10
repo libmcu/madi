@@ -13,8 +13,7 @@ int main(void)
 	logging_init();
 	board_init();
 
-	info("\n\n[%s] %s %s",
-			board_get_reboot_reason_string(),
+	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),
 			board_get_version_string());
 
