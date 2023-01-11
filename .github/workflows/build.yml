@@ -69,10 +69,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: Build
+      - name: Build on v4.4
         uses: docker://espressif/idf:release-v4.4
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py build"
+      - name: Build on latest
+        uses: docker://espressif/idf:latest
+        with:
+          args: /bin/bash -c "git config --global --add safe.directory /github/workspace && make clean && idf.py build"
   build-with-zephyr:
     name: Build with Zephyr
     strategy:

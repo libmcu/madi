@@ -3,6 +3,13 @@
 # Include for ESP-IDF build system functions
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 
+set(ESP_COMPONENTS freertos esptool_py esp-tls bt)
+if ($ENV{IDF_VERSION} VERSION_GREATER_EQUAL "5.0.0")
+	list(APPEND ESP_COMPONENTS esp_adc)
+else()
+	list(APPEND ESP_COMPONENTS esp_adc_cal)
+endif()
+
 idf_build_process(${BOARD}
 	# try and trim the build; additional components
 	# will be included as needed based on dependency tree
@@ -11,11 +18,7 @@ idf_build_process(${BOARD}
 	# processing the component is needed for flashing related
 	# targets and file generation
 	COMPONENTS
-		${BOARD}
-		freertos
-		esptool_py
-		esp-tls
-		bt
+		${ESP_COMPONENTS}
 	SDKCONFIG_DEFAULTS
 		"${CMAKE_CURRENT_LIST_DIR}/sdkconfig.defaults"
 	BUILD_DIR
@@ -70,14 +73,19 @@ target_include_directories(${PROJECT_EXECUTABLE}
 
 # Link the static libraries to the executable
 target_link_libraries(${PROJECT_EXECUTABLE}
-	idf::${BOARD}
 	idf::freertos
 	idf::spi_flash
 	idf::nvs_flash
+	idf::driver
 	fpl_app
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"
 )
+if ($ENV{IDF_VERSION} VERSION_GREATER_EQUAL "5.0.0")
+target_link_libraries(${PROJECT_EXECUTABLE} idf::esp_adc)
+else()
+target_link_libraries(${PROJECT_EXECUTABLE} idf::esp_adc_cal)
+endif()
 
 set(idf_size ${python} $ENV{IDF_PATH}/tools/idf_size.py)
 add_custom_target(size DEPENDS ${mapfile} COMMAND ${idf_size} ${mapfile})
