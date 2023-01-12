@@ -17,10 +17,12 @@ int main(void)
 			board_get_serial_number_string(),
 			board_get_version_string());
 
+	static char cli_buffer[CLI_CMD_MAXLEN];
 	struct cli cli;
 	DEFINE_CLI_CMD_LIST(cli_commands,
 			help, exit, info, reboot, md, wifi, ble, mqtt);
-	cli_init(&cli, cli_io_create(), cli_commands);
+	cli_init(&cli, cli_io_create(), cli_buffer, sizeof(cli_buffer));
+	cli_register_cmdlist(&cli, cli_commands);
 	cli_run(&cli);
 
 	/* never reach down here unless cli gets terminated by exit command */
