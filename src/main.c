@@ -25,7 +25,5 @@ int main(void)
 	cli_register_cmdlist(&cli, cli_commands);
 	cli_run(&cli);
 
-	/* never reach down here unless cli gets terminated by exit command */
-	while (1) {
-	}
+	return 0;
 }

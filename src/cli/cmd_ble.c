@@ -65,6 +65,7 @@ DEFINE_CLI_CMD(ble, "BLE functions") {
 		} else {
 			ble = ble_create_default();
 		}
+		goto out;
 	}
 
 	if (!ble) {
