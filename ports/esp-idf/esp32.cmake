@@ -20,12 +20,6 @@ else()
 endif()
 
 idf_build_process(${BOARD}
-	# try and trim the build; additional components
-	# will be included as needed based on dependency tree
-	#
-	# although esptool_py does not generate static library,
-	# processing the component is needed for flashing related
-	# targets and file generation
 	COMPONENTS
 		${ESP_COMPONENTS}
 	SDKCONFIG_DEFAULTS

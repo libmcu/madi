@@ -12,11 +12,13 @@ add_subdirectory(external/pwifi)
 add_subdirectory(external/pl4)
 add_subdirectory(external/pmqtt)
 
-target_link_libraries(fpl_app libmcu)
-target_link_libraries(fpl_app pble)
-target_link_libraries(fpl_app pwifi)
-target_link_libraries(fpl_app pl4)
-target_link_libraries(fpl_app pmqtt)
+target_link_libraries(fpl_app
+	libmcu
+	pble
+	pwifi
+	pl4
+	pmqtt
+)
 
 target_compile_definitions(libmcu PRIVATE
 	METRICS_USER_DEFINES=\"${PROJECT_SOURCE_DIR}/include/metrics.def\"
