@@ -74,6 +74,8 @@ NRF_SRCS = \
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
 	\
 	$(PORT_ROOT)/nRF5_SDK/timext.c \
+	$(PORT_ROOT)/nRF5_SDK/uart0.c \
+	$(PORT_ROOT)/nRF5_SDK/cli.c \
 	\
 	$(LIBMCU_ROOT)/ports/stubs/semaphore.c
 
