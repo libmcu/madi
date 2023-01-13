@@ -151,12 +151,8 @@ $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
 INCS += $(NRF_INCS)
 DEFS += $(NRF_DEFS)
+LIBDIRS += $(SDK_ROOT)/modules/nrfx/mdk
 
 NRF_OUTPUT := $(OUTDIR)/libnrf52.a
 NRF_OBJS := $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o))
-DEPS += $(NRF_OBJS:.o=.d)
-LIBS += -Wl,--whole-archive -lnrf52 -Wl,--no-whole-archive
-LIBDIRS += $(SDK_ROOT)/modules/nrfx/mdk
-
-$(OUTELF):: $(NRF_OUTPUT)
 $(eval $(call generate_lib, $(NRF_OUTPUT), $(NRF_OBJS)))

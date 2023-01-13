@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 .DEFAULT_GOAL :=
-all:: $(OUTPUT)
+all: $(OUTPUT)
 	$(info done $(PROJECT)_$(VERSION)-$(BOARD))
 
-$(OUTELF):: $(OBJS) $(EXTRA_OBJS) $(LD_SCRIPT)
+$(OUTELF): $(OBJS) $(EXTRA_OBJS) $(LD_SCRIPT) $(GENERATED_LIBS)
 	$(info linking     $@)
 	$(Q)$(SZ) -t --common $(sort $(OBJS))
 	$(Q)$(CC) -o $@ $(OBJS) $(EXTRA_OBJS) \
@@ -12,7 +12,10 @@ $(OUTELF):: $(OBJS) $(EXTRA_OBJS) $(LD_SCRIPT)
 		$(addprefix -T, $(LD_SCRIPT)) \
 		$(LDFLAGS) \
 		$(addprefix -L, $(LIBDIRS)) \
+		-Wl,--whole-archive \
+		$(GENERATED_LIBS) \
 		$(LIBS) \
+		-Wl,--no-whole-archive \
 		$(STDLIBS)
 
 $(OUTDIR)/%.c.o: %.c Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)

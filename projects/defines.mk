@@ -12,6 +12,8 @@ OUTPUT ?= $(OUTELF) $(OUTHEX) $(OUTBIN) $(OUTDEF) $(OUTSRC) $(OUTINC) \
 	  $(OUTELF).size $(OUTELF).dump $(OUTELF).lst $(OUTELF).sym
 
 define generate_lib
+GENERATED_LIBS += $(1)
+DEPS += $(2:.o=.d)
 $(1): $(2)
 	$(info archiving   $(1))
 	$(Q)rm -f $(1)

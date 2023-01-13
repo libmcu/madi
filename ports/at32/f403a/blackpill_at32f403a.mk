@@ -53,8 +53,4 @@ DEFS += $(AT_DEFS)
 
 AT_OUTPUT := $(OUTDIR)/libat32.a
 AT_OBJS := $(addprefix $(OUTDIR)/, $(AT_SRCS:%=%.o))
-DEPS += $(AT_OBJS:.o=.d)
-LIBS += -Wl,--whole-archive -lat32 -Wl,--no-whole-archive
-
-$(OUTELF):: $(AT_OUTPUT)
 $(eval $(call generate_lib, $(AT_OUTPUT), $(AT_OBJS)))
