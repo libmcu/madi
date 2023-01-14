@@ -1,13 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 PORT_ROOT := ports/nrf52
-
+PLATFORM_SPECIFIC_MAKE := $(PORT_ROOT)/nRF5_SDK/sdk.mk
 INCS += \
 	$(PORT_ROOT) \
 	$(PORT_ROOT)/nRF5_SDK
 
 include projects/arch/cm4f.mk
-include $(PORT_ROOT)/nRF5_SDK/sdk.mk
 
 .PHONY: flash flash_softdevice erase gdbserver
 flash: $(OUTHEX)

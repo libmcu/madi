@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 PORT_ROOT := ports/stm32
+PLATFORM_SPECIFIC_MAKE := $(PORT_ROOT)/f1/$(BOARD).mk
 INCS += $(PORT_ROOT)
 
 include projects/arch/cm3.mk
-include $(PORT_ROOT)/f1/$(BOARD).mk
 
 .PHONY: flash erase gdbserver
 flash: $(OUTHEX)

@@ -1,15 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
-if(PREREQUISITE_ONLY STREQUAL true)
+set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/stm32/f1)
+
 include(${BASEDIR}/projects/arch/cm3.cmake)
-return()
-endif()
 
 add_executable(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PRIVATE ${APP_INCS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${APP_DEFS})
-
-add_subdirectory(${CMAKE_SOURCE_DIR}/ports/stm32/f1)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE c nosys m fpl_app)
 

@@ -19,8 +19,11 @@ export Q
 include projects/version.mk
 ifneq ($(BOARD),)
 include projects/defines.mk
-include projects/app.mk
 include projects/boards/$(BOARD).mk
+include projects/app.mk
+ifneq ($(PLATFORM_SPECIFIC_MAKE),)
+include $(PLATFORM_SPECIFIC_MAKE)
+endif
 include projects/toolchain.mk
 include projects/rules.mk
 else
