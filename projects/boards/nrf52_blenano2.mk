@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
-PORT_ROOT := ports/nrf52
+TARGET_PLATFORM := nrf52
+PORT_ROOT := ports/$(TARGET_PLATFORM)
 PLATFORM_SPECIFIC_MAKE := $(PORT_ROOT)/nRF5_SDK/sdk.mk
 INCS += \
 	$(PORT_ROOT) \
 	$(PORT_ROOT)/nRF5_SDK
+DEFS += TARGET_PLATFORM=$(TARGET_PLATFORM)
 
 include projects/arch/cm4f.mk
 

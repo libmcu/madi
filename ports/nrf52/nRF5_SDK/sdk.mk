@@ -69,13 +69,16 @@ NRF_SRCS = \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
+	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
 	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
+	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
 	\
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
 	\
 	$(PORT_ROOT)/nRF5_SDK/timext.c \
 	$(PORT_ROOT)/nRF5_SDK/uart0.c \
 	$(PORT_ROOT)/nRF5_SDK/cli.c \
+	$(PORT_ROOT)/nRF5_SDK/board.c \
 	\
 	$(LIBMCU_ROOT)/ports/stubs/semaphore.c
 
@@ -150,6 +153,7 @@ NRF_DEFS = \
 	_POSIX_C_SOURCE=200809L
 
 $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o)): CFLAGS+=-Wno-error
+$(addprefix $(OUTDIR)/, $(PBLE_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
 INCS += $(NRF_INCS)
 DEFS += $(NRF_DEFS)

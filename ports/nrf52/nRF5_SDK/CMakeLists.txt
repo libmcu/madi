@@ -68,7 +68,9 @@ set(NRF_SRCS
 	${SDK_ROOT}/modules/nrfx/drivers/src/prs/nrfx_prs.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_clock.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_gpiote.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_rtc.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_uart.c
+	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_clock.c
 
 	${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 
@@ -158,3 +160,5 @@ target_link_libraries(nrf52 libmcu)
 target_link_libraries(${PROJECT_NAME} PRIVATE nrf52)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})
 target_link_directories(${PROJECT_NAME} PRIVATE ${SDK_ROOT}/modules/nrfx/mdk)
+
+target_link_libraries(pble nrf52)

@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
+set(TARGET_PLATFORM nrf52)
 set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf52/nRF5_SDK)
 
 include(${BASEDIR}/projects/arch/cm4f.cmake)
