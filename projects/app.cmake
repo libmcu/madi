@@ -12,7 +12,7 @@ add_subdirectory(external/pwifi)
 add_subdirectory(external/pl4)
 add_subdirectory(external/pmqtt)
 
-target_link_libraries(fpl_app
+target_link_libraries(fpl_app PUBLIC
 	libmcu
 	pble
 	pwifi
