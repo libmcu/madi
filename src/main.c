@@ -6,11 +6,13 @@
 
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
+#include "libmcu/metrics.h"
 #include "libmcu/cli.h"
 
 int main(void)
 {
-	logging_init();
+	logging_init(board_get_time_since_boot_ms);
+	metrics_init(0);
 	board_init();
 
 	info("[%s] %s %s", board_get_reboot_reason_string(),
@@ -20,7 +22,7 @@ int main(void)
 	static char cli_buffer[CLI_CMD_MAXLEN];
 	struct cli cli;
 	DEFINE_CLI_CMD_LIST(cli_commands,
-			help, exit, info, reboot, md, wifi, ble, mqtt);
+			help, exit, info, reboot, md, metric, wifi, ble, mqtt);
 	cli_init(&cli, cli_io_create(), cli_buffer, sizeof(cli_buffer));
 	cli_register_cmdlist(&cli, cli_commands);
 	cli_run(&cli);
