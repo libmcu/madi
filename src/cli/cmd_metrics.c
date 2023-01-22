@@ -25,7 +25,7 @@ static void print_metric(metric_key_t key, int32_t value, void *ctx)
 	cli->io->write(buf, strlen(buf));
 }
 
-DEFINE_CLI_CMD(metric, NULL) {
+DEFINE_CLI_CMD(metric, "Show metrics") {
 	if (argc == 2) {
 		if (strcmp(argv[1], "reset") == 0) {
 			metrics_reset();
