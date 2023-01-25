@@ -46,6 +46,9 @@ set(AT_DEFS
 	AT32F403ACGU7
 )
 
+target_include_directories(libmcu PUBLIC
+	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
+
 add_library(at32 OBJECT ${AT_SRCS})
 target_include_directories(at32 PRIVATE ${APP_INCS} PUBLIC ${AT_INCS})
 target_compile_definitions(at32 PUBLIC ${AT_DEFS})

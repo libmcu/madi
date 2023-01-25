@@ -48,7 +48,7 @@ AT_DEFS = \
 
 $(addprefix $(OUTDIR)/, $(AT_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
-INCS += $(AT_INCS)
+INCS += $(AT_INCS) $(LIBMCU_ROOT)/modules/common/include/libmcu/posix
 DEFS += $(AT_DEFS)
 
 AT_OUTPUT := $(OUTDIR)/libat32.a

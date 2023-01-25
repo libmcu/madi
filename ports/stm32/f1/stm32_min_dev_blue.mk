@@ -70,7 +70,7 @@ ST_DEFS = \
 
 $(addprefix $(OUTDIR)/, $(ST_SRCS:%=%.o)): CFLAGS+=-Wno-error
 
-INCS += $(ST_INCS)
+INCS += $(ST_INCS) $(LIBMCU_ROOT)/modules/common/include/libmcu/posix
 DEFS += $(ST_DEFS)
 
 ST_OUTPUT := $(OUTDIR)/libstm32.a

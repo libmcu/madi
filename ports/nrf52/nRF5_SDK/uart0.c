@@ -83,9 +83,9 @@ size_t uart0_write(const void *data, size_t datasize)
 	size_t cnt = 0;
 
 	for (size_t i = 0; i < datasize; i++) {
-		if (app_uart_put(((const uint8_t *)data)[i]) == NRF_SUCCESS) {
-			cnt++;
+		while (app_uart_put(((const uint8_t *)data)[i]) != NRF_SUCCESS) {
 		}
+		cnt++;
 	}
 
 	return cnt;

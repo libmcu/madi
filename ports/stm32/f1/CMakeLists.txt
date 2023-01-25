@@ -68,6 +68,9 @@ set(ST_DEFS
 	HSE_VALUE=8000000U
 )
 
+target_include_directories(libmcu PUBLIC
+	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
+
 add_library(stm32 OBJECT ${ST_SRCS})
 target_include_directories(stm32 PRIVATE ${APP_INCS} PUBLIC ${ST_INCS})
 target_compile_definitions(stm32 PUBLIC ${ST_DEFS})
