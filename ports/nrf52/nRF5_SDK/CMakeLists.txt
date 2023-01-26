@@ -3,7 +3,7 @@
 AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
 
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/nRF5_SDK_17.1.0_ddde560)
-set(LD_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/nrf52832.ld)
+set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52832.ld)
 set(NRF_SRCS
 	${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52.S
 
@@ -148,8 +148,8 @@ set(NRF_INCS
 	${SDK_ROOT}/components/ble/ble_services/ble_nus
 	${SDK_ROOT}/components/ble/ble_services/ble_nus_c
 
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/..
+	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/..
 )
 set(NRF_DEFS
 	SOFTDEVICE_PRESENT
