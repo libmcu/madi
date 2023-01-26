@@ -8,8 +8,12 @@ set(ESP_COMPONENTS freertos esptool_py esp-tls bt)
 
 if ($ENV{IDF_VERSION} VERSION_GREATER_EQUAL "5.0.0")
 	list(APPEND ESP_COMPONENTS esp_adc)
+	get_filename_component(tmp_abs_file_path ${CMAKE_CURRENT_LIST_DIR}/adc1_legacy.c ABSOLUTE)
+	list(REMOVE_ITEM PORT_SRCS ${tmp_abs_file_path})
 else()
 	list(APPEND ESP_COMPONENTS esp_adc_cal)
+	get_filename_component(tmp_abs_file_path ${CMAKE_CURRENT_LIST_DIR}/adc1.c ABSOLUTE)
+	list(REMOVE_ITEM PORT_SRCS ${tmp_abs_file_path})
 endif()
 
 idf_build_process(${BOARD}
@@ -54,6 +58,8 @@ add_executable(${PROJECT_EXECUTABLE}
 	${PORT_SRCS}
 	${LIBMCU_ROOT}/ports/freertos/semaphore.c
 	${LIBMCU_ROOT}/ports/esp-idf/board.c
+	${LIBMCU_ROOT}/ports/esp-idf/ao.c
+	${LIBMCU_ROOT}/ports/overrides/button.c
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")

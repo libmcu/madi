@@ -8,6 +8,12 @@
 #include "libmcu/assert.h"
 #include "nrf_pwr_mgmt.h"
 #include "app_timer.h"
+#include "nrf_drv_ppi.h"
+#include "nrf_drv_gpiote.h"
+
+#include "nrf_sdh_freertos.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include "nrf_sdh_freertos.h"
 #include "FreeRTOS.h"
@@ -16,6 +22,11 @@
 void board_init(void)
 {
 	int rc = nrf_pwr_mgmt_init();
+	assert(rc == NRF_SUCCESS);
+
+	rc = nrf_drv_ppi_init();
+	assert(rc == NRF_SUCCESS);
+	rc = nrf_drv_gpiote_init();
 	assert(rc == NRF_SUCCESS);
 #if 0
 	nrf_sdh_freertos_init(0, 0);

@@ -1,11 +1,34 @@
 # SPDX-License-Identifier: Apache-2.0
 
 SDK_ROOT ?= external/nRF5_SDK_17.1.0_ddde560
-LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52832.ld
 
-NRF_SRCS = \
+ifeq ($(BOARD),nrf52_libmcu)
+LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52840.ld
+NRF_SRCS += \
+	$(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
+	$(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c
+NRF_INCS += \
+	$(SDK_ROOT)/components/softdevice/s140/headers/nrf52 \
+	$(SDK_ROOT)/components/softdevice/s140/headers
+NRF_DEFS += \
+	S140 \
+	NRF52840_XXAA \
+	CUSTOM_BOARD_INC=libmcu
+else
+LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52832.ld
+NRF_SRCS += \
 	$(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
-	\
+	$(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
+NRF_INCS += \
+	$(SDK_ROOT)/components/softdevice/s132/headers/nrf52 \
+	$(SDK_ROOT)/components/softdevice/s132/headers
+NRF_DEFS += \
+	S132 \
+	NRF52832_XXAA \
+	CUSTOM_BOARD_INC=redbear
+endif
+
+NRF_SRCS += \
 	$(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
 	$(SDK_ROOT)/components/ble/common/ble_advdata.c \
 	$(SDK_ROOT)/components/ble/common/ble_conn_params.c \
@@ -75,15 +98,21 @@ NRF_SRCS = \
 	$(SDK_ROOT)/external/freertos/source/tasks.c \
 	$(SDK_ROOT)/external/freertos/source/timers.c \
 	$(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-	$(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
 	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
+	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twi.c \
+	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c \
+	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twis.c \
+	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_ppi.c \
+	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
+	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
 	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
 	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
+	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_ppi.c \
 	\
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
 	\
@@ -91,11 +120,10 @@ NRF_SRCS = \
 	$(wildcard $(PORT_ROOT)/nRF5_SDK/*.cpp) \
 	\
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
+	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
 	$(LIBMCU_ROOT)/ports/stubs/semaphore.c
 
-NRF_INCS = \
-	$(SDK_ROOT)/components/softdevice/s132/headers/nrf52 \
-	$(SDK_ROOT)/components/softdevice/s132/headers \
+NRF_INCS += \
 	$(SDK_ROOT)/components/ble/common \
 	$(SDK_ROOT)/components/ble/ble_advertising \
 	$(SDK_ROOT)/components/ble/ble_link_ctx_manager \
@@ -147,18 +175,19 @@ NRF_INCS = \
 	\
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus \
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus_c \
-
-NRF_DEFS = \
-	SOFTDEVICE_PRESENT \
-	S132 \
-	NRF_SD_BLE_API_VERSION=7 \
 	\
-	CUSTOM_BOARD_INC=redbear \
+	$(PORT_ROOT)/nRF5_SDK \
+	$(PORT_ROOT) \
+
+NRF_DEFS += \
+	SOFTDEVICE_PRESENT \
+	NRF_SD_BLE_API_VERSION=7 \
+	NRFX_SAADC_API_V2 \
+	\
 	BSP_DEFINES_ONLY \
 	CONFIG_GPIO_AS_PINRESET \
 	FLOAT_ABI_HARD \
 	NRF52_PAN_74 \
-	NRF52832_XXAA \
 	NRF52 \
 	FREERTOS \
 	__HEAP_SIZE=8192 \

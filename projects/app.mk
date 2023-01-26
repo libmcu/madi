@@ -14,17 +14,22 @@ PL4_ROOT := $(BASEDIR)/external/pl4
 include $(PL4_ROOT)/sources.mk
 PMQTT_ROOT := $(BASEDIR)/external/pmqtt
 include $(PMQTT_ROOT)/sources.mk
+BQ25180_ROOT := $(BASEDIR)/external/bq25180
+include $(BQ25180_ROOT)/sources.mk
 
 SRCS += $(LIBMCU_MODULES_SRCS) \
 	$(PBLE_SRCS) \
 	$(PWIFI_SRCS) \
 	$(PL4_SRCS) \
 	$(PMQTT_SRCS) \
+	$(BQ25180_SRCS) \
 
 INCS += $(LIBMCU_MODULES_INCS) \
 	$(PBLE_INCS) \
 	$(PWIFI_INCS) \
 	$(PL4_INCS) \
 	$(PMQTT_INCS) \
+	$(BQ25180_INCS) \
 
 DEFS += METRICS_USER_DEFINES=\"$(BASEDIR)/include/metrics.def\"
+CFLAGS += -include libmcu/assert.h

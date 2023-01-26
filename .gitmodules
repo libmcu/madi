@@ -13,3 +13,6 @@
 [submodule "external/pl4"]
 	path = external/pl4
 	url = https://github.com/libmcu/pl4.git
+[submodule "external/bq25180"]
+	path = external/bq25180
+	url = https://github.com/libmcu/bq25180.git

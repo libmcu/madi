@@ -46,7 +46,7 @@ $(OUTDIR)/%.S.o: %.S Makefile $(MAKEFILE_LIST) | $(PREREQUISITES)
 		-o $@ -c $< -MMD \
 		$(addprefix -D, $(DEFS)) \
 		$(addprefix -I, $(INCS)) \
-		$(CFLAGS)
+		$(filter-out -include %, $(CFLAGS))
 
 $(OUTDEF): $(OUTELF)
 	$(info generating  $@)

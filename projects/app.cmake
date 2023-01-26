@@ -11,6 +11,7 @@ add_subdirectory(external/pble)
 add_subdirectory(external/pwifi)
 add_subdirectory(external/pl4)
 add_subdirectory(external/pmqtt)
+add_subdirectory(external/bq25180)
 
 target_link_libraries(fpl_app PUBLIC
 	libmcu
@@ -18,6 +19,7 @@ target_link_libraries(fpl_app PUBLIC
 	pwifi
 	pl4
 	pmqtt
+	bq25180
 )
 
 target_compile_definitions(libmcu PRIVATE

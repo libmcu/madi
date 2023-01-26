@@ -15,6 +15,7 @@ target_link_libraries(app PRIVATE
 	pwifi
 	pl4
 	pmqtt
+	bq25180
 )
 
 target_link_libraries(libmcu PUBLIC zephyr_interface)

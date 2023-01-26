@@ -29,13 +29,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: blackpill_at32f403a
-            repo: ArteryTek/framework-at32firmlib
-            path: ${{ github.event.repository.name }}/external/at32sdk
           - target: stm32_min_dev_blue
             repo: STMicroelectronics/STM32CubeF1
             path: ${{ github.event.repository.name }}/external/STM32CubeF1
-          - target: nrf52_blenano2
+          - target: nrf52_libmcu
             repo: libmcu/nRF5_SDK_17.1.0_ddde560
             path: ${{ github.event.repository.name }}/external/nRF5_SDK_17.1.0_ddde560
     steps:
@@ -72,16 +69,16 @@ jobs:
       - name: Build on v4.4
         uses: docker://espressif/idf:release-v4.4
         with:
-          args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py build"
+          args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py set-target esp32s3 && idf.py build"
       - name: Build on latest
         uses: docker://espressif/idf:latest
         with:
-          args: /bin/bash -c "git config --global --add safe.directory /github/workspace && make clean && idf.py build"
+          args: /bin/bash -c "git config --global --add safe.directory /github/workspace && rm -rf build sdkconfig && idf.py set-target esp32s3 && idf.py build"
   build-with-zephyr:
     name: Build with Zephyr
     strategy:
       matrix:
-        target: [esp32, nrf52_blenano2, stm32_min_dev_blue]
+        target: [esp32]
     runs-on: ubuntu-latest
     needs: [unit-test]
     container:
