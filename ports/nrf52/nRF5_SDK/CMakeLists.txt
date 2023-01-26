@@ -183,8 +183,8 @@ list(APPEND NRF_INCS
 	${SDK_ROOT}/components/ble/ble_services/ble_nus
 	${SDK_ROOT}/components/ble/ble_services/ble_nus_c
 
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/..
+	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/..
 )
 list(APPEND NRF_DEFS
 	SOFTDEVICE_PRESENT

@@ -42,7 +42,7 @@ set(AT_INCS
 	${SDK_ROOT}/cmsis/cm4/device_support
 	${SDK_ROOT}/drivers/inc
 
-	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_LIST_DIR}
 )
 set(AT_DEFS
 	AT32F403ACGU7
