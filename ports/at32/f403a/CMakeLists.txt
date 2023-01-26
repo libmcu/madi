@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
+
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/at32sdk/AT32F403A_407_Firmware_Library/libraries)
 set(LD_SCRIPT ${SDK_ROOT}/cmsis/cm4/device_support/startup/gcc/linker/AT32F403AxG_FLASH.ld)
 set(AT_SRCS
@@ -31,7 +33,7 @@ set(AT_SRCS
 	${SDK_ROOT}/drivers/src/at32f403a_407_wwdt.c
 	${SDK_ROOT}/drivers/src/at32f403a_407_xmc.c
 
-	${CMAKE_CURRENT_SOURCE_DIR}/board.c
+	${PORT_SRCS}
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
 )

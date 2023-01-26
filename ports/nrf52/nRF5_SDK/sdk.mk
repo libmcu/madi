@@ -87,10 +87,8 @@ NRF_SRCS = \
 	\
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
 	\
-	$(PORT_ROOT)/nRF5_SDK/timext.c \
-	$(PORT_ROOT)/nRF5_SDK/uart0.c \
-	$(PORT_ROOT)/nRF5_SDK/cli.c \
-	$(PORT_ROOT)/nRF5_SDK/board.c \
+	$(wildcard $(PORT_ROOT)/nRF5_SDK/*.c) \
+	$(wildcard $(PORT_ROOT)/nRF5_SDK/*.cpp) \
 	\
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
 	$(LIBMCU_ROOT)/ports/stubs/semaphore.c

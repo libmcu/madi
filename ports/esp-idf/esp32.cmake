@@ -3,15 +3,8 @@
 # Include for ESP-IDF build system functions
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
 set(ESP_COMPONENTS freertos esptool_py esp-tls bt)
-set(PORT_SRCS
-	${CMAKE_CURRENT_LIST_DIR}/start.c
-	${CMAKE_CURRENT_LIST_DIR}/board.c
-	${CMAKE_CURRENT_LIST_DIR}/uart0.c
-	${CMAKE_CURRENT_LIST_DIR}/usb_serial_jtag.c
-	${CMAKE_CURRENT_LIST_DIR}/cli.c
-	${CMAKE_CURRENT_LIST_DIR}/i2c0.c
-)
 
 if ($ENV{IDF_VERSION} VERSION_GREATER_EQUAL "5.0.0")
 	list(APPEND ESP_COMPONENTS esp_adc)

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
+
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/STM32CubeF1)
 set(LD_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/STM32F103C8Tx_FLASH.ld)
 set(ST_SRCS
@@ -48,9 +50,7 @@ set(ST_SRCS
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_usart.c
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_wwdg.c
 
-	${CMAKE_CURRENT_SOURCE_DIR}/board.c
-	${CMAKE_CURRENT_SOURCE_DIR}/uart1.c
-	${CMAKE_CURRENT_SOURCE_DIR}/cli.c
+	${PORT_SRCS}
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
 )

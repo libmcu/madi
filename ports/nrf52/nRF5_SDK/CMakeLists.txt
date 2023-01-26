@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
+
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/nRF5_SDK_17.1.0_ddde560)
 set(LD_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/nrf52832.ld)
 set(NRF_SRCS
@@ -86,10 +88,7 @@ set(NRF_SRCS
 
 	${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 
-	${CMAKE_CURRENT_SOURCE_DIR}/timext.c
-	${CMAKE_CURRENT_SOURCE_DIR}/uart0.c
-	${CMAKE_CURRENT_SOURCE_DIR}/cli.c
-	${CMAKE_CURRENT_SOURCE_DIR}/board.c
+	${PORT_SRCS}
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
