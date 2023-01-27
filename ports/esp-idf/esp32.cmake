@@ -58,7 +58,11 @@ add_executable(${PROJECT_EXECUTABLE}
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
 target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options})
-target_compile_definitions(${PROJECT_EXECUTABLE} PRIVATE ESP_PLATFORM=1)
+target_compile_definitions(${PROJECT_EXECUTABLE}
+	PRIVATE
+		ESP_PLATFORM=1
+		xPortIsInsideInterrupt=xPortInIsrContext
+)
 target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos

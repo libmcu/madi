@@ -11,9 +11,10 @@
 
 int main(void)
 {
+	board_init(); /* This should be called first. */
+
 	logging_init(board_get_time_since_boot_ms);
 	metrics_init(0);
-	board_init();
 
 	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),
