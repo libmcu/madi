@@ -107,12 +107,12 @@ static void logging_stdout_backend_init(void)
 
 int main(void)
 {
+	board_init(); /* should be called very first. */
+
+	metrics_init(0);
 	logging_init(board_get_time_since_boot_ms);
 	logging_stdout_backend_init();
 	stdout = cli_io_create()->write;
-
-	metrics_init(0);
-	board_init();
 
 	eventloop_init();
 	status_led_init();

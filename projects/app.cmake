@@ -22,7 +22,7 @@ target_link_libraries(fpl_app PUBLIC
 	bq25180
 )
 
-target_compile_definitions(libmcu PRIVATE
+target_compile_definitions(libmcu PUBLIC
 	METRICS_USER_DEFINES=\"${PROJECT_SOURCE_DIR}/include/metrics.def\"
 	_POSIX_THREADS
 	_POSIX_C_SOURCE=200809L
