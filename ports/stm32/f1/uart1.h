@@ -10,7 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-void uart1_init(uint32_t baudrate);
+int uart1_enable(uint32_t baudrate);
+int uart1_disable(void);
 size_t uart1_write(void const *data, size_t datasize);
 size_t uart1_read(void *buf, size_t bufsize);
 

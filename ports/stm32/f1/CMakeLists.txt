@@ -49,23 +49,59 @@ set(ST_SRCS
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_usart.c
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_wwdg.c
+	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.c
+
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/croutine.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/list.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/queue.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/tasks.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/timers.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c
+	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
+	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
+	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
+	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
 
 	${PORT_SRCS}
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/main.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/usart.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/gpio.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32f1xx_hal_msp.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32f1xx_hal_timebase_tim.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32f1xx_it.c
 
-	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
+	${CMAKE_CURRENT_LIST_DIR}/USB_DEVICE/App/usb_device.c
+	${CMAKE_CURRENT_LIST_DIR}/USB_DEVICE/App/usbd_cdc_if.c
+	${CMAKE_CURRENT_LIST_DIR}/USB_DEVICE/App/usbd_desc.c
+	${CMAKE_CURRENT_LIST_DIR}/USB_DEVICE/Target/usbd_conf.c
+
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
 )
 set(ST_INCS
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Inc
 	${SDK_ROOT}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
 	${SDK_ROOT}/Drivers/CMSIS/Device/ST/STM32F1xx/Include
 	${SDK_ROOT}/Drivers/CMSIS/Include
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/include
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
+	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
 
 	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/Core/Inc
+	${CMAKE_CURRENT_LIST_DIR}/USB_DEVICE/App
+	${CMAKE_CURRENT_LIST_DIR}/USB_DEVICE/Target
 )
 set(ST_DEFS
 	USE_HAL_DRIVER
 	STM32F103xB
-	HSE_VALUE=8000000U
 )
 
 target_include_directories(libmcu PUBLIC
