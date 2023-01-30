@@ -5,7 +5,7 @@ AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/nRF5_SDK_17.1.0_ddde560)
 
 if (BOARD STREQUAL nrf52_libmcu)
-	set(LD_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/nrf52840.ld)
+	set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52840.ld)
 	set(NRF_SRCS
 		${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52840.S
 		${SDK_ROOT}/modules/nrfx/mdk/system_nrf52840.c
@@ -20,7 +20,7 @@ if (BOARD STREQUAL nrf52_libmcu)
 		CUSTOM_BOARD_INC=libmcu
 	)
 else()
-	set(LD_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/nrf52832.ld)
+	set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52832.ld)
 	set(NRF_SRCS
 		${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52.S
 		${SDK_ROOT}/modules/nrfx/mdk/system_nrf52.c
@@ -112,12 +112,12 @@ list(APPEND NRF_SRCS
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_clock.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_gpiote.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_rtc.c
-	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twi.c
-	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c
-	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twis.c
-	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_ppi.c
-	$(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c
-	$(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twi.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twim.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twis.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_ppi.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_saadc.c
+	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_twi.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_uart.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_clock.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_ppi.c
@@ -128,7 +128,8 @@ list(APPEND NRF_SRCS
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
-	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/nrf52/freertos.c
 )
 list(APPEND NRF_INCS
 	${SDK_ROOT}/components/ble/common
@@ -206,12 +207,12 @@ target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
 
 add_library(nrf52 OBJECT ${NRF_SRCS})
-target_include_directories(nrf52 PRIVATE ${APP_INCS} PUBLIC ${NRF_INCS})
+target_include_directories(nrf52 PUBLIC ${NRF_INCS} ${APP_INCS})
 target_compile_definitions(nrf52 PUBLIC ${NRF_DEFS})
-target_link_libraries(nrf52 libmcu)
+target_link_libraries(nrf52 PUBLIC libmcu bq25180)
+
+target_link_libraries(pble PRIVATE nrf52)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nrf52)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})
 target_link_directories(${PROJECT_NAME} PRIVATE ${SDK_ROOT}/modules/nrfx/mdk)
-
-target_link_libraries(pble nrf52)

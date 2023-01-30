@@ -57,10 +57,11 @@ set(LIBMCU_ROOT ${PROJECT_SOURCE_DIR}/external/libmcu)
 add_executable(${PROJECT_EXECUTABLE}
 	${APP_SRCS}
 	${PORT_SRCS}
-	${LIBMCU_ROOT}/ports/freertos/semaphore.c
 	${LIBMCU_ROOT}/ports/esp-idf/board.c
 	${LIBMCU_ROOT}/ports/esp-idf/ao.c
-	${LIBMCU_ROOT}/ports/overrides/button.c
+	${LIBMCU_ROOT}/ports/esp-idf/pthread.c
+	${LIBMCU_ROOT}/ports/freertos/semaphore.c
+	${LIBMCU_ROOT}/ports/posix/button.c
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
@@ -75,6 +76,7 @@ target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
 		$ENV{IDF_PATH}/components/freertos/include/freertos
+		${CMAKE_CURRENT_LIST_DIR}
 		${APP_INCS}
 )
 
@@ -84,12 +86,14 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	idf::spi_flash
 	idf::nvs_flash
 	idf::driver
+	idf::pthread
 
 	libmcu
 	pble
 	pwifi
 	pl4
 	pmqtt
+	bq25180
 
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"

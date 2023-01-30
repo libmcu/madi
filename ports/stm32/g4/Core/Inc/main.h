@@ -27,7 +27,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f1xx_hal.h"
+#include "stm32g4xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -57,9 +57,18 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define UserBtn_Pin GPIO_PIN_11
-#define UserBtn_GPIO_Port GPIOB
-#define UserBtn_EXTI_IRQn EXTI15_10_IRQn
+#define BATMON_LEVEL_Pin GPIO_PIN_4
+#define BATMON_LEVEL_GPIO_Port GPIOC
+#define BATMON_EN_Pin GPIO_PIN_2
+#define BATMON_EN_GPIO_Port GPIOB
+#define BATMON_INT_Pin GPIO_PIN_6
+#define BATMON_INT_GPIO_Port GPIOC
+#define BATMON_INT_EXTI_IRQn EXTI9_5_IRQn
+#define LED_Pin GPIO_PIN_15
+#define LED_GPIO_Port GPIOA
+#define User_button_Pin GPIO_PIN_8
+#define User_button_GPIO_Port GPIOB
+#define User_button_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 

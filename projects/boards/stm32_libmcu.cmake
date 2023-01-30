@@ -2,8 +2,7 @@
 
 include(${BASEDIR}/projects/arch/cm4f.cmake)
 
-set(TARGET_PLATFORM nrf52)
-set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf52/nRF5_SDK)
+set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/stm32/g4)
 
 add_custom_target(${PROJECT_NAME}.bin ALL DEPENDS ${PROJECT_NAME})
 add_custom_target(${PROJECT_NAME}.hex ALL DEPENDS ${PROJECT_NAME})
@@ -24,10 +23,10 @@ add_custom_command(TARGET ${PROJECT_NAME}.bin
 
 add_custom_command(TARGET flash
 	USES_TERMINAL COMMAND
-		pyocd flash -t nrf52840 ${PROJECT_NAME}.hex
+		pyocd flash -t stm32g473ce ${PROJECT_NAME}.hex
 )
 
 add_custom_command(TARGET gdb
 	USES_TERMINAL COMMAND
-		pyocd gdbserver -t nrf52840
+		pyocd gdbserver -t stm32g473ce
 )

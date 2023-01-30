@@ -5,13 +5,22 @@
  */
 
 #include "bq25180_overrides.h"
+
+#if defined(stm32_libmcu)
+#include "i2c2.h"
+#else
 #include "i2c0.h"
+#endif
 
 static struct i2c *i2c_handle;
 
 static void initialize_i2c(void)
 {
+#if defined(stm32_libmcu)
+	i2c_handle = i2c2_create();
+#else
 	i2c_handle = i2c0_create();
+#endif
 	i2c_init(i2c_handle);
 }
 

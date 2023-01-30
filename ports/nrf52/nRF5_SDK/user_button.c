@@ -5,6 +5,7 @@
  */
 
 #include "user_button.h"
+#include "libmcu/assert.h"
 #include "nrf_gpio.h"
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_gpiote.h"

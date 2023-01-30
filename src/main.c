@@ -9,6 +9,7 @@
 #include "libmcu/metrics.h"
 #include "libmcu/cli.h"
 #include "libmcu/ao.h"
+#include "libmcu/ao_timer.h"
 
 #include "status_led.h"
 #include "battery.h"
@@ -57,7 +58,8 @@ static void dispatch(struct ao * const ao, const struct ao_event * const event)
 
 static void eventloop_init(void)
 {
-	ao_create(&eventloop, EVENTLOOP_STACK_SIZE_BYTES, 0);
+	ao_timer_init();
+	ao_create(&eventloop, EVENTLOOP_STACK_SIZE_BYTES, 1);
 	ao_start(&eventloop, dispatch);
 }
 
