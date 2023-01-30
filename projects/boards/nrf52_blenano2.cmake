@@ -1,15 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
-set(TARGET_PLATFORM nrf52)
-set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf52/nRF5_SDK)
-
 include(${BASEDIR}/projects/arch/cm4f.cmake)
 
-add_executable(${PROJECT_NAME})
-target_include_directories(${PROJECT_NAME} PRIVATE ${APP_INCS})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${APP_DEFS})
-
-target_link_libraries(${PROJECT_NAME} PRIVATE c nosys m fpl_app)
+set(TARGET_PLATFORM nrf52)
+set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf52/nRF5_SDK)
 
 add_custom_target(${PROJECT_NAME}.bin ALL DEPENDS ${PROJECT_NAME})
 add_custom_target(${PROJECT_NAME}.hex ALL DEPENDS ${PROJECT_NAME})

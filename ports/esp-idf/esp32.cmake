@@ -55,6 +55,7 @@ target_include_directories(libmcu PUBLIC
 set(LIBMCU_ROOT ${PROJECT_SOURCE_DIR}/external/libmcu)
 
 add_executable(${PROJECT_EXECUTABLE}
+	${APP_SRCS}
 	${PORT_SRCS}
 	${LIBMCU_ROOT}/ports/freertos/semaphore.c
 	${LIBMCU_ROOT}/ports/esp-idf/board.c
@@ -68,11 +69,13 @@ target_compile_definitions(${PROJECT_EXECUTABLE}
 	PRIVATE
 		ESP_PLATFORM=1
 		xPortIsInsideInterrupt=xPortInIsrContext
+		${APP_DEFS}
 )
 target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
 		$ENV{IDF_PATH}/components/freertos/include/freertos
+		${APP_INCS}
 )
 
 # Link the static libraries to the executable
@@ -81,7 +84,13 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	idf::spi_flash
 	idf::nvs_flash
 	idf::driver
-	fpl_app
+
+	libmcu
+	pble
+	pwifi
+	pl4
+	pmqtt
+
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"
 )

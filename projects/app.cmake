@@ -1,29 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
-include(${BASEDIR}/projects/sources.cmake)
-
-add_library(fpl_app OBJECT ${APP_SRCS})
-target_include_directories(fpl_app PUBLIC ${APP_INCS})
-target_compile_definitions(fpl_app PUBLIC ${APP_DEFS})
-
-add_subdirectory(external/libmcu)
-add_subdirectory(external/pble)
-add_subdirectory(external/pwifi)
-add_subdirectory(external/pl4)
-add_subdirectory(external/pmqtt)
-add_subdirectory(external/bq25180)
-
-target_link_libraries(fpl_app PUBLIC
+add_executable(${PROJECT_NAME} ${APP_SRCS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${APP_INCS})
+target_compile_definitions(${PROJECT_NAME} PUBLIC ${APP_DEFS})
+target_link_libraries(${PROJECT_NAME} PUBLIC
 	libmcu
 	pble
 	pwifi
 	pl4
 	pmqtt
 	bq25180
-)
 
-target_compile_definitions(libmcu PUBLIC
-	METRICS_USER_DEFINES=\"${PROJECT_SOURCE_DIR}/include/metrics.def\"
-	_POSIX_THREADS
-	_POSIX_C_SOURCE=200809L
+	-Wl,--cref
+	-Wl,--Map=\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map\"
 )
