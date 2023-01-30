@@ -108,9 +108,9 @@ target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
 
 add_library(stm32 OBJECT ${ST_SRCS})
-target_include_directories(stm32 PRIVATE ${APP_INCS} PUBLIC ${ST_INCS})
+target_include_directories(stm32 PUBLIC ${ST_INCS} ${APP_INCS})
 target_compile_definitions(stm32 PUBLIC ${ST_DEFS})
-target_link_libraries(stm32 libmcu)
+target_link_libraries(stm32 PUBLIC libmcu)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE stm32)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})

@@ -13,17 +13,38 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-void board_init(void)
+#define MAIN_TASK_STACK_SIZE		2048U
+#define MAIN_TASK_PRIORITY		1U
+
+static void start_scheduler(void)
+{
+	extern int main(void);
+	xTaskCreate(main, "Main",
+			MAIN_TASK_STACK_SIZE / sizeof(StackType_t), 0,
+			MAIN_TASK_PRIORITY, 0);
+	vTaskStartScheduler();
+}
+
+static void initialize_bsp(void)
 {
 	int rc = nrf_pwr_mgmt_init();
 	assert(rc == NRF_SUCCESS);
-#if 0
-	nrf_sdh_freertos_init(0, 0);
-	vTaskStartScheduler();
-#endif
 }
 
 void board_reboot(void)
 {
 	NVIC_SystemReset();
+}
+
+void board_init(void)
+{
+	static bool initialized;
+
+	if (!initialized) {
+		initialized = true;
+
+		initialize_bsp();
+		start_scheduler();
+		return; /* never reaches down here */
+	}
 }

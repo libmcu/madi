@@ -69,6 +69,7 @@ target_include_directories(${PROJECT_EXECUTABLE}
 	PRIVATE
 		$ENV{IDF_PATH}/components/freertos/FreeRTOS-Kernel/include/freertos
 		$ENV{IDF_PATH}/components/freertos/include/freertos
+		${CMAKE_CURRENT_LIST_DIR}
 		${APP_INCS}
 )
 
