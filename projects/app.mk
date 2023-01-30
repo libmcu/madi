@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
-include projects/sources.mk
-
 LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
 LIBMCU_MODULES := ao button cli logging metrics
 include $(LIBMCU_ROOT)/projects/modules.mk

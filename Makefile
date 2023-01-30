@@ -20,6 +20,7 @@ include projects/version.mk
 ifneq ($(BOARD),)
 include projects/defines.mk
 include projects/boards/$(BOARD).mk
+include projects/sources.mk
 include projects/app.mk
 ifneq ($(PLATFORM_SPECIFIC_MAKE),)
 include $(PLATFORM_SPECIFIC_MAKE)
