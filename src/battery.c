@@ -5,30 +5,19 @@
  */
 
 #include "battery.h"
-#include "padc/adc.h"
-#include "adc.h"
 #include "bq25180.h"
 
-#define MONITOR_ENABLE_GPIO_PORT	GPIOB
-#define MONITOR_ENABLE_GPIO_PIN		GPIO_PIN_2
-#define MONITOR_INTR_GPIO_PIN		GPIO_PIN_6 /* GPIOC */
-#define ADC_CHANNEL			5 /* PC.4 ADC2.5 */
+#include "bq25180_overrides.h"
+#if defined(stm32_libmcu)
+#include "i2c2.h"
+#else
+#include "i2c0.h"
+#endif
 
-static struct adc *adc;
-static void (*dispatch_callback)(void);
+#define NR_SAMPLES		20
 
-static void on_interrupt(void)
-{
-	if (dispatch_callback) {
-		(*dispatch_callback)();
-	}
-}
-
-static void initialize_monitor_gpio(void)
-{
-	MX_GPIO_InitRecursive();
-	MX_GPIO_RegisterCallback(MONITOR_INTR_GPIO_PIN, on_interrupt);
-}
+static const struct battery_monitor *monitor;
+static struct i2c *i2c_handle;
 
 static int calc_average(const int *samples, int n)
 {
@@ -72,31 +61,38 @@ static int calc_average_filtered(const int *samples, int n, int avg, int var)
 	return sum / c;
 }
 
-int battery_enable_monitor(bool enable)
+static void initialize_i2c(void)
 {
-	if (enable) {
-		HAL_GPIO_WritePin(MONITOR_ENABLE_GPIO_PORT,
-				MONITOR_ENABLE_GPIO_PIN, 1);
-	} else {
-		HAL_GPIO_WritePin(MONITOR_ENABLE_GPIO_PORT,
-				MONITOR_ENABLE_GPIO_PIN, 0);
-	}
+#if defined(stm32_libmcu)
+	i2c_handle = i2c2_create();
+#else
+	i2c_handle = i2c0_create();
+#endif
+	i2c_init(i2c_handle);
+}
 
-	return 0;
+int bq25180_read(uint8_t addr, uint8_t reg, void *buf, size_t bufsize)
+{
+	if (!i2c_handle) {
+		initialize_i2c();
+	}
+	return i2c_read(i2c_handle, addr, reg, buf, bufsize);
+}
+
+int bq25180_write(uint8_t addr, uint8_t reg, const void *data, size_t data_len)
+{
+	if (!i2c_handle) {
+		initialize_i2c();
+	}
+	return i2c_write(i2c_handle, addr, reg, data, data_len);
 }
 
 int battery_level_raw(void)
 {
-	if (!adc) {
-		return 0;
-	}
-
-#define NR_SAMPLES	20
 	int samples[NR_SAMPLES];
 
-	adc_get_raw(adc, ADC_CHANNEL); /* The first one always to be outlier. */
 	for (int i = 0; i < NR_SAMPLES; i++) {
-		samples[i] = adc_get_raw(adc, ADC_CHANNEL);
+		samples[i] = monitor->get_level_adc();
 	}
 
 	int avg = calc_average(samples, NR_SAMPLES);
@@ -108,24 +104,17 @@ int battery_level_raw(void)
 
 int battery_raw_to_millivolts(int raw)
 {
-	if (!adc) {
-		return 0;
-	}
-
-	int mv_raw = adc_raw_to_millivolts(adc, raw);
-	return mv_raw * 1000/128/*scale*/ - 54/*offset*/;
+	return monitor->adc_to_millivolts(raw);
 }
 
-int battery_init(void (*on_event_callback)(void))
+int battery_enable_monitor(bool enable)
 {
-	adc = adc_create();
-	adc_enable(adc, true);
-	adc_calibrate(adc);
-	//adc_channel_init(ADC_CHANNEL);
+	return monitor->enable(enable);
+}
 
-	initialize_monitor_gpio();
-
-	dispatch_callback = on_event_callback;
+int battery_init(const struct battery_monitor *battery_monitor)
+{
+	monitor = battery_monitor;
 
 	bq25180_reset(false);
 	bq25180_enable_interrupt(BQ25180_INTR_CHARGING_STATUS);

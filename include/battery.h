@@ -14,7 +14,15 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-int battery_init(void (*on_event_callback)(void));
+struct battery_monitor {
+	int (*enable)(bool enable);
+	int (*get_level_adc)(void);
+	int (*adc_to_millivolts)(int raw);
+};
+
+struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void));
+
+int battery_init(const struct battery_monitor *battery_monitor);
 
 /**
  * @brief Enable or Disable battery level monitor
@@ -36,6 +44,13 @@ int battery_enable_monitor(bool enable);
 int battery_level_raw(void);
 
 /**
+ * @brief Read battery level in percentage
+ *
+ * @return 0 ~ 100 percentage
+ */
+uint8_t battery_level_pct(void);
+
+/**
  * @brief Convert ADC value to millivoltage
  *
  * @param[in] raw ADC value
@@ -43,13 +58,6 @@ int battery_level_raw(void);
  * @return millivoltage
  */
 int battery_raw_to_millivolts(int raw);
-
-/**
- * @brief Read battery level in percentage
- *
- * @return 0 ~ 100 percentage
- */
-uint8_t battery_level(void);
 
 #if defined(__cplusplus)
 }
