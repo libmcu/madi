@@ -13,9 +13,11 @@ extern "C" {
 
 #include <stdbool.h>
 
-void user_button_init(void (*event_callback)(void));
-void user_button_init_hw(void (*event_callback)(void));
-int user_button_get_state(void);
+typedef int (*user_button_read_state_func_t)(void);
+
+user_button_read_state_func_t user_button_gpio_init(
+		void (*event_callback)(void));
+void user_button_init(user_button_read_state_func_t func);
 bool user_button_process(void);
 
 #if defined(__cplusplus)

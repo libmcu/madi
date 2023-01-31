@@ -19,15 +19,18 @@ static void on_gpio_state_change(void)
 	}
 }
 
-int user_button_get_state(void)
+static int user_button_get_state(void)
 {
 	return !HAL_GPIO_ReadPin(USER_BUTTON_GPIO_PORT, USER_BUTTON_GPIO_PIN);
 }
 
-void user_button_init_hw(void (*event_callback)(void))
+user_button_read_state_func_t user_button_gpio_init(
+		void (*event_callback)(void))
 {
 	MX_GPIO_InitRecursive();
 	MX_GPIO_RegisterCallback(USER_BUTTON_GPIO_PIN, on_gpio_state_change);
 
 	dispatch_callback = event_callback;
+
+	return user_button_get_state;
 }

@@ -21,12 +21,13 @@ static void IRAM_ATTR on_gpio_state_change(void *arg)
 	}
 }
 
-int user_button_get_state(void)
+static int user_button_get_state(void)
 {
 	return !gpio_get_level(USER_BUTTON_GPIO_NUMBER);
 }
 
-void user_button_init_hw(void (*event_callback)(void))
+user_button_read_state_func_t user_button_gpio_init(
+		void (*event_callback)(void))
 {
 	gpio_config_t io_conf = {
 		.intr_type = GPIO_INTR_NEGEDGE,
@@ -38,4 +39,6 @@ void user_button_init_hw(void (*event_callback)(void))
 	gpio_isr_handler_add(USER_BUTTON_GPIO_NUMBER, on_gpio_state_change, 0);
 
 	dispatch_callback = event_callback;
+
+	return user_button_get_state;
 }

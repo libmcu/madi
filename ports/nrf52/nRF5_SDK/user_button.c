@@ -26,12 +26,13 @@ static void on_gpio_state_change(nrf_drv_gpiote_pin_t pin,
 	}
 }
 
-int user_button_get_state(void)
+static int user_button_get_state(void)
 {
 	return !nrf_gpio_pin_read(USER_BUTTON_GPIO_NUMBER);
 }
 
-void user_button_init_hw(void (*event_callback)(void))
+user_button_read_state_func_t user_button_gpio_init(
+		void (*event_callback)(void))
 {
 	nrf_drv_gpiote_in_config_t cfg = {
 		.pull = NRF_GPIO_PIN_PULLUP,
@@ -46,4 +47,6 @@ void user_button_init_hw(void (*event_callback)(void))
 	nrf_drv_gpiote_in_event_enable(USER_BUTTON_GPIO_NUMBER, true);
 
 	dispatch_callback = event_callback;
+
+	return user_button_get_state;
 }

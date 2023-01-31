@@ -23,13 +23,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
-int user_button_get_state(void)
+static int user_button_get_state(void)
 {
 	return !HAL_GPIO_ReadPin(USER_BUTTON_GPIO_PORT, USER_BUTTON_GPIO_PIN);
 }
 
-void user_button_init_hw(void (*event_callback)(void))
+user_button_read_state_func_t user_button_gpio_init(
+		void (*event_callback)(void))
 {
 	MX_GPIO_InitRecursive();
 	dispatch_callback = event_callback;
+
+	return user_button_get_state;
 }

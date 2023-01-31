@@ -119,7 +119,7 @@ int main(void)
 	eventloop_init();
 	status_led_init();
 	battery_init(battery_monitor_init(on_battery_status_change));
-	user_button_init(on_user_button_state_change);
+	user_button_init(user_button_gpio_init(on_user_button_state_change));
 
 	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),

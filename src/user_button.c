@@ -35,15 +35,13 @@ bool user_button_process(void)
 	return false;
 }
 
-void user_button_init(void (*on_event_callback)(void))
+void user_button_init(const user_button_read_state_func_t func)
 {
-	user_button_init_hw(on_event_callback);
-
 	button_init(board_get_time_since_boot_ms);
 
 	static struct button_handlers handlers = {
 		.pressed = on_pressed,
 		.released = on_released,
 	};
-	user_btn_handle = button_register(&handlers, user_button_get_state);
+	user_btn_handle = button_register(&handlers, func);
 }
