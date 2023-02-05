@@ -128,6 +128,7 @@ list(APPEND NRF_SRCS
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/nrf52/freertos.c
 )
@@ -195,13 +196,15 @@ list(APPEND NRF_DEFS
 	BSP_DEFINES_ONLY
 	CONFIG_GPIO_AS_PINRESET
 	FLOAT_ABI_HARD
-	NRF52_PAN_74
-	NRF52
 	FREERTOS
 	__HEAP_SIZE=8192
 	__STACK_SIZE=8192
 	_POSIX_C_SOURCE=200809L
 )
+
+if (NOT EXISTS ${SDK_ROOT})
+	message(FATAL_ERROR "Download nRF5 SDK first from https://www.nordicsemi.com/Products/Development-software/nRF5-SDK/Download into ${SDK_ROOT}.")
+endif()
 
 target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)

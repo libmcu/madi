@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include "padc/adc.h"
+#include "libmcu/metrics.h"
 
 /* USER CODE END 0 */
 
@@ -164,12 +165,16 @@ static int get_raw(struct adc *self, int channel)
 
 static int get_raw_to_millivolts(struct adc *self, int raw)
 {
-	return raw * 3300/*ref. in millivoltage*/ / (4096-1)/*12bit*/;
+	/* FIXME: Voltage divider resistor should be changed to keep resistance
+	 * less than 50KOhm. */
+	int mv = raw * 3300/*ref. in millivoltage*/ / (4096-1)/*12bit*/;
+	return mv * 1000 / 128/*voltage divider ratio */;
 }
 
 static int calibrate(struct adc *self)
 {
 	if (HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED) != HAL_OK) {
+		metrics_increase(ADCError);
 		return -EFAULT;
 	}
 
@@ -185,6 +190,7 @@ static int enable(struct adc *self, bool enable)
 
 	/* disable */
 	if (HAL_ADC_DeInit(&hadc2) != HAL_OK) {
+		metrics_increase(ADCError);
 		return -EFAULT;
 	}
 

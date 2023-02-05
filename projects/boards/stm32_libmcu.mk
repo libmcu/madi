@@ -7,9 +7,9 @@ INCS += $(PORT_ROOT)
 include projects/arch/cm4f.mk
 
 .PHONY: flash erase gdbserver
-flash: $(OUTHEX)
-	pyocd flash -t stm32g473ce $<
+flash: $(OUTBIN)
+	dfu-util --alt 0 --dfuse-address 0x08000000:leave --download $<
 erase:
-	pyocd erase -t stm32g473ce --chip
+	dfu-util --alt 0 --dfuse-address 0x08000000:mass-erase:force
 gdbserver:
 	$(Q)pyocd $@ -t stm32g473ce

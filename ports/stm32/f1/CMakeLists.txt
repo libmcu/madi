@@ -104,6 +104,17 @@ set(ST_DEFS
 	STM32F103xB
 )
 
+if (NOT EXISTS ${SDK_ROOT})
+	message(INFO "Downloading STM32CubeF1")
+	include(FetchContent)
+	FetchContent_Declare(stm32_sdk
+		GIT_REPOSITORY "https://github.com/STMicroelectronics/STM32CubeF1.git"
+		GIT_TAG "master"
+		SOURCE_DIR "${SDK_ROOT}"
+	)
+	FetchContent_MakeAvailable(stm32_sdk)
+endif()
+
 target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
 

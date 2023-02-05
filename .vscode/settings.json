@@ -1,0 +1,19 @@
+{
+	"makefile.configurations": [
+		{
+			"name": "libmcu STM32",
+			"makeArgs": ["BOARD=stm32_libmcu"]
+		},
+		{
+			"name": "libmcu nRF52",
+			"makeArgs": ["BOARD=nrf52_libmcu"]
+		},
+		{
+			"name": "libmcu ESP32",
+			"makeArgs": ["BOARD=esp32_libmcu"]
+		}
+	],
+
+	"cpputestExplorer.testExecutable": "${workspaceFolder}/tests/build/*_tests",
+	"cpputestExplorer.testExecutablePath": "${workspaceFolder}/tests/build"
+}

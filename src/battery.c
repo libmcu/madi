@@ -119,7 +119,6 @@ int battery_init(const struct battery_monitor *battery_monitor)
 	bq25180_reset(false);
 	bq25180_enable_interrupt(BQ25180_INTR_CHARGING_STATUS);
 	bq25180_set_watchdog_timer(BQ25180_WDT_DISABLE);
-	bq25180_enable_thermal_protection(false);
 	bq25180_enable_vindpm(BQ25180_VINDPM_4700mV);
 	bq25180_set_sys_voltage(BQ25180_SYS_REG_PASS_THROUGH);
 

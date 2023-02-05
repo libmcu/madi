@@ -16,15 +16,14 @@
 #define ADC_RESOLUTION		NRF_SAADC_RESOLUTION_12BIT
 #define ADC_PRIORITY		6
 
-static nrf_saadc_value_t raw_buffer[1];
+#define VOLTAGE_DIVIDER_RATIO	128 /* R1: 1.5M, R2: 220K */
+
+static nrf_saadc_value_t raw_buffer[1]; /* nRF52840 supports up to 8 channels */
 
 static int initialize_adc(void)
 {
-	nrfx_err_t err = nrfx_saadc_init(ADC_PRIORITY);
-	err |= nrfx_saadc_buffer_set(raw_buffer,
-			sizeof(raw_buffer) / sizeof(raw_buffer[0]));
-
-	if (err != NRFX_SUCCESS) {
+	if (nrfx_saadc_init(ADC_PRIORITY) != NRFX_SUCCESS) {
+		metrics_increase(ADCError);
 		return -EFAULT;
 	}
 
@@ -33,13 +32,14 @@ static int initialize_adc(void)
 
 static int initialize_adc_mode(int channel)
 {
+	channel = 1 << channel;
 	return (int)nrfx_saadc_simple_mode_set((uint32_t)channel,
 			ADC_RESOLUTION, NRF_SAADC_OVERSAMPLE_DISABLED, NULL);
 }
 
 static int initialize_channel(int channel)
 {
-	static nrfx_saadc_channel_t cfg = {
+	nrfx_saadc_channel_t cfg = {
 		.channel_config = {
 			.resistor_p = NRF_SAADC_RESISTOR_DISABLED,
 			.resistor_n = NRF_SAADC_RESISTOR_DISABLED,
@@ -48,20 +48,26 @@ static int initialize_channel(int channel)
 			.acq_time = NRF_SAADC_ACQTIME_15US, /* 192kOhm */
 			.mode = NRF_SAADC_MODE_SINGLE_ENDED,
 			.burst = NRF_SAADC_BURST_DISABLED,
+			.pin_p = (nrf_saadc_input_t)(channel + NRF_SAADC_INPUT_AIN0),
 			.pin_n = NRF_SAADC_INPUT_DISABLED,
 		},
+		.pin_p = (nrf_saadc_input_t)(channel + NRF_SAADC_INPUT_AIN0),
 		.pin_n = NRF_SAADC_INPUT_DISABLED,
+		.channel_index = (uint8_t)channel,
 	};
 
-	cfg.channel_config.pin_p =
-		(nrf_saadc_input_t)(channel + NRF_SAADC_INPUT_AIN0);
-	cfg.pin_p = (nrf_saadc_input_t)(channel + NRF_SAADC_INPUT_AIN0);
-
 	if (nrfx_saadc_channels_config(&cfg, 1) != NRFX_SUCCESS) {
+		metrics_increase(ADCError);
 		return -EFAULT;
 	}
 	if (initialize_adc_mode(channel) != NRFX_SUCCESS) {
+		metrics_increase(ADCError);
 		return -EFAULT;
+	}
+	if (nrfx_saadc_buffer_set(raw_buffer, sizeof(raw_buffer) /
+				sizeof(raw_buffer[0])) != NRFX_SUCCESS) {
+		metrics_increase(ADCError);
+		return -ENOSPC;
 	}
 
 	return 0;
@@ -102,7 +108,8 @@ static int get_raw(struct adc *self, int channel)
 static int get_raw_to_millivolts(struct adc *self, int raw)
 {
 	(void)self;
-	return raw * (600/*=ref0.6V*1000mV*/) / 1/*gain*/ / (4096-1)/*12bit*/;
+	int mv = raw * (600/*=ref0.6V*1000mV*/) / 1/*gain*/ / (4096-1)/*12bit*/;
+	return mv * 1000 / VOLTAGE_DIVIDER_RATIO;
 }
 
 static int calibrate(struct adc *self)
@@ -110,6 +117,7 @@ static int calibrate(struct adc *self)
 	(void)self;
 
 	if (nrfx_saadc_offset_calibrate(NULL) != NRFX_SUCCESS) {
+		metrics_increase(ADCError);
 		return -EFAULT;
 	}
 

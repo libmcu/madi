@@ -8,8 +8,10 @@ static int i2c2_read(struct i2c *self, uint8_t addr, uint8_t reg,
 {
 	(void)self;
 
-	if (HAL_I2C_Master_Transmit(&hi2c2, addr, &reg, sizeof(reg),
-				HAL_MAX_DELAY) != HAL_OK) {
+	addr <<= 1;
+
+	if (HAL_I2C_Master_Transmit(&hi2c2, addr, &reg, 1, HAL_MAX_DELAY)
+			!= HAL_OK) {
 		return -EIO;
 	}
 
@@ -25,6 +27,8 @@ static int i2c2_write(struct i2c *self, uint8_t addr, uint8_t reg,
 			    const void *data, size_t data_len)
 {
 	(void)self;
+
+	addr <<= 1;
 
 	uint8_t buf[data_len + 1];
 	buf[0] = reg;

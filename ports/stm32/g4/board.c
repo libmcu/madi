@@ -5,6 +5,7 @@
  */
 
 #include "libmcu/board.h"
+#include "libmcu/assert.h"
 #include <stdbool.h>
 
 #include "stm32g4xx_hal.h"
@@ -17,9 +18,11 @@
 static void start_scheduler(void)
 {
 	extern int main(void);
-	xTaskCreate(main, "Main",
+	if (xTaskCreate(main, "Main",
 			MAIN_TASK_STACK_SIZE / sizeof(StackType_t), 0,
-			MAIN_TASK_PRIORITY, 0);
+			MAIN_TASK_PRIORITY, 0) != pdPASS) {
+		assert(0);
+	}
 	vTaskStartScheduler();
 }
 

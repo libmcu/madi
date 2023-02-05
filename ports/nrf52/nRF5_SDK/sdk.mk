@@ -121,7 +121,9 @@ NRF_SRCS += \
 	\
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
-	$(LIBMCU_ROOT)/ports/stubs/semaphore.c
+	$(LIBMCU_ROOT)/ports/freertos/ao.c \
+	$(LIBMCU_ROOT)/ports/freertos/semaphore.c \
+	$(LIBMCU_ROOT)/ports/nrf52/freertos.c \
 
 NRF_INCS += \
 	$(SDK_ROOT)/components/ble/common \
@@ -187,8 +189,6 @@ NRF_DEFS += \
 	BSP_DEFINES_ONLY \
 	CONFIG_GPIO_AS_PINRESET \
 	FLOAT_ABI_HARD \
-	NRF52_PAN_74 \
-	NRF52 \
 	FREERTOS \
 	__HEAP_SIZE=8192 \
 	__STACK_SIZE=8192 \

@@ -68,7 +68,8 @@ ST_SRCS = \
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
 	$(LIBMCU_ROOT)/ports/freertos/ao.c \
-	$(LIBMCU_ROOT)/ports/freertos/semaphore.c
+	$(LIBMCU_ROOT)/ports/freertos/semaphore.c \
+	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c \
 
 ST_INCS = \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Inc \
@@ -89,7 +90,6 @@ ST_INCS = \
 ST_DEFS = \
 	USE_HAL_DRIVER \
 	STM32G473xx \
-	STM32_THREAD_SAFE_STRATEGY=4 \
 
 $(addprefix $(OUTDIR)/, $(ST_SRCS:%=%.o)): CFLAGS+=-Wno-error
 

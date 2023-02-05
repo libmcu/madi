@@ -69,6 +69,7 @@ set(ST_SRCS
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
+	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c
 )
 set(ST_INCS
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Inc
@@ -89,8 +90,18 @@ set(ST_INCS
 set(ST_DEFS
 	USE_HAL_DRIVER
 	STM32G473xx
-	STM32_THREAD_SAFE_STRATEGY=4
 )
+
+if (NOT EXISTS ${SDK_ROOT})
+	message(INFO "Downloading STM32CubeG4")
+	include(FetchContent)
+	FetchContent_Declare(stm32_sdk
+		GIT_REPOSITORY "https://github.com/STMicroelectronics/STM32CubeG4.git"
+		GIT_TAG "master"
+		SOURCE_DIR "${SDK_ROOT}"
+	)
+	FetchContent_MakeAvailable(stm32_sdk)
+endif()
 
 target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)

@@ -11,6 +11,7 @@
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_gpiote.h"
 
+#include "nrf_sdh.h"
 #include "nrf_sdh_freertos.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -29,13 +30,19 @@ static void start_scheduler(void)
 
 static void initialize_bsp(void)
 {
-	int rc = nrf_pwr_mgmt_init();
+	ret_code_t rc = nrf_pwr_mgmt_init();
 	assert(rc == NRF_SUCCESS);
 
 	rc = nrf_drv_ppi_init();
 	assert(rc == NRF_SUCCESS);
 	rc = nrf_drv_gpiote_init();
 	assert(rc == NRF_SUCCESS);
+}
+
+static void initialize_ble(void)
+{
+	nrf_sdh_enable_request();
+	nrf_sdh_freertos_init(0, 0);
 }
 
 void board_reboot(void)
@@ -51,6 +58,7 @@ void board_init(void)
 		initialized = true;
 
 		initialize_bsp();
+		initialize_ble();
 		start_scheduler();
 		return; /* never reaches down here */
 	}

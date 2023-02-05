@@ -1,0 +1,18 @@
+{
+	"image": "libmcu/dev",
+	"runArgs": [ "--platform=linux/amd64" ],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"ms-vscode-remote.remote-wsl",
+				"ms-vscode.makefile-tools",
+				"marus25.cortex-debug",
+				"twxs.cmake",
+				"dan-c-underwood.arm",
+				"zixuanwang.linkerscript"
+			]
+		}
+	}
+}

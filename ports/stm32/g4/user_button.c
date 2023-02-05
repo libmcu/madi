@@ -21,7 +21,7 @@ static void on_gpio_state_change(void)
 
 static int user_button_get_state(void)
 {
-	return !HAL_GPIO_ReadPin(USER_BUTTON_GPIO_PORT, USER_BUTTON_GPIO_PIN);
+	return HAL_GPIO_ReadPin(USER_BUTTON_GPIO_PORT, USER_BUTTON_GPIO_PIN);
 }
 
 user_button_read_state_func_t user_button_gpio_init(
