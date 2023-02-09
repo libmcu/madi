@@ -15,8 +15,8 @@ extern "C" {
 #include <stdint.h>
 
 void uart0_init(uint32_t baudrate);
-size_t uart0_write_async(void const *data, size_t datasize);
-size_t uart0_read(void *buf, size_t bufsize);
+int uart0_write_async(void const *data, size_t datasize);
+int uart0_read(void *buf, size_t bufsize);
 
 #if defined(__cplusplus)
 }

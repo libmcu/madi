@@ -56,6 +56,7 @@ ST_SRCS = \
 	$(PORT_ROOT)/g4/Core/Src/gpio.c \
 	$(PORT_ROOT)/g4/Core/Src/i2c.c \
 	$(PORT_ROOT)/g4/Core/Src/adc.c \
+	$(PORT_ROOT)/g4/Core/Src/quadspi.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_hal_msp.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_hal_timebase_tim.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_it.c \
@@ -69,6 +70,8 @@ ST_SRCS = \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
 	$(LIBMCU_ROOT)/ports/freertos/ao.c \
 	$(LIBMCU_ROOT)/ports/freertos/semaphore.c \
+	$(LIBMCU_ROOT)/ports/freertos/timext.c \
+	$(LIBMCU_ROOT)/ports/stubs/syscall.c \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c \
 
 ST_INCS = \

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-include(${BASEDIR}/projects/arch/cm3.cmake)
+include(${CMAKE_SOURCE_DIR}/projects/arch/cm3.cmake)
 
 set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/stm32/f1)
 

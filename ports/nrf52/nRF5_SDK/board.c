@@ -10,6 +10,7 @@
 #include "app_timer.h"
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_gpiote.h"
+#include "nrf_drv_clock.h"
 
 #include "nrf_sdh.h"
 #include "nrf_sdh_freertos.h"
@@ -30,7 +31,14 @@ static void start_scheduler(void)
 
 static void initialize_bsp(void)
 {
-	ret_code_t rc = nrf_pwr_mgmt_init();
+	ret_code_t rc = nrf_drv_clock_init();
+	assert(rc == NRF_SUCCESS);
+	nrf_drv_clock_hfclk_request(0);
+	while (!nrf_drv_clock_hfclk_is_running()) {
+		/* wait for hfclk to be ready */
+	}
+
+	rc = nrf_pwr_mgmt_init();
 	assert(rc == NRF_SUCCESS);
 
 	rc = nrf_drv_ppi_init();

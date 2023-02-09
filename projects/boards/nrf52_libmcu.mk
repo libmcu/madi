@@ -6,7 +6,6 @@ PLATFORM_SPECIFIC_MAKE := $(PORT_ROOT)/nRF5_SDK/sdk.mk
 INCS += \
 	$(PORT_ROOT) \
 	$(PORT_ROOT)/nRF5_SDK
-DEFS += TARGET_PLATFORM=$(TARGET_PLATFORM)
 
 include projects/arch/cm4f.mk
 

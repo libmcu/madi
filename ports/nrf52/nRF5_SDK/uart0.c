@@ -78,9 +78,9 @@ static int initialize_uart0(uint32_t baudrate)
 	return 0;
 }
 
-size_t uart0_write(const void *data, size_t datasize)
+int uart0_write(const void *data, size_t datasize)
 {
-	size_t cnt = 0;
+	int cnt = 0;
 
 	for (size_t i = 0; i < datasize; i++) {
 		while (app_uart_put(((const uint8_t *)data)[i]) != NRF_SUCCESS) {
@@ -91,11 +91,12 @@ size_t uart0_write(const void *data, size_t datasize)
 	return cnt;
 }
 
-size_t uart0_read(void *buf, size_t bufsize)
+int uart0_read(void *buf, size_t bufsize)
 {
-	size_t i = 0;
+	int i = 0;
 
-	while (app_uart_get(&((uint8_t *)buf)[i]) == NRF_SUCCESS && i < bufsize) {
+	while (app_uart_get(&((uint8_t *)buf)[i]) == NRF_SUCCESS &&
+			(size_t)i < bufsize) {
 		i++;
 	}
 

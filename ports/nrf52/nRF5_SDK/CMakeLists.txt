@@ -81,7 +81,6 @@ list(APPEND NRF_SRCS
 	${SDK_ROOT}/components/libraries/strerror/nrf_strerror.c
 	${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
 	${SDK_ROOT}/components/libraries/fifo/app_fifo.c
-	${SDK_ROOT}/components/libraries/uart/retarget.c
 	${SDK_ROOT}/components/libraries/sortlist/nrf_sortlist.c
 	${SDK_ROOT}/components/libraries/timer/drv_rtc.c
 	${SDK_ROOT}/components/libraries/scheduler/app_scheduler.c
@@ -117,6 +116,7 @@ list(APPEND NRF_SRCS
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twis.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_ppi.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_saadc.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_qspi.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_twi.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_uart.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_clock.c
@@ -131,6 +131,7 @@ list(APPEND NRF_SRCS
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/nrf52/freertos.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/syscall.c
 )
 list(APPEND NRF_INCS
 	${SDK_ROOT}/components/ble/common

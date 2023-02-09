@@ -16,8 +16,8 @@ extern "C" {
 int usbd_cdc_init(void);
 int usbd_cdc_enable(void);
 int usbd_cdc_disable(void);
-size_t usbd_cdc_write(const void *data, size_t datasize);
-size_t usbd_cdc_read(void *buf, size_t bufsize);
+int usbd_cdc_write(const void *data, size_t datasize);
+int usbd_cdc_read(void *buf, size_t bufsize);
 
 #if defined(__cplusplus)
 }

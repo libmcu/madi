@@ -29,5 +29,7 @@ INCS += $(LIBMCU_MODULES_INCS) \
 	$(PMQTT_INCS) \
 	$(BQ25180_INCS) \
 
-DEFS += METRICS_USER_DEFINES=\"$(BASEDIR)/include/metrics.def\"
+DEFS += METRICS_USER_DEFINES=\"$(BASEDIR)/include/metrics.def\" \
+	TARGET_PLATFORM=$(TARGET_PLATFORM) \
+
 CFLAGS += -include libmcu/assert.h

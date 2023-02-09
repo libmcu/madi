@@ -56,6 +56,7 @@ set(ST_SRCS
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/gpio.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/i2c.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/adc.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/quadspi.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_hal_msp.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_hal_timebase_tim.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_it.c
@@ -69,6 +70,8 @@ set(ST_SRCS
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/timext.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/syscall.c
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c
 )
 set(ST_INCS

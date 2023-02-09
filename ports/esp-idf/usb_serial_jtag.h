@@ -14,8 +14,8 @@ extern "C" {
 #include <stddef.h>
 
 void serial_jtag_init(void);
-size_t serial_jtag_write_async(void const *data, size_t datasize);
-size_t serial_jtag_read(void *buf, size_t bufsize);
+int serial_jtag_write_async(void const *data, size_t datasize);
+int serial_jtag_read(void *buf, size_t bufsize);
 
 #if defined(__cplusplus)
 }

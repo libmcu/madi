@@ -70,7 +70,7 @@ static int i2c0_read(struct i2c *self, uint8_t addr, uint8_t reg,
 
 	finish_xfer();
 
-	return bufsize;
+	return 0;
 }
 
 static int i2c0_write(struct i2c *self, uint8_t addr, uint8_t reg,
@@ -91,7 +91,7 @@ static int i2c0_write(struct i2c *self, uint8_t addr, uint8_t reg,
 
 	finish_xfer();
 
-	return data_len;
+	return 0;
 }
 
 static int i2c0_init(struct i2c *self)

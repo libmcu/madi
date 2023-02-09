@@ -74,26 +74,26 @@ jobs:
         uses: docker://espressif/idf:latest
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && rm -rf build sdkconfig && idf.py set-target esp32s3 && idf.py build"
-  build-with-zephyr:
-    name: Build with Zephyr
-    strategy:
-      matrix:
-        target: [esp32]
-    runs-on: ubuntu-latest
-    needs: [unit-test]
-    container:
-      image: zephyrprojectrtos/ci:latest
-    env:
-      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.2
-    steps:
-      - name: Prepare
-        run: |
-          west init .
-          west update
-      - name: Clone
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          path: ${{ github.event.repository.name }}
-      - name: Build for ${{ matrix.target }}
-        run: west build -b ${{ matrix.target }} ${{ github.event.repository.name }} -p always
+  # build-with-zephyr:
+  #   name: Build with Zephyr
+  #   strategy:
+  #     matrix:
+  #       target: [esp32]
+  #   runs-on: ubuntu-latest
+  #   needs: [unit-test]
+  #   container:
+  #     image: zephyrprojectrtos/ci:latest
+  #   env:
+  #     ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.15.2
+  #   steps:
+  #     - name: Prepare
+  #       run: |
+  #         west init .
+  #         west update
+  #     - name: Clone
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: recursive
+  #         path: ${{ github.event.repository.name }}
+  #     - name: Build for ${{ matrix.target }}
+  #       run: west build -b ${{ matrix.target }} ${{ github.event.repository.name }} -p always

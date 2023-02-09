@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
-PORT_ROOT := ports/stm32
+TARGET_PLATFORM := stm32
+PORT_ROOT := ports/${TARGET_PLATFORM}
 PLATFORM_SPECIFIC_MAKE := $(PORT_ROOT)/g4/$(BOARD).mk
 INCS += $(PORT_ROOT)
 

@@ -10,14 +10,15 @@
 #include "libmcu/cli.h"
 #include "libmcu/ao.h"
 #include "libmcu/ao_timer.h"
+#include "libmcu/syscall.h"
 
 #include "status_led.h"
 #include "battery.h"
 #include "user_button.h"
 
-#define EVENTLOOP_STACK_SIZE_BYTES	4096
-#define STATUS_LED_BLINK_INTERVAL_MS	500
-#define CLI_MAX_HISTORY			10
+#define EVENTLOOP_STACK_SIZE_BYTES	4096U
+#define STATUS_LED_BLINK_INTERVAL_MS	500U
+#define CLI_MAX_HISTORY			10U
 
 enum event {
 	EVT_LED,
@@ -33,8 +34,6 @@ static struct ao eventloop;
 static struct ao_event evt_led = { .type = EVT_LED };
 static struct ao_event evt_button = { .type = EVT_BUTTON };
 static struct ao_event evt_battery = { .type = EVT_BATTERY };
-
-static size_t (*stdout)(const void *, size_t);
 
 static void dispatch(struct ao * const ao, const struct ao_event * const event)
 {
@@ -95,13 +94,15 @@ static size_t logging_stdout_writer(const void *data, size_t size)
 	buf[len++] = '\n';
 	buf[len] = '\0';
 
-	(*stdout)(buf, len);
+	write(1, buf, len);
 
 	return len;
 }
 
 static void logging_stdout_backend_init(void)
 {
+	syscall_register_writer(cli_io_create()->write);
+
 	static struct logging_backend log_console = { 0, };
 	log_console.write = logging_stdout_writer;
 	logging_add_backend(&log_console);
@@ -114,7 +115,6 @@ int main(void)
 	metrics_init(0);
 	logging_init(board_get_time_since_boot_ms);
 	logging_stdout_backend_init();
-	stdout = cli_io_create()->write;
 
 	eventloop_init();
 	status_led_init();
