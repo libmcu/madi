@@ -97,10 +97,12 @@ set(ST_DEFS
 
 if (NOT EXISTS ${SDK_ROOT})
 	message(INFO "Downloading STM32CubeG4")
+	set(FETCHCONTENT_QUIET FALSE)
 	include(FetchContent)
 	FetchContent_Declare(stm32_sdk
 		GIT_REPOSITORY "https://github.com/STMicroelectronics/STM32CubeG4.git"
 		GIT_TAG "master"
+		GIT_PROGRESS TRUE
 		SOURCE_DIR "${SDK_ROOT}"
 	)
 	FetchContent_MakeAvailable(stm32_sdk)

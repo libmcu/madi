@@ -24,7 +24,7 @@ add_custom_command(TARGET ${PROJECT_NAME}.bin
 
 add_custom_command(TARGET flash
 	USES_TERMINAL COMMAND
-		pyocd flash -t stm32g473ce ${PROJECT_NAME}.hex
+		dfu-util --alt 0 --dfuse-address 0x08000000:leave --download ${PROJECT_NAME}.hex
 )
 
 add_custom_command(TARGET gdb

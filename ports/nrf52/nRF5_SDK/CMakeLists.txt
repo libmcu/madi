@@ -204,7 +204,14 @@ list(APPEND NRF_DEFS
 )
 
 if (NOT EXISTS ${SDK_ROOT})
-	message(FATAL_ERROR "Download nRF5 SDK first from https://www.nordicsemi.com/Products/Development-software/nRF5-SDK/Download into ${SDK_ROOT}.")
+	message(INFO "Downloading nRF5 SDK")
+	set(FETCHCONTENT_QUIET FALSE)
+	include(FetchContent)
+	FetchContent_Declare(nrf52_sdk
+		URL "https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/nrf5_sdk_17.1.0_ddde560.zip"
+		SOURCE_DIR "${SDK_ROOT}"
+	)
+	FetchContent_MakeAvailable(nrf52_sdk)
 endif()
 
 target_include_directories(libmcu PUBLIC

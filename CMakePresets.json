@@ -7,46 +7,71 @@
 	},
 	"configurePresets": [
 		{
-			"name": "base",
+			"name": "armv7-m",
 			"generator": "Ninja",
 			"binaryDir": "${sourceDir}/build/${presetName}",
 			"cacheVariables": {
 				"BOARD": "${presetName}",
+				"CCACHE_ENABLE": "1",
+				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/projects/arm-none-eabi-gcc.cmake"
+			},
+			"hidden": true
+		},
+		{
+			"name": "esp-idf",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"BOARD": "${presetName}",
+				"PYTHON_DEPS_CHECKED": "1",
+				"ESP_PLATFORM": "1",
 				"CCACHE_ENABLE": "1"
-			}
+			},
+			"hidden": true
 		},
 		{
 			"name": "stm32_libmcu",
-			"inherits": "base",
-			"cacheVariables": {
-				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/projects/arm-none-eabi-gcc.cmake"
-			}
+			"inherits": "armv7-m"
 		},
 		{
 			"name": "nrf52_libmcu",
-			"inherits": "base",
-			"cacheVariables": {
-				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/projects/arm-none-eabi-gcc.cmake"
-			}
+			"inherits": "armv7-m"
 		},
 		{
 			"name": "esp32_libmcu",
-			"inherits": "base",
+			"inherits": "esp-idf",
 			"cacheVariables": {
-				"BOARD": "esp32s3",
-				"PYTHON_DEPS_CHECKED": "1",
-				"ESP_PLATFORM": "1",
 				"IDF_TARGET": "esp32s3"
 			}
 		},
 		{
 			"name": "esp32",
-			"inherits": "base",
+			"inherits": "esp-idf",
 			"cacheVariables": {
-				"PYTHON_DEPS_CHECKED": "1",
-				"ESP_PLATFORM": "1",
 				"IDF_TARGET": "esp32"
 			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "stm32_libmcu",
+			"configurePreset": "stm32_libmcu",
+			"targets": [ "all", "flash" ]
+		},
+		{
+			"name": "nrf52_libmcu",
+			"configurePreset": "nrf52_libmcu",
+			"targets": [ "all", "flash" ]
+		},
+		{
+			"name": "esp32_libmcu",
+			"configurePreset": "esp32_libmcu",
+			"targets": [ "all", "flash" ]
+		},
+		{
+			"name": "esp32",
+			"configurePreset": "esp32",
+			"targets": [ "all", "flash" ]
 		}
 	]
 }
