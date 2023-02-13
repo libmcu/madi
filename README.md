@@ -2,8 +2,7 @@
 
 ![Build Status](https://github.com/libmcu/board-sdk/workflows/build/badge.svg)
 
-MADI is a firmware development framework for platform-independent and
-hardware-agnostic application development.
+SDK for MADI development boards produced by [libmcu](https://libmcu.org).
 
 ## Getting Started
 Please refer to [the official documentation](https://docs.libmcu.org/quickstart/).
