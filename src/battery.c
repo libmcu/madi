@@ -8,7 +8,7 @@
 #include "bq25180.h"
 
 #include "bq25180_overrides.h"
-#if defined(stm32_libmcu)
+#if defined(madi_stm32)
 #include "i2c2.h"
 #else
 #include "i2c0.h"
@@ -63,7 +63,7 @@ static int calc_average_filtered(const int *samples, int n, int avg, int var)
 
 static void initialize_i2c(void)
 {
-#if defined(stm32_libmcu)
+#if defined(madi_stm32)
 	i2c_handle = i2c2_create();
 #else
 	i2c_handle = i2c0_create();

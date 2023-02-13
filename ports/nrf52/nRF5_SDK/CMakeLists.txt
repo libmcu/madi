@@ -4,7 +4,7 @@ AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
 
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/nRF5_SDK_17.1.0_ddde560)
 
-if (BOARD STREQUAL nrf52_libmcu)
+if (BOARD STREQUAL madi_nrf52)
 	set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52840.ld)
 	set(NRF_SRCS
 		${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52840.S

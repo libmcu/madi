@@ -29,10 +29,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: stm32_libmcu
+          - target: madi_stm32
             repo: STMicroelectronics/STM32CubeG4
             path: ${{ github.event.repository.name }}/external/STM32CubeG4
-          - target: nrf52_libmcu
+          - target: madi_nrf52
             repo: libmcu/nRF5_SDK_17.1.0_ddde560
             path: ${{ github.event.repository.name }}/external/nRF5_SDK_17.1.0_ddde560
     steps:

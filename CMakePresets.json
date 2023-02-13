@@ -30,15 +30,15 @@
 			"hidden": true
 		},
 		{
-			"name": "stm32_libmcu",
+			"name": "madi_stm32",
 			"inherits": "armv7-m"
 		},
 		{
-			"name": "nrf52_libmcu",
+			"name": "madi_nrf52",
 			"inherits": "armv7-m"
 		},
 		{
-			"name": "esp32_libmcu",
+			"name": "madi_esp32",
 			"inherits": "esp-idf",
 			"cacheVariables": {
 				"IDF_TARGET": "esp32s3"
@@ -54,18 +54,18 @@
 	],
 	"buildPresets": [
 		{
-			"name": "stm32_libmcu",
-			"configurePreset": "stm32_libmcu",
+			"name": "madi_stm32",
+			"configurePreset": "madi_stm32",
 			"targets": [ "all", "flash" ]
 		},
 		{
-			"name": "nrf52_libmcu",
-			"configurePreset": "nrf52_libmcu",
+			"name": "madi_nrf52",
+			"configurePreset": "madi_nrf52",
 			"targets": [ "all", "flash" ]
 		},
 		{
-			"name": "esp32_libmcu",
-			"configurePreset": "esp32_libmcu",
+			"name": "madi_esp32",
+			"configurePreset": "madi_esp32",
 			"targets": [ "all", "flash" ]
 		},
 		{

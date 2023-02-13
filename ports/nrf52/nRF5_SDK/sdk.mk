@@ -2,7 +2,7 @@
 
 SDK_ROOT ?= external/nRF5_SDK_17.1.0_ddde560
 
-ifeq ($(BOARD),nrf52_libmcu)
+ifeq ($(BOARD),madi_nrf52)
 LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52840.ld
 NRF_SRCS += \
 	$(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
