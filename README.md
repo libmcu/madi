@@ -5,6 +5,12 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=libmcu_firmware-project-layout&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=libmcu_firmware-project-layout)
 
+This project is my attempt at developing platform independent and hardware
+agnostic firmware, providing a standard project layout.
+
+## Getting Started
+Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
+
 ## Project Layout
 
 ```shell
@@ -41,12 +47,9 @@
 | tests     | Automated tests                                                                |
 | tools     | Tools and utilities                                                            |
 
-## Build
-In case you go with [Zephyr](https://zephyrproject.org/), use `west` which is
-Zephyr's meta tool. Please refer to [Zephyr's Getting Started
-Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html).
-Zephyr kernel configurations and devicetree overlays for a board can be found
-at [https://docs.libmcu.org/boards/](https://docs.libmcu.org/boards/).
+## Supported Boards
+Supported boards can be found [here](https://docs.libmcu.org/boards/).
 
-Please check out our [getting started guide](https://docs.libmcu.org/boards/)
-for other RTOSs or bear metal firmwares.
+## Contributing
+Contributions are welcome. Feel free to submit issues, enhancement requests and
+Pull Request.
