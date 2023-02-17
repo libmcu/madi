@@ -5,7 +5,7 @@
 SDK for MADI development boards produced by [libmcu](https://libmcu.org).
 
 ## Getting Started
-Please refer to [the official documentation](https://docs.libmcu.org/quickstart/).
+Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
 
 ## Project Layout
 

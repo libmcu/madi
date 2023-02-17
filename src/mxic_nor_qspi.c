@@ -21,6 +21,7 @@ enum mxic_cmd {
 	CMD_READ	= 0x03U, /**< Single data line */
 	CMD_RSTEN	= 0x66U, /**< Reset enable */
 	CMD_RST		= 0x99U, /**< Reset */
+	CMD_DP		= 0xB9U, /**< Deep Powerdown */
 };
 
 static int poll_wip(const struct qspi *io)
@@ -97,6 +98,11 @@ int mxic_set_memory_mapped(const struct qspi *io)
 	rc = io->set_mode(QSPI_MEMORY_MAPPED, CMD_READ4IO, READ4IO_DUMMY_CYCLE);
 out:
 	return rc;
+}
+
+int mxic_sleep(const struct qspi *io)
+{
+	return io->write_reg(CMD_DP, 0, 0, 0);
 }
 
 int mxic_reset(const struct qspi *io)

@@ -15,6 +15,7 @@ extern "C" {
 
 int mxic_init(const struct qspi *io);
 int mxic_reset(const struct qspi *io);
+int mxic_sleep(const struct qspi *io);
 int mxic_read(const struct qspi *io,
 		uint32_t addr, void *buf, size_t bytes_to_read);
 int mxic_write(const struct qspi *io,
