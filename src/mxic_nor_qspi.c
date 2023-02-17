@@ -102,6 +102,12 @@ out:
 
 int mxic_sleep(const struct qspi *io)
 {
+	int rc = poll_wip(io);
+
+	if (rc != 0) {
+		return rc;
+	}
+
 	return io->write_reg(CMD_DP, 0, 0, 0);
 }
 
