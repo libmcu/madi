@@ -88,8 +88,8 @@ static int read_reg(uint32_t cmd, void *buf, size_t bytes_to_read)
 		.opcode    = (uint8_t)cmd,
 		.length    = (nrf_qspi_cinstr_len_t)
 				(NRF_QSPI_CINSTR_LEN_1B + bytes_to_read),
-		.io2_level = false,
-		.io3_level = false,
+		.io2_level = true,
+		.io3_level = true,
 		.wipwait   = false,
 		.wren      = false,
 	};
@@ -108,8 +108,8 @@ static int write_reg(uint32_t cmd, bool addr,
 		.opcode    = (uint8_t)cmd,
 		.length    = (nrf_qspi_cinstr_len_t)
 				(NRF_QSPI_CINSTR_LEN_1B + bytes_to_write),
-		.io2_level = false,
-		.io3_level = false,
+		.io2_level = true,
+		.io3_level = true,
 		.wipwait   = false,
 		.wren      = false,
 	};

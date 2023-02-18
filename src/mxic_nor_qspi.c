@@ -100,15 +100,30 @@ out:
 	return rc;
 }
 
+int mxic_sync(const struct qspi *io)
+{
+	return poll_wip(io);
+}
+
 int mxic_sleep(const struct qspi *io)
 {
-	int rc = poll_wip(io);
+	int rc;
+	/* FIXME: In nRF5 SDK, read command should be issued first before DP
+	 * command. And nRF5 SDK requests the variable to be in RAM with
+	 * word-aligned. */
+	uint8_t __attribute__((aligned(4))) tmp;
 
-	if (rc != 0) {
-		return rc;
+	if ((rc = poll_wip(io)) != 0) {
+		goto out;
+	}
+	if ((rc = io->read(CMD_READ4IO, 0, &tmp, sizeof(tmp),
+			READ4IO_DUMMY_CYCLE)) != 0) {
+		goto out;
 	}
 
-	return io->write_reg(CMD_DP, 0, 0, 0);
+	rc = io->write_reg(CMD_DP, 0, 0, 0);
+out:
+	return rc;
 }
 
 int mxic_reset(const struct qspi *io)
