@@ -33,10 +33,6 @@ static void initialize_bsp(void)
 {
 	ret_code_t rc = nrf_drv_clock_init();
 	assert(rc == NRF_SUCCESS);
-	nrf_drv_clock_hfclk_request(0);
-	while (!nrf_drv_clock_hfclk_is_running()) {
-		/* wait for hfclk to be ready */
-	}
 
 	rc = nrf_pwr_mgmt_init();
 	assert(rc == NRF_SUCCESS);

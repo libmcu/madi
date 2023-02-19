@@ -49,7 +49,7 @@ static int initialize_qspi(void)
 			.sck_delay = 1,
 			.dpmen = false,
 			.spi_mode = NRF_QSPI_MODE_0,
-			.sck_freq = NRF_QSPI_FREQ_32MDIV1,
+			.sck_freq = NRF_QSPI_FREQ_32MDIV2,
 		},
 		.irq_priority = 6,
 	};
