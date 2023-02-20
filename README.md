@@ -7,6 +7,12 @@ SDK for MADI development boards produced by [libmcu](https://libmcu.org).
 ## Getting Started
 Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
 
+This project is my attempt at developing platform independent and hardware
+agnostic firmware, providing a standard project layout.
+
+## Getting Started
+Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
+
 ## Project Layout
 
 ```shell

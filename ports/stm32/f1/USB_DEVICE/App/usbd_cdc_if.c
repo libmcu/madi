@@ -304,7 +304,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
-size_t usbd_cdc_write(const void *data, size_t datasize)
+int usbd_cdc_write(const void *data, size_t datasize)
 {
 	if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED) {
 		return 0;
@@ -316,10 +316,10 @@ size_t usbd_cdc_write(const void *data, size_t datasize)
 		/* FIXME: add timeout */
 	}
 
-	return (size_t)len;
+	return (int)len;
 }
 
-size_t usbd_cdc_read(void *buf, size_t bufsize)
+int usbd_cdc_read(void *buf, size_t bufsize)
 {
 	size_t len = MIN(ringbuf_length(&rxbuf_handle), bufsize);
 
@@ -327,7 +327,7 @@ size_t usbd_cdc_read(void *buf, size_t bufsize)
 		sem_wait(&rx_event);
 	}
 
-	return ringbuf_read(&rxbuf_handle, 0, buf, len);
+	return (int)ringbuf_read(&rxbuf_handle, 0, buf, len);
 }
 
 int usbd_cdc_enable(void)

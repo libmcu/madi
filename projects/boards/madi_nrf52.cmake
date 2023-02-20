@@ -24,7 +24,8 @@ add_custom_command(TARGET ${PROJECT_NAME}.bin
 
 add_custom_command(TARGET flash
 	USES_TERMINAL COMMAND
-		pyocd flash -t nrf52840 ${PROJECT_NAME}.hex
+		nrfjprog -f nrf52 --program ${PROJECT_NAME}.hex --sectorerase --verify
+		#pyocd flash -t nrf52840 ${PROJECT_NAME}.hex
 )
 
 add_custom_command(TARGET gdb
