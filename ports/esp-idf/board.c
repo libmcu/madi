@@ -6,6 +6,7 @@
 
 #include "libmcu/board.h"
 #include "esp_system.h"
+#include "driver/gpio.h"
 
 void board_reboot(void)
 {
@@ -14,4 +15,5 @@ void board_reboot(void)
 
 void board_init(void)
 {
+	gpio_install_isr_service(0);
 }

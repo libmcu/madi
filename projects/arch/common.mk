@@ -12,4 +12,4 @@ LDFLAGS += \
 	--specs=nano.specs \
 	--specs=nosys.specs \
 
-STDLIBS += -lc -lnosys -lm
+STDLIBS += -lnosys -lc -lm

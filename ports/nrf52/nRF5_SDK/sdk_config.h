@@ -3423,7 +3423,7 @@
 // <e> NRFX_SAADC_ENABLED - nrfx_saadc - SAADC peripheral driver
 //==========================================================
 #ifndef NRFX_SAADC_ENABLED
-#define NRFX_SAADC_ENABLED 0
+#define NRFX_SAADC_ENABLED 1
 #endif
 // <o> NRFX_SAADC_CONFIG_RESOLUTION  - Resolution
  
@@ -3433,7 +3433,7 @@
 // <3=> 14 bit 
 
 #ifndef NRFX_SAADC_CONFIG_RESOLUTION
-#define NRFX_SAADC_CONFIG_RESOLUTION 1
+#define NRFX_SAADC_CONFIG_RESOLUTION 2
 #endif
 
 // <o> NRFX_SAADC_CONFIG_OVERSAMPLE  - Sample period
@@ -4378,13 +4378,13 @@
 // <e> NRFX_TWI_ENABLED - nrfx_twi - TWI peripheral driver
 //==========================================================
 #ifndef NRFX_TWI_ENABLED
-#define NRFX_TWI_ENABLED 0
+#define NRFX_TWI_ENABLED 1
 #endif
 // <q> NRFX_TWI0_ENABLED  - Enable TWI0 instance
  
 
 #ifndef NRFX_TWI0_ENABLED
-#define NRFX_TWI0_ENABLED 0
+#define NRFX_TWI0_ENABLED 1
 #endif
 
 // <q> NRFX_TWI1_ENABLED  - Enable TWI1 instance
@@ -5221,7 +5221,7 @@
 // <e> QSPI_ENABLED - nrf_drv_qspi - QSPI peripheral driver - legacy layer
 //==========================================================
 #ifndef QSPI_ENABLED
-#define QSPI_ENABLED 0
+#define QSPI_ENABLED 1
 #endif
 // <o> QSPI_CONFIG_SCK_DELAY - tSHSL, tWHSL and tSHWL in number of 16 MHz periods (62.5 ns).  <0-255> 
 
@@ -5244,7 +5244,7 @@
 // <4=> Read4IO 
 
 #ifndef QSPI_CONFIG_READOC
-#define QSPI_CONFIG_READOC 0
+#define QSPI_CONFIG_READOC 4
 #endif
 
 // <o> QSPI_CONFIG_WRITEOC  - Number of data lines and opcode used for writing.
@@ -5255,7 +5255,7 @@
 // <3=> PP4IO 
 
 #ifndef QSPI_CONFIG_WRITEOC
-#define QSPI_CONFIG_WRITEOC 0
+#define QSPI_CONFIG_WRITEOC 3
 #endif
 
 // <o> QSPI_CONFIG_ADDRMODE  - Addressing mode.
@@ -5296,7 +5296,7 @@
 // <15=> 32MHz/16 
 
 #ifndef QSPI_CONFIG_FREQUENCY
-#define QSPI_CONFIG_FREQUENCY 15
+#define QSPI_CONFIG_FREQUENCY 0
 #endif
 
 // <s> QSPI_PIN_SCK - SCK pin value.
@@ -5451,7 +5451,7 @@
 // <e> SAADC_ENABLED - nrf_drv_saadc - SAADC peripheral driver - legacy layer
 //==========================================================
 #ifndef SAADC_ENABLED
-#define SAADC_ENABLED 0
+#define SAADC_ENABLED 1
 #endif
 // <o> SAADC_CONFIG_RESOLUTION  - Resolution
  
@@ -5874,7 +5874,7 @@
 // <e> TWI_ENABLED - nrf_drv_twi - TWI/TWIM peripheral driver - legacy layer
 //==========================================================
 #ifndef TWI_ENABLED
-#define TWI_ENABLED 0
+#define TWI_ENABLED 1
 #endif
 // <o> TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
  
@@ -5920,7 +5920,7 @@
 // <e> TWI0_ENABLED - Enable TWI0 instance
 //==========================================================
 #ifndef TWI0_ENABLED
-#define TWI0_ENABLED 0
+#define TWI0_ENABLED 1
 #endif
 // <q> TWI0_USE_EASY_DMA  - Use EasyDMA (if present)
  
@@ -7757,7 +7757,7 @@
 // <e> NRF_LOG_ENABLED - nrf_log - Logger
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 1
+#define NRF_LOG_ENABLED 0
 #endif
 // <h> Log message pool - Configuration of log message pool
 

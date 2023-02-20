@@ -27,7 +27,7 @@ void uart0_init(uint32_t baudrate)
 	uart_param_config(UART_NUM_0, &uart_config);
 }
 
-size_t uart0_write_async(void const *data, size_t datasize)
+int uart0_write_async(void const *data, size_t datasize)
 {
 	if (datasize == 1 && ((const char *)data)[0] == '\n') {
 		uart_write_bytes(UART_NUM_0, " \b\n", 3);
@@ -35,10 +35,10 @@ size_t uart0_write_async(void const *data, size_t datasize)
 	}
 
 	int written = uart_write_bytes(UART_NUM_0, data, datasize);
-	return written > 0 ? (size_t)written : 0;
+	return written > 0 ? written : 0;
 }
 
-size_t uart0_read(void *buf, size_t bufsize)
+int uart0_read(void *buf, size_t bufsize)
 {
 	int len = uart_read_bytes(UART_NUM_0,
 			   buf, bufsize, (TickType_t)portMAX_DELAY);

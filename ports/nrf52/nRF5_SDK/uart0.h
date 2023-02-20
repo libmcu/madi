@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 void uart0_init(uint32_t baudrate);
-size_t uart0_write(const void *data, size_t datasize);
-size_t uart0_read(void *buf, size_t bufsize);
+int uart0_write(const void *data, size_t datasize);
+int uart0_read(void *buf, size_t bufsize);
 
 #endif

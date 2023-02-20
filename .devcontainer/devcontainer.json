@@ -1,0 +1,15 @@
+{
+	"image": "libmcu/dev",
+	"runArgs": [ "--platform=linux/amd64" ],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack",
+				"ms-vscode-remote.remote-wsl",
+				"marus25.cortex-debug"
+			]
+		}
+	},
+	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+}

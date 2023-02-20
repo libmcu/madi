@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef ESP_I2C0_H
-#define ESP_I2C0_H
+#ifndef ESP32_I2C0_H
+#define ESP32_I2C0_H
 
 #if defined(__cplusplus)
 extern "C" {

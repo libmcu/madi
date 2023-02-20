@@ -1,0 +1,77 @@
+{
+	"version": 2,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 20,
+		"patch": 0
+	},
+	"configurePresets": [
+		{
+			"name": "armv7-m",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"BOARD": "${presetName}",
+				"CCACHE_ENABLE": "1",
+				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/projects/arm-none-eabi-gcc.cmake"
+			},
+			"hidden": true
+		},
+		{
+			"name": "esp-idf",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"BOARD": "${presetName}",
+				"PYTHON_DEPS_CHECKED": "1",
+				"ESP_PLATFORM": "1",
+				"CCACHE_ENABLE": "1"
+			},
+			"hidden": true
+		},
+		{
+			"name": "madi_stm32",
+			"inherits": "armv7-m"
+		},
+		{
+			"name": "madi_nrf52",
+			"inherits": "armv7-m"
+		},
+		{
+			"name": "madi_esp32",
+			"inherits": "esp-idf",
+			"cacheVariables": {
+				"IDF_TARGET": "esp32s3"
+			}
+		},
+		{
+			"name": "esp32",
+			"inherits": "esp-idf",
+			"cacheVariables": {
+				"IDF_TARGET": "esp32"
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "madi_stm32",
+			"configurePreset": "madi_stm32",
+			"targets": [ "all", "flash" ]
+		},
+		{
+			"name": "madi_nrf52",
+			"configurePreset": "madi_nrf52",
+			"targets": [ "all", "flash" ]
+		},
+		{
+			"name": "madi_esp32",
+			"configurePreset": "madi_esp32",
+			"targets": [ "all", "flash" ]
+		},
+		{
+			"name": "esp32",
+			"configurePreset": "esp32",
+			"targets": [ "all", "flash" ]
+		}
+	]
+}

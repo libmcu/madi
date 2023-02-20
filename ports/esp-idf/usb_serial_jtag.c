@@ -18,7 +18,7 @@ void serial_jtag_init(void)
 	}
 }
 
-size_t serial_jtag_write_async(void const *data, size_t datasize)
+int serial_jtag_write_async(void const *data, size_t datasize)
 {
 	if (datasize == 0) {
 		return 0;
@@ -28,10 +28,10 @@ size_t serial_jtag_write_async(void const *data, size_t datasize)
 	}
 
 	int written = usb_serial_jtag_write_bytes(data, datasize, 0);
-	return written > 0 ? (size_t)written : 0;
+	return written > 0 ? written : 0;
 }
 
-size_t serial_jtag_read(void *buf, size_t bufsize)
+int serial_jtag_read(void *buf, size_t bufsize)
 {
 	int len = usb_serial_jtag_read_bytes(buf, bufsize,
 			(TickType_t)portMAX_DELAY);

@@ -3,10 +3,40 @@
 AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
 
 set(SDK_ROOT ${CMAKE_SOURCE_DIR}/external/nRF5_SDK_17.1.0_ddde560)
-set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52832.ld)
-set(NRF_SRCS
-	${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52.S
 
+if (BOARD STREQUAL madi_nrf52)
+	set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52840.ld)
+	set(NRF_SRCS
+		${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52840.S
+		${SDK_ROOT}/modules/nrfx/mdk/system_nrf52840.c
+	)
+	set(NRF_INCS
+		${SDK_ROOT}/components/softdevice/s140/headers/nrf52
+		${SDK_ROOT}/components/softdevice/s140/headers
+	)
+	set(NRF_DEFS
+		S140
+		NRF52840_XXAA
+		CUSTOM_BOARD_INC=libmcu
+	)
+else()
+	set(LD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/nrf52832.ld)
+	set(NRF_SRCS
+		${SDK_ROOT}/modules/nrfx/mdk/gcc_startup_nrf52.S
+		${SDK_ROOT}/modules/nrfx/mdk/system_nrf52.c
+	)
+	set(NRF_INCS
+		${SDK_ROOT}/components/softdevice/s132/headers/nrf52
+		${SDK_ROOT}/components/softdevice/s132/headers
+	)
+	set(NRF_DEFS
+		S132
+		NRF52832_XXAA
+		CUSTOM_BOARD_INC=redbear
+	)
+endif()
+
+list(APPEND NRF_SRCS
 	${SDK_ROOT}/components/ble/ble_advertising/ble_advertising.c
 	${SDK_ROOT}/components/ble/common/ble_advdata.c
 	${SDK_ROOT}/components/ble/common/ble_conn_params.c
@@ -51,7 +81,6 @@ set(NRF_SRCS
 	${SDK_ROOT}/components/libraries/strerror/nrf_strerror.c
 	${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
 	${SDK_ROOT}/components/libraries/fifo/app_fifo.c
-	${SDK_ROOT}/components/libraries/uart/retarget.c
 	${SDK_ROOT}/components/libraries/sortlist/nrf_sortlist.c
 	${SDK_ROOT}/components/libraries/timer/drv_rtc.c
 	${SDK_ROOT}/components/libraries/scheduler/app_scheduler.c
@@ -76,26 +105,35 @@ set(NRF_SRCS
 	${SDK_ROOT}/external/freertos/source/tasks.c
 	${SDK_ROOT}/external/freertos/source/timers.c
 	${SDK_ROOT}/modules/nrfx/soc/nrfx_atomic.c
-	${SDK_ROOT}/modules/nrfx/mdk/system_nrf52.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_uart.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_uarte.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/prs/nrfx_prs.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_clock.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_gpiote.c
 	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_rtc.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twi.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twim.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_twis.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_ppi.c
+	${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_saadc.c
+	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_twi.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_uart.c
 	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_clock.c
+	${SDK_ROOT}/integration/nrfx/legacy/nrf_drv_ppi.c
 
 	${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 
 	${PORT_SRCS}
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
-	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/semaphore.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/timext.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/nrf52/freertos.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/stubs/syscall.c
 )
-set(NRF_INCS
-	${SDK_ROOT}/components/softdevice/s132/headers/nrf52
-	${SDK_ROOT}/components/softdevice/s132/headers
+list(APPEND NRF_INCS
 	${SDK_ROOT}/components/ble/common
 	${SDK_ROOT}/components/ble/ble_advertising
 	${SDK_ROOT}/components/ble/ble_link_ctx_manager
@@ -151,33 +189,40 @@ set(NRF_INCS
 	${CMAKE_CURRENT_LIST_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/..
 )
-set(NRF_DEFS
+list(APPEND NRF_DEFS
 	SOFTDEVICE_PRESENT
-	S132
 	NRF_SD_BLE_API_VERSION=7
+	NRFX_SAADC_API_V2
 
-	CUSTOM_BOARD_INC=redbear
 	BSP_DEFINES_ONLY
 	CONFIG_GPIO_AS_PINRESET
 	FLOAT_ABI_HARD
-	NRF52_PAN_74
-	NRF52832_XXAA
-	NRF52
 	FREERTOS
 	__HEAP_SIZE=8192
 	__STACK_SIZE=8192
 	_POSIX_C_SOURCE=200809L
 )
 
+if (NOT EXISTS ${SDK_ROOT})
+	message(INFO "Downloading nRF5 SDK")
+	set(FETCHCONTENT_QUIET FALSE)
+	include(FetchContent)
+	FetchContent_Declare(nrf52_sdk
+		URL "https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/nrf5_sdk_17.1.0_ddde560.zip"
+		SOURCE_DIR "${SDK_ROOT}"
+	)
+	FetchContent_MakeAvailable(nrf52_sdk)
+endif()
+
 target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
 
 add_library(nrf52 OBJECT ${NRF_SRCS})
-target_include_directories(nrf52 PUBLIC ${NRF_INCS} {APP_INCS})
+target_include_directories(nrf52 PUBLIC ${NRF_INCS} ${APP_INCS})
 target_compile_definitions(nrf52 PUBLIC ${NRF_DEFS})
 target_link_libraries(nrf52 PUBLIC libmcu)
 
-target_link_libraries(pble nrf52)
+target_link_libraries(pble PRIVATE nrf52)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nrf52)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})
