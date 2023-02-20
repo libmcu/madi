@@ -1,14 +1,8 @@
 # MADI
 
-![Build Status](https://github.com/libmcu/board-sdk/workflows/build/badge.svg)
+![Build Status](https://github.com/libmcu/madi/workflows/build/badge.svg)
 
 SDK for MADI development boards produced by [libmcu](https://libmcu.org).
-
-## Getting Started
-Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
-
-This project is my attempt at developing platform independent and hardware
-agnostic firmware, providing a standard project layout.
 
 ## Getting Started
 Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
