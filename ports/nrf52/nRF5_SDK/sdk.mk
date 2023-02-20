@@ -123,6 +123,7 @@ NRF_SRCS += \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
 	$(LIBMCU_ROOT)/ports/freertos/ao.c \
 	$(LIBMCU_ROOT)/ports/freertos/semaphore.c \
+	$(LIBMCU_ROOT)/ports/freertos/timext.c \
 	$(LIBMCU_ROOT)/ports/nrf52/freertos.c \
 	$(LIBMCU_ROOT)/ports/stubs/syscall.c \
 

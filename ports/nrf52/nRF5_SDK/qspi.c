@@ -58,7 +58,43 @@ static int initialize_qspi(void)
 		return -EFAULT;
 	}
 
+	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(0, 7),
+			NRF_GPIO_PIN_DIR_OUTPUT,
+			NRF_GPIO_PIN_INPUT_DISCONNECT,
+			NRF_GPIO_PIN_PULLUP,
+			NRF_GPIO_PIN_H0H1,
+			NRF_GPIO_PIN_NOSENSE);
+
 	return 0;
+}
+
+static void deinitialize_qspi(void)
+{
+	*(volatile uint32_t *)0x40029010ul = 1ul;
+	*(volatile uint32_t *)0x40029054ul = 1ul;
+
+	nrf_gpio_pin_set(NRF_GPIO_PIN_MAP(0, 7));
+
+	if (nrf_qspi_cinstr_long_transfer_is_ongoing(NRF_QSPI)) {
+		nrf_qspi_cinstr_long_transfer_continue(NRF_QSPI, NRF_QSPI_CINSTR_LEN_1B, true);
+	}
+	NRFX_IRQ_DISABLE(QSPI_IRQn);
+	nrf_qspi_int_disable(NRF_QSPI, NRF_QSPI_INT_READY_MASK);
+	nrf_qspi_task_trigger(NRF_QSPI, NRF_QSPI_TASK_DEACTIVATE);
+	nrf_qspi_disable(NRF_QSPI);
+	nrf_qspi_event_clear(NRF_QSPI, NRF_QSPI_EVENT_READY);
+
+	nrf_qspi_pins_t pins;
+	nrf_qspi_pins_get(NRF_QSPI, &pins);
+	nrf_gpio_cfg_default(pins.sck_pin);
+	nrf_gpio_cfg_default(pins.io0_pin);
+	nrf_gpio_cfg_default(pins.io1_pin);
+	if (pins.io2_pin != NRF_QSPI_PIN_NOT_CONNECTED) {
+		nrf_gpio_cfg_default(pins.io2_pin);
+	}
+	if (pins.io3_pin != NRF_QSPI_PIN_NOT_CONNECTED) {
+		nrf_gpio_cfg_default(pins.io3_pin);
+	}
 }
 
 static int set_mode(enum qspi_access_mode mode,
@@ -77,7 +113,7 @@ static int enable_qspi(bool enable)
 	}
 
 	/* disable */
-	nrf_drv_qspi_uninit();
+	deinitialize_qspi();
 
 	return 0;
 }
