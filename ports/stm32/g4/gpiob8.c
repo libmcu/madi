@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "user_button.h"
+#include "userbutton.h"
 #include "gpio.h"
 
-#define USER_BUTTON_GPIO_PORT			GPIOB
-#define USER_BUTTON_GPIO_PIN			GPIO_PIN_8
+#define USERBUTTON_GPIO_PORT			GPIOB
+#define USERBUTTON_GPIO_PIN			GPIO_PIN_8
 
 static void (*dispatch_callback)(void);
 
@@ -19,18 +19,18 @@ static void on_gpio_state_change(void)
 	}
 }
 
-static int user_button_get_state(void)
+static int userbutton_get_state(void)
 {
-	return HAL_GPIO_ReadPin(USER_BUTTON_GPIO_PORT, USER_BUTTON_GPIO_PIN);
+	return HAL_GPIO_ReadPin(USERBUTTON_GPIO_PORT, USERBUTTON_GPIO_PIN);
 }
 
-user_button_read_state_func_t user_button_gpio_init(
+userbutton_read_state_func_t userbutton_gpio_init(
 		void (*event_callback)(void))
 {
 	MX_GPIO_InitRecursive();
-	MX_GPIO_RegisterCallback(USER_BUTTON_GPIO_PIN, on_gpio_state_change);
+	MX_GPIO_RegisterCallback(USERBUTTON_GPIO_PIN, on_gpio_state_change);
 
 	dispatch_callback = event_callback;
 
-	return user_button_get_state;
+	return userbutton_get_state;
 }

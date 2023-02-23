@@ -12,13 +12,18 @@
 #include "libmcu/ao_timer.h"
 #include "libmcu/syscall.h"
 
-#include "status_led.h"
+#include "ledind.h"
 #include "battery.h"
-#include "user_button.h"
+#include "userbutton.h"
+#include "selftest.h"
 
 #define EVENTLOOP_STACK_SIZE_BYTES	4096U
-#define STATUS_LED_BLINK_INTERVAL_MS	500U
 #define CLI_MAX_HISTORY			10U
+
+#define SELFTEST_TIMEOUT_MS		5000U
+#define SELFTEST_NR_CLICK		3U
+#define ERROR_LED_INTERVAL		100U
+#define OK_LED_INTERVAL			1500U
 
 enum event {
 	EVT_LED,
@@ -39,11 +44,10 @@ static void dispatch(struct ao * const ao, const struct ao_event * const event)
 {
 	switch (event->type) {
 	case EVT_LED:
-		status_led_toggle();
-		ao_post_defer(ao, &evt_led, STATUS_LED_BLINK_INTERVAL_MS);
+		ao_post_defer(ao, &evt_led, ledind_step());
 		break;
 	case EVT_BUTTON:
-		if (user_button_process()) {
+		if (userbutton_process()) {
 			ao_post_if_unique(ao, &evt_button);
 		}
 		break;
@@ -62,7 +66,7 @@ static void eventloop_init(void)
 	ao_start(&eventloop, dispatch);
 }
 
-static void on_user_button_state_change(void)
+static void on_userbutton_state_change(void)
 {
 	ao_post_if_unique(&eventloop, &evt_button);
 }
@@ -108,6 +112,23 @@ static void logging_stdout_backend_init(void)
 	logging_add_backend(&log_console);
 }
 
+static void run_selftest(void)
+{
+	uint32_t led_interval = ERROR_LED_INTERVAL;
+
+	ledind_set(LEDIND_STATIC, 0, 0);
+	ledind_off();
+
+	if (selftest()) {
+		ledind_on();
+		if (selftest_button(SELFTEST_NR_CLICK, SELFTEST_TIMEOUT_MS)) {
+			led_interval = OK_LED_INTERVAL;
+		}
+	}
+
+	ledind_set(LEDIND_BLINK, led_interval / 10, led_interval);
+}
+
 int main(void)
 {
 	board_init(); /* should be called very first. */
@@ -117,15 +138,17 @@ int main(void)
 	logging_stdout_backend_init();
 
 	eventloop_init();
-	status_led_init();
+	ledind_init(ledind_gpio_create());
 	battery_init(battery_monitor_init(on_battery_status_change));
-	user_button_init(user_button_gpio_init(on_user_button_state_change));
+	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
 
 	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),
 			board_get_version_string());
 
-	ao_post_defer(&eventloop, &evt_led, STATUS_LED_BLINK_INTERVAL_MS);
+	ledind_enable();
+	run_selftest();
+	ao_post(&eventloop, &evt_led);
 
 	shell_start();
 

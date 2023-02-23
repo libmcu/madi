@@ -61,6 +61,7 @@ add_executable(${PROJECT_EXECUTABLE}
 	${LIBMCU_ROOT}/ports/esp-idf/ao.c
 	${LIBMCU_ROOT}/ports/esp-idf/pthread.c
 	${LIBMCU_ROOT}/ports/freertos/semaphore.c
+	${LIBMCU_ROOT}/ports/freertos/timext.c
 	${LIBMCU_ROOT}/ports/posix/button.c
 )
 
