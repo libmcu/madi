@@ -43,7 +43,6 @@ static bool test_battery(void)
 {
 	debug("Test Battery Level(ADC)");
 
-	battery_enable_monitor(true);
 	bq25180_enable_battery_charging(true);
 
 	int mV_charging = battery_raw_to_millivolts(battery_level_raw());
@@ -54,6 +53,15 @@ static bool test_battery(void)
 
 	if (mV_charging < 4000 || mV > 1000) {
 		error("%dmV %dmV", mV_charging, mV);
+		return false;
+	}
+
+	return true;
+}
+
+static bool is_battery_attached(void)
+{
+	if (battery_raw_to_millivolts(battery_level_raw()) < 2800) {
 		return false;
 	}
 
@@ -130,14 +138,14 @@ static void iterate_metrics(metric_key_t key, int32_t value, void *ctx)
 {
 	unused(key);
 
-	int *err = (int *)ctx;
+	int *abnormal = (int *)ctx;
 
 	if (value != 0) {
-		*err += 1;
+		*abnormal += 1;
 	}
 }
 
-bool selftest_button(uint8_t expected_clicks, uint32_t timeout_ms)
+selftest_error_t selftest_button(uint8_t expected_clicks, uint32_t timeout_ms)
 {
 	uint32_t tout;
 
@@ -152,29 +160,41 @@ bool selftest_button(uint8_t expected_clicks, uint32_t timeout_ms)
 	userbutton_unset_handler(on_userbutton_event);
 
 	if (expected_clicks == 0) {
-		return true;
+		return SELFTEST_SUCCESS;
 	}
 
-	return false;
+	return SELFTEST_ERROR;
 }
 
-bool selftest(void)
+selftest_error_t selftest(void)
 {
-	int err = 0;
+	int abnormal = 0;
+	selftest_error_t err = SELFTEST_SUCCESS;
+
+	battery_enable_monitor(true);
+
+	if (is_battery_attached()) { /* skip self test */
+		err = SELFTEST_BYPASS;
+		goto out;
+	}
 
 	if (!test_bq25180() ||
 			!test_battery() ||
 			!test_qspi_flash() ||
 			!test_ble() ||
 			!test_wifi()) {
-		return false;
+		err = SELFTEST_ERROR;
+		goto out;
 	}
 
-	metrics_iterate(iterate_metrics, &err);
+	metrics_iterate(iterate_metrics, &abnormal);
 
-	if (err) {
-		return false;
+	if (abnormal) {
+		err = SELFTEST_ERROR;
 	}
 
-	return true;
+out:
+	battery_enable_monitor(false);
+
+	return err;
 }

@@ -14,8 +14,14 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-bool selftest(void);
-bool selftest_button(uint8_t expected_clicks, uint32_t timeout_ms);
+typedef enum {
+	SELFTEST_SUCCESS,
+	SELFTEST_BYPASS,
+	SELFTEST_ERROR,
+} selftest_error_t;
+
+selftest_error_t selftest(void);
+selftest_error_t selftest_button(uint8_t expected_clicks, uint32_t timeout_ms);
 
 #if defined(__cplusplus)
 }

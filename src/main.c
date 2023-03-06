@@ -119,11 +119,20 @@ static void run_selftest(void)
 	ledind_set(LEDIND_STATIC, 0, 0);
 	ledind_off();
 
-	if (selftest()) {
+	switch (selftest()) {
+	case SELFTEST_SUCCESS:
 		ledind_on();
-		if (selftest_button(SELFTEST_NR_CLICK, SELFTEST_TIMEOUT_MS)) {
-			led_interval = OK_LED_INTERVAL;
+		if (selftest_button(SELFTEST_NR_CLICK, SELFTEST_TIMEOUT_MS) !=
+				SELFTEST_SUCCESS) {
+			break;
 		}
+		/* fall through */
+	case SELFTEST_BYPASS:
+		led_interval = OK_LED_INTERVAL;
+		break;
+	case SELFTEST_ERROR: /* fall through */
+	default:
+		break;
 	}
 
 	ledind_set(LEDIND_BLINK, led_interval / 10, led_interval);
