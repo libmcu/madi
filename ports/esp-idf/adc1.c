@@ -133,7 +133,7 @@ static int get_raw_to_millivolts(struct adc *self, int raw)
 static int calibrate(struct adc *self)
 {
 	(void)self;
-	return calibrate_internal(ADC_ATTEN_DB_0);
+	return calibrate_internal(ADC_ATTEN_DB_11);
 }
 
 int adc1_channel_init(int channel, int attenuation)
