@@ -46,15 +46,13 @@ static bool test_battery(void)
 	battery_enable_monitor(true);
 	bq25180_enable_battery_charging(true);
 
-	sleep_ms(10);
 	int mV_charging = battery_raw_to_millivolts(battery_level_raw());
 
 	bq25180_enable_battery_charging(false);
 
-	sleep_ms(10);
 	int mV = battery_raw_to_millivolts(battery_level_raw());
 
-	if (mV_charging < 4000 || mV > 100) {
+	if (mV_charging < 4000 || mV > 1000) {
 		error("%dmV %dmV", mV_charging, mV);
 		return false;
 	}

@@ -4,9 +4,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"ms-vscode-remote.remote-wsl",
 				"ms-vscode.cpptools",
 				"ms-vscode.cpptools-extension-pack",
-				"ms-vscode-remote.remote-wsl",
 				"marus25.cortex-debug"
 			]
 		}

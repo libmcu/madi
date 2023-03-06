@@ -45,12 +45,13 @@ static void initialize_monitor_gpio(void)
 static int enable_monitor(bool enable)
 {
 	adc_enable(adc, enable);
-	gpio_set_level(MONITOR_ENABLE_GPIO_NUMBER, enable);
 
 	if (enable) {
 		adc_calibrate(adc);
 		adc1_channel_init(6, 0/*dB*/);
 	}
+
+	gpio_set_level(MONITOR_ENABLE_GPIO_NUMBER, enable);
 
 	return 0;
 }
@@ -63,7 +64,7 @@ static int get_level_adc(void)
 static int adc_to_millivolts(int raw)
 {
 	int mv_raw = adc_raw_to_millivolts(adc, raw);
-	return mv_raw * 1000/128/*scale*/ - 54/*offset*/;
+	return mv_raw * 1000/128/*scale*/;
 }
 
 struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void))

@@ -4,6 +4,13 @@
 
 SDK for MADI development boards produced by [libmcu](https://libmcu.org).
 
+![MADI summary](hardware/madi_summary.jpg)
+
+MADI is a development board based on various microcontroller chips with the
+same form factor of 21.59mm x 30mm. The board documentation can be found
+[here](https://docs.libmcu.org/boards/libmcu.html) and purchase can be made
+[here](https://libmcu.org/kr/madi).
+
 ## Getting Started
 Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
 
@@ -36,9 +43,6 @@ Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
 | src       | The application-specific code, including private headers      |
 | tests     | Automated tests                                               |
 | tools     | Tools and utilities                                           |
-
-## Supported Boards
-Supported boards can be found [here](https://docs.libmcu.org/boards/).
 
 ## Contributing
 Contributions are welcome. Feel free to submit issues, enhancement requests and
