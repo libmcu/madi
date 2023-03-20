@@ -11,9 +11,10 @@ include projects/arch/cm4f.mk
 
 SDK_ROOT ?= external/nRF5_SDK_17.1.0_ddde560
 .PHONY: flash flash_softdevice erase gdbserver
-flash: $(OUTHEX)
-	nrfjprog -f nrf52 --program $< --sectorerase --verify
-	nrfjprog -f nrf52 --reset
+flash: $(OUTBIN)
+	#nrfjprog -f nrf52 --program $< --sectorerase --verify
+	#nrfjprog -f nrf52 --reset
+	dfu-util --device 1209:e001 --alt 0 --download $<
 flash_softdevice: $(SDK_ROOT)/components/softdevice/s140/hex/s140_nrf52_7.2.0_softdevice.hex
 	nrfjprog -f nrf52 --program $< --sectorerase --verify
 erase:

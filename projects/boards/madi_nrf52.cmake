@@ -7,7 +7,7 @@ set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf52/nRF5_SDK)
 
 add_custom_target(${PROJECT_NAME}.bin ALL DEPENDS ${PROJECT_NAME})
 add_custom_target(${PROJECT_NAME}.hex ALL DEPENDS ${PROJECT_NAME})
-add_custom_target(flash DEPENDS ${PROJECT_NAME}.hex)
+add_custom_target(flash DEPENDS ${PROJECT_NAME}.hex ${PROJECT_NAME}.bin)
 add_custom_target(gdb DEPENDS ${PROJECT_NAME})
 
 add_custom_command(TARGET ${PROJECT_NAME}.hex
@@ -24,8 +24,11 @@ add_custom_command(TARGET ${PROJECT_NAME}.bin
 
 add_custom_command(TARGET flash
 	USES_TERMINAL COMMAND
-		nrfjprog -f nrf52 --program ${PROJECT_NAME}.hex --sectorerase --verify
+		#nrfjprog -f nrf52 --program ${PROJECT_NAME}.hex --sectorerase --verify
 		#pyocd flash -t nrf52840 ${PROJECT_NAME}.hex
+		# specify path with --path or serial with --serial when more
+		# than one device connected
+		dfu-util --device 1209:e001 --alt 0 --download ${PROJECT_NAME}.bin
 )
 
 add_custom_command(TARGET gdb

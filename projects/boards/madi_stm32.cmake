@@ -24,7 +24,7 @@ add_custom_command(TARGET ${PROJECT_NAME}.bin
 
 add_custom_command(TARGET flash
 	USES_TERMINAL COMMAND
-		dfu-util --alt 0 --dfuse-address 0x08000000:leave --download ${PROJECT_NAME}.bin
+		dfu-util --alt 0 --dfuse-address 0x08000000 --download ${PROJECT_NAME}.bin
 )
 
 add_custom_command(TARGET gdb

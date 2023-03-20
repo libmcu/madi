@@ -9,7 +9,7 @@ include projects/arch/cm4f.mk
 
 .PHONY: flash erase gdbserver
 flash: $(OUTBIN)
-	dfu-util --alt 0 --dfuse-address 0x08000000:leave --download $<
+	dfu-util --alt 0 --dfuse-address 0x08000000 --download $<
 erase:
 	dfu-util --alt 0 --dfuse-address 0x08000000:mass-erase:force
 gdbserver:
