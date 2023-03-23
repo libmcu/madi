@@ -3,7 +3,7 @@
 include(${CMAKE_SOURCE_DIR}/projects/arch/cm4f.cmake)
 
 set(TARGET_PLATFORM nrf52)
-set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf52/nRF5_SDK)
+set(PLATFORM_SPECIFIC_DIR ${CMAKE_SOURCE_DIR}/ports/nrf5-sdk)
 
 add_custom_target(${PROJECT_NAME}.bin ALL DEPENDS ${PROJECT_NAME})
 add_custom_target(${PROJECT_NAME}.hex ALL DEPENDS ${PROJECT_NAME})

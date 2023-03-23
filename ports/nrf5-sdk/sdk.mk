@@ -3,7 +3,7 @@
 SDK_ROOT ?= external/nRF5_SDK_17.1.0_ddde560
 
 ifeq ($(BOARD),madi_nrf52)
-LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52840.ld
+LD_SCRIPT ?= $(PORT_ROOT)/nrf52840.ld
 NRF_SRCS += \
 	$(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
 	$(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c
@@ -15,7 +15,7 @@ NRF_DEFS += \
 	NRF52840_XXAA \
 	CUSTOM_BOARD_INC=libmcu
 else
-LD_SCRIPT ?= $(PORT_ROOT)/nRF5_SDK/nrf52832.ld
+LD_SCRIPT ?= $(PORT_ROOT)/nrf52832.ld
 NRF_SRCS += \
 	$(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
 	$(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
@@ -116,8 +116,8 @@ NRF_SRCS += \
 	\
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
 	\
-	$(wildcard $(PORT_ROOT)/nRF5_SDK/*.c) \
-	$(wildcard $(PORT_ROOT)/nRF5_SDK/*.cpp) \
+	$(wildcard $(PORT_ROOT)/*.c) \
+	$(wildcard $(PORT_ROOT)/*.cpp) \
 	\
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
@@ -180,7 +180,6 @@ NRF_INCS += \
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus \
 	$(SDK_ROOT)/components/ble/ble_services/ble_nus_c \
 	\
-	$(PORT_ROOT)/nRF5_SDK \
 	$(PORT_ROOT) \
 
 NRF_DEFS += \
