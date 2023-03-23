@@ -19,11 +19,8 @@
 
 static volatile uint32_t system_ticks = 0;
 
-// tinyusb function that handles power event (detected, ready, removed)
-// We must call it within SD's SOC event handler, or set it as power event handler if SD is not enabled.
 extern void tusb_hal_nrf_power_event(uint32_t event);
 
-// nrf power callback, could be unused if SD is enabled or usb is disabled (board_test example)
 static void power_event_handler(nrfx_power_usb_evt_t event)
 {
 	tusb_hal_nrf_power_event((uint32_t)event);
@@ -34,8 +31,6 @@ static void board_init(void)
 	nrf_gpio_cfg_input(BUTTON_PIN, NRF_GPIO_PIN_PULLUP);
 	SysTick_Config(SystemCoreClock / 1000);
 
-	// Priorities 0, 1, 4 (nRF52) are reserved for SoftDevice
-	// 2 is highest for application
 	NVIC_SetPriority(USBD_IRQn, 2);
 
 	uint32_t usb_reg;
@@ -49,13 +44,12 @@ static void board_init(void)
 
 		sd_power_usbregstatus_get(&usb_reg);
 	} else {
-		// Power module init
 		const nrfx_power_config_t pwr_cfg = { 0 };
 		nrfx_power_init(&pwr_cfg);
 
-		// Register tusb function as USB power handler
-		// cause cast-function-type warning
-		const nrfx_power_usbevt_config_t config = { .handler = power_event_handler };
+		const nrfx_power_usbevt_config_t config = {
+			.handler = power_event_handler
+		};
 		nrfx_power_usbevt_init(&config);
 
 		nrfx_power_usbevt_enable();
@@ -94,7 +88,6 @@ static uint32_t proc_soc(void)
 	uint32_t err = sd_evt_get(&soc_evt);
 
 	if (err == NRF_SUCCESS) {
-		/*------------- usb power event handler -------------*/
 		int32_t usbevt = (soc_evt == NRF_EVT_POWER_USB_DETECTED) ? NRFX_POWER_USB_EVT_DETECTED :
 			(soc_evt == NRF_EVT_POWER_USB_POWER_READY) ? NRFX_POWER_USB_EVT_READY :
 			(soc_evt == NRF_EVT_POWER_USB_REMOVED) ? NRFX_POWER_USB_EVT_REMOVED : -1;

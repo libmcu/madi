@@ -2,9 +2,9 @@
 
 ![Build Status](https://github.com/libmcu/madi/workflows/build/badge.svg)
 
-SDK for MADI development boards produced by [libmcu](https://libmcu.org).
+SDK for [MADI](https://libmcu.org/kr/madi) development boards.
 
-![MADI summary](hardware/madi_summary.jpg)
+![MADI summary](https://libmcu.org/madi/all-summary.jpg)
 
 MADI is a development board based on various microcontroller chips with the
 same form factor of 21.59mm x 30mm. The board documentation can be found
@@ -12,7 +12,7 @@ same form factor of 21.59mm x 30mm. The board documentation can be found
 [here](https://libmcu.org/kr/madi).
 
 ## Getting Started
-Please refer to [Quickstart guide](https://docs.libmcu.org/quickstart/).
+Please refer to [Getting Started Guide](https://docs.libmcu.org/quickstart/).
 
 ## Project Layout
 
