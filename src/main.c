@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <unistd.h>
+
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
 #include "libmcu/metrics.h"
 #include "libmcu/cli.h"
-#include "libmcu/ao.h"
-#include "libmcu/ao_timer.h"
 #include "libmcu/syscall.h"
 
+#include "evtloop.h"
 #include "ledind.h"
 #include "battery.h"
 #include "userbutton.h"
@@ -25,55 +26,35 @@
 #define ERROR_LED_INTERVAL		100U
 #define OK_LED_INTERVAL			1500U
 
-enum event {
-	EVT_LED,
-	EVT_BUTTON,
-	EVT_BATTERY,
-};
-
-struct ao_event {
-	enum event type;
-};
-
-static struct ao eventloop;
-static struct ao_event evt_led = { .type = EVT_LED };
-static struct ao_event evt_button = { .type = EVT_BUTTON };
-static struct ao_event evt_battery = { .type = EVT_BATTERY };
-
-static void dispatch(struct ao * const ao, const struct ao_event * const event)
+static void update_led(void *ctx)
 {
-	switch (event->type) {
-	case EVT_LED:
-		ao_post_defer(ao, &evt_led, ledind_step());
-		break;
-	case EVT_BUTTON:
-		if (userbutton_process()) {
-			ao_post_if_unique(ao, &evt_button);
-		}
-		break;
-	case EVT_BATTERY:
-		debug("Battery status changed");
-		break;
-	default:
-		break;
+	unused(ctx);
+	uint32_t msec = ledind_step();
+	evtloop_post_defer(update_led, 0, msec);
+}
+
+static void poll_userbutton(void *ctx)
+{
+	unused(ctx);
+	if (userbutton_process()) {
+		evtloop_post(poll_userbutton, 0);
 	}
 }
 
-static void eventloop_init(void)
+static void check_battery(void *ctx)
 {
-	ao_timer_init();
-	ao_create(&eventloop, EVENTLOOP_STACK_SIZE_BYTES, 1);
-	ao_start(&eventloop, dispatch);
+	unused(ctx);
+	debug("Battery status changed");
 }
 
 static void on_userbutton_state_change(void)
 {
-	ao_post_if_unique(&eventloop, &evt_button);
+	evtloop_post(poll_userbutton, 0);
 }
 
 static void on_battery_status_change(void)
 {
-	ao_post(&eventloop, &evt_battery);
+	evtloop_post(check_battery, 0);
 }
 
 static void shell_start(void)
@@ -143,10 +124,11 @@ int main(void)
 	board_init(); /* should be called very first. */
 
 	metrics_init(0);
+	evtloop_init(1, EVENTLOOP_STACK_SIZE_BYTES);
+
 	logging_init(board_get_time_since_boot_ms);
 	logging_stdout_backend_init();
 
-	eventloop_init();
 	ledind_init(ledind_gpio_create());
 	battery_init(battery_monitor_init(on_battery_status_change));
 	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
@@ -157,7 +139,8 @@ int main(void)
 
 	ledind_enable();
 	run_selftest();
-	ao_post(&eventloop, &evt_led);
+
+	evtloop_post(update_led, 0);
 
 	shell_start();
 

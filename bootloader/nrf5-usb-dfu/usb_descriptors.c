@@ -110,7 +110,7 @@ static const char *desc_arr[] = {
 	"libmcu",	// 1: Manufacturer
 	"MADI",		// 2: Product
 	serial_number,	// 3: Serials, should use chip ID
-	"FLASH",	// 4: DFU Partition 1
+	"FLASH 0x2A000/0xD6000",	// 4: DFU Partition 1
 };
 
 // Invoked when received GET STRING DESCRIPTOR request

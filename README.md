@@ -26,7 +26,7 @@ Please refer to [Getting Started Guide](https://docs.libmcu.org/quickstart/).
 ├── ports
 │   ├── esp-idf
 │   ├── freertos
-│   ├── nrf52
+│   ├── nrf5-sdk
 │   ├── stm32
 │   └── zephyr
 ├── projects

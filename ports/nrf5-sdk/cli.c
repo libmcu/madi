@@ -5,20 +5,20 @@
  */
 
 #include "libmcu/cli_overrides.h"
-#include "uart0.h"
+#include "pusb/usbd_cdc.h"
 
 struct cli_io const *cli_io_create(void)
 {
 	static bool initialized;
 
 	if (!initialized) {
-		uart0_init(115200);
+		usbd_cdc_init();
 		initialized = true;
 	}
 
 	static const struct cli_io io = {
-		.read = uart0_read,
-		.write = uart0_write,
+		.read = usbd_cdc_read,
+		.write = usbd_cdc_write,
 	};
 
 	return &io;

@@ -32,8 +32,11 @@ add_custom_command(TARGET flash
 )
 
 add_custom_command(TARGET flash_jlink
-	USES_TERMINAL COMMAND
+	USES_TERMINAL
+	COMMAND
 		nrfjprog -f nrf52 --program ${PROJECT_NAME}.hex --sectorerase --verify
+	COMMAND
+		nrfjprog -f nrf52 --reset
 )
 
 add_custom_command(TARGET flash_pyocd

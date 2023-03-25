@@ -17,8 +17,6 @@
 #define APP_BASEADDR		0x2A000UL
 #define APP_FLASH_SIZE		0xD6000UL
 
-static volatile uint32_t system_ticks = 0;
-
 extern void tusb_hal_nrf_power_event(uint32_t event);
 
 static void power_event_handler(nrfx_power_usb_evt_t event)
@@ -29,7 +27,6 @@ static void power_event_handler(nrfx_power_usb_evt_t event)
 static void board_init(void)
 {
 	nrf_gpio_cfg_input(BUTTON_PIN, NRF_GPIO_PIN_PULLUP);
-	SysTick_Config(SystemCoreClock / 1000);
 
 	NVIC_SetPriority(USBD_IRQn, 2);
 
@@ -67,9 +64,6 @@ static void board_init(void)
 
 static void board_uninit(void)
 {
-	NVIC_DisableIRQ(SysTick_IRQn);
-	SysTick->CTRL = 0;
-
 	nrf_gpio_cfg_default(BUTTON_PIN);
 
 	nrfx_power_usbevt_disable();
@@ -128,11 +122,6 @@ static void erase_and_flash(uint16_t blk, const uint8_t *data, uint16_t len)
 	}
 
 	nrfx_nvmc_bytes_write(flash_addr, data, len);
-}
-
-void SysTick_Handler(void)
-{
-	system_ticks++;
 }
 
 void USBD_IRQHandler(void)
