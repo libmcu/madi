@@ -345,7 +345,7 @@ int usbd_cdc_write(const void *data, size_t datasize)
 	timeout_set(&tout, MIN(10 * datasize, 1000));
 
 	while (CDC_Transmit_FS(data, len) != USBD_OK &&
-			timeout_is_expired(tout)) {
+			!timeout_is_expired(tout)) {
 		/* retry until timed out */
 	}
 
