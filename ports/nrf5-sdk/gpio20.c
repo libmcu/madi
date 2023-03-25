@@ -28,10 +28,12 @@ static int enable_led_gpio(bool enable)
 {
 	if (enable) {
 		nrf_gpio_cfg_output(LED_GPIO_NUMBER);
+		set_led_level(0);
 		return 0;
 	}
 
 	/* disable */
+	set_led_level(0);
 	nrf_gpio_cfg_default(LED_GPIO_NUMBER);
 	return 0;
 }
