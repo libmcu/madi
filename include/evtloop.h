@@ -14,15 +14,16 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-#if !defined(EVTLOOP_MAX_EVENT)
-#define EVTLOOP_MAX_EVENT		10
-#endif
-
 typedef void (*evtloop_handler_t)(void *ctx);
 
+struct ao_event {
+	evtloop_handler_t handler;
+	void *ctx;
+};
+
 void evtloop_init(int priority, size_t stack_size_bytes);
-int evtloop_post(evtloop_handler_t handler, void *arg);
-int evtloop_post_defer(evtloop_handler_t handler, void *arg, uint32_t msec);
+int evtloop_post(void *event);
+int evtloop_post_defer(void *event, uint32_t msec);
 
 #if defined(__cplusplus)
 }

@@ -14,8 +14,26 @@
 #include "evtloop.h"
 #include "ledind.h"
 
-#define EVENTLOOP_STACK_SIZE_BYTES	4096U
+#define EVTLOOP_STACK_SIZE_BYTES	4096U
+#define EVTLOOP_PRIORITY		1U
+
 #define CLI_MAX_HISTORY			10U
+
+#define LED_BLINK_ON_TIME_MS		100U
+#define LED_BLINK_INTERVAL_MS		1500U
+
+static void process_led(void *ctx);
+
+static struct ao_event led_event = {
+	.handler = process_led,
+};
+
+static void process_led(void *ctx)
+{
+	unused(ctx);
+	uint32_t msec = ledind_step();
+	evtloop_post_defer(&led_event, msec);
+}
 
 static size_t logging_stdout_writer(const void *data, size_t size)
 {
@@ -35,8 +53,10 @@ static void logging_stdout_backend_init(void)
 {
 	syscall_register_writer(cli_io_create()->write);
 
-	static struct logging_backend log_console = { 0, };
-	log_console.write = logging_stdout_writer;
+	static struct logging_backend log_console = {
+		.write = logging_stdout_writer,
+	};
+
 	logging_add_backend(&log_console);
 }
 
@@ -56,7 +76,7 @@ static void shell_start(void)
 int main(void)
 {
 	board_init(); /* should be called very first. */
-	evtloop_init(1, EVENTLOOP_STACK_SIZE_BYTES);
+	evtloop_init(EVTLOOP_PRIORITY, EVTLOOP_STACK_SIZE_BYTES);
 
 	logging_init(board_get_time_since_boot_ms);
 	logging_stdout_backend_init();
@@ -67,7 +87,10 @@ int main(void)
 
 	ledind_init(ledind_gpio_create());
 	ledind_enable();
-	ledind_on();
+	ledind_set(LEDIND_BLINK, LED_BLINK_ON_TIME_MS,
+			LED_BLINK_INTERVAL_MS - LED_BLINK_ON_TIME_MS);
+
+	evtloop_post(&led_event);
 
 	shell_start();
 

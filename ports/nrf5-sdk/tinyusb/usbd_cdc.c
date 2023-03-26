@@ -25,6 +25,11 @@ static struct ringbuf rxbuf_handle;
 static uint8_t rxbuf[512];
 static sem_t rx_event;
 
+static void process_usb_event(void *ctx);
+static struct ao_event usb_event = {
+	.handler = process_usb_event,
+};
+
 static void poll_power_event(void *ctx)
 {
 	uint32_t soc_evt;
@@ -70,7 +75,7 @@ static void process_usb_event(void *ctx)
 void USBD_IRQHandler(void)
 {
 	tud_int_handler(BOARD_TUD_RHPORT);
-	evtloop_post(process_usb_event, 0);
+	evtloop_post(&usb_event);
 }
 
 void tud_cdc_rx_cb(uint8_t itf)
@@ -124,7 +129,7 @@ int usbd_cdc_write(const void *data, size_t datasize)
 
 int usbd_cdc_read(void *buf, size_t bufsize)
 {
-	evtloop_post(process_usb_event, 0);
+	evtloop_post(&usb_event);
 
 	size_t len = MIN(ringbuf_length(&rxbuf_handle), bufsize);
 
