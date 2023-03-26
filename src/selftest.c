@@ -7,6 +7,7 @@
 #include "selftest.h"
 
 #include <string.h>
+
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
 #include "libmcu/timext.h"
@@ -19,6 +20,7 @@
 #include "pble/ble.h"
 #include "mxic_nor_qspi.h"
 #include "userbutton.h"
+#include "ledind.h"
 
 static bool test_bq25180(void)
 {
@@ -152,6 +154,8 @@ selftest_error_t selftest_button(uint8_t expected_clicks, uint32_t timeout_ms)
 	userbutton_set_handler(on_userbutton_event, &expected_clicks);
 	timeout_set(&tout, timeout_ms);
 
+	info("Waiting for %u clicks", expected_clicks);
+
 	while (!timeout_is_expired(tout) && ACCESS_ONCE(expected_clicks)) {
 		/* waiting for user input */
 		sleep_ms(100);
@@ -191,7 +195,11 @@ selftest_error_t selftest(void)
 
 	if (abnormal) {
 		err = SELFTEST_ERROR;
+		goto out;
 	}
+
+	ledind_set(LEDIND_STATIC, 1, 0);
+	err = selftest_button(SELFTEST_NR_CLICK, SELFTEST_TIMEOUT_MS);
 
 out:
 	battery_enable_monitor(false);

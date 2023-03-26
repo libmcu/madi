@@ -8,6 +8,7 @@
 
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
+#include "libmcu/metrics.h"
 #include "libmcu/cli.h"
 #include "libmcu/syscall.h"
 
@@ -15,14 +16,16 @@
 #include "ledind.h"
 #include "userbutton.h"
 #include "battery.h"
+#include "selftest.h"
 
 #define EVTLOOP_STACK_SIZE_BYTES	4096U
 #define EVTLOOP_PRIORITY		1U
 
 #define CLI_MAX_HISTORY			10U
 
-#define LED_BLINK_ON_TIME_MS		100U
+#define LED_BLINK_ON_TIME_MS		50U
 #define LED_BLINK_INTERVAL_MS		1500U
+#define LED_BLINK_ERROR_INTERVAL_MS	150U
 
 static void process_led(void *ctx);
 static void process_button(void *ctx);
@@ -102,17 +105,30 @@ static void shell_start(void)
 	struct cli cli;
 
 	DEFINE_CLI_CMD_LIST(cli_commands,
-			help, exit, info, reboot, md, wifi, ble);
+			help, exit, info, reboot, md, metric, wifi, ble);
 
 	cli_init(&cli, cli_io_create(), cli_buffer, sizeof(cli_buffer));
 	cli_register_cmdlist(&cli, cli_commands);
 	cli_run(&cli);
 }
 
+static void run_selftest(void)
+{
+	uint32_t led_blink_interval = LED_BLINK_INTERVAL_MS;
+
+	if (selftest() != SELFTEST_SUCCESS) {
+		led_blink_interval = LED_BLINK_ERROR_INTERVAL_MS;
+	}
+
+	ledind_set(LEDIND_BLINK, LED_BLINK_ON_TIME_MS,
+			led_blink_interval - LED_BLINK_ON_TIME_MS);
+}
+
 int main(void)
 {
 	board_init(); /* should be called very first. */
 
+	metrics_init(0);
 	logging_init(board_get_time_since_boot_ms);
 	logging_stdout_backend_init();
 
@@ -121,14 +137,13 @@ int main(void)
 	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
 	ledind_init(ledind_gpio_create());
 
-	ledind_enable();
-	ledind_set(LEDIND_BLINK, LED_BLINK_ON_TIME_MS,
-			LED_BLINK_INTERVAL_MS - LED_BLINK_ON_TIME_MS);
-	evtloop_post(&led_event);
-
 	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),
 			board_get_version_string());
+
+	ledind_enable();
+	evtloop_post(&led_event);
+	run_selftest();
 
 	shell_start();
 

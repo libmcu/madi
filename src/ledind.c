@@ -59,6 +59,9 @@ uint32_t ledind_step(void)
 	case LEDIND_FADE: /* TODO: Implement PWM functionality */
 		break;
 	case LEDIND_STATIC: /* fall through */
+		if (m.is_on != !!m.on_period_ms) {
+			ledind_toggle();
+		}
 	default:
 		break;
 	}

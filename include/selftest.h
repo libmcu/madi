@@ -14,6 +14,9 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#define SELFTEST_TIMEOUT_MS		5000U
+#define SELFTEST_NR_CLICK		3U
+
 typedef enum {
 	SELFTEST_SUCCESS,
 	SELFTEST_BYPASS,
