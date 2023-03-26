@@ -29,10 +29,12 @@ static int enable_led_gpio(bool enable)
 {
 	if (enable) {
 		MX_GPIO_InitRecursive();
+		set_led_level(0);
 		return 0;
 	}
 
 	/* disable */
+	set_led_level(0);
 	/* TODO: Implement */
 	return 0;
 }
