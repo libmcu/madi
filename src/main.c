@@ -31,15 +31,15 @@ static void process_led(void *ctx);
 static void process_button(void *ctx);
 static void process_battery(void *ctx);
 
-static struct ao_event led_event = {
+static evtloop_event_t led_event = {
 	.handler = process_led,
 };
 
-static struct ao_event button_event = {
+static evtloop_event_t button_event = {
 	.handler = process_button,
 };
 
-static struct ao_event battery_event = {
+static evtloop_event_t battery_event = {
 	.handler = process_battery,
 };
 

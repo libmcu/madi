@@ -16,10 +16,10 @@ extern "C" {
 
 typedef void (*evtloop_handler_t)(void *ctx);
 
-struct ao_event {
+typedef struct ao_event {
 	evtloop_handler_t handler;
 	void *ctx;
-};
+} evtloop_event_t;
 
 void evtloop_init(int priority, size_t stack_size_bytes);
 int evtloop_post(void *event);
