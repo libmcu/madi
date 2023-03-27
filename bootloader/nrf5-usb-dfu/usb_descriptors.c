@@ -108,7 +108,7 @@ static const char lang[] = { 0x09, 0x04 }; // English 0x0409
 static const char *desc_arr[] = {
 	lang,		// 0: supported language
 	"libmcu",	// 1: Manufacturer
-	"MADI",		// 2: Product
+	"MADI DFU",	// 2: Product
 	serial_number,	// 3: Serials, should use chip ID
 	"FLASH 0x2A000/0xD6000",	// 4: DFU Partition 1
 };
