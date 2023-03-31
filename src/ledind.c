@@ -17,30 +17,50 @@ static struct {
 	bool initialized;
 } m;
 
-void ledind_on(void)
-{
-	m.api->set(true);
-	m.is_on = true;
-}
-
-void ledind_off(void)
-{
-	m.api->set(false);
-	m.is_on = false;
-}
-
-void ledind_toggle(void)
-{
-	m.api->toggle();
-	m.is_on ^= 1;
-}
-
-void ledind_set(enum ledind_mode mode,
+static void update_led_status(enum ledind_mode mode,
 		uint32_t on_period_ms, uint32_t off_period_ms)
 {
 	m.mode = mode;
 	m.on_period_ms = on_period_ms;
 	m.off_period_ms = off_period_ms;
+}
+
+static void set_led(bool level)
+{
+	m.api->set(level);
+	m.is_on = level;
+}
+
+static void set_led_static(bool level)
+{
+	set_led(level);
+	update_led_status(LEDIND_STATIC, level, 0);
+}
+
+static void toggle_led(void)
+{
+	set_led(m.is_on ^ 1);
+}
+
+void ledind_on(void)
+{
+	set_led_static(1);
+}
+
+void ledind_off(void)
+{
+	set_led_static(0);
+}
+
+void ledind_toggle(void)
+{
+	set_led_static(m.is_on ^ 1);
+}
+
+void ledind_set(enum ledind_mode mode,
+		uint32_t on_period_ms, uint32_t off_period_ms)
+{
+	update_led_status(mode, on_period_ms, off_period_ms);
 }
 
 uint32_t ledind_step(void)
@@ -54,13 +74,13 @@ uint32_t ledind_step(void)
 		} else {
 			next_period_ms = m.on_period_ms;
 		}
-		ledind_toggle();
+		toggle_led();
 		break;
 	case LEDIND_FADE: /* TODO: Implement PWM functionality */
 		break;
 	case LEDIND_STATIC: /* fall through */
 		if (m.is_on != !!m.on_period_ms) {
-			ledind_toggle();
+			toggle_led();
 		}
 	default:
 		break;

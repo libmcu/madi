@@ -40,8 +40,29 @@ void ledind_disable(void);
 uint32_t ledind_step(void);
 void ledind_set(enum ledind_mode mode,
 		uint32_t on_period_ms, uint32_t off_period_ms);
+/**
+ * @brief Turn on LED
+ *
+ * @note This will result in invalidating the previous LED mode set by @ref
+ * ledind_set(). The mode will be changed to @ref LEDIND_STATIC, keeping the
+ * current LED status.
+ */
 void ledind_on(void);
+/**
+ * @brief Turn off LED
+ *
+ * @note This will result in invalidating the previous LED mode set by @ref
+ * ledind_set(). The mode will be changed to @ref LEDIND_STATIC, keeping the
+ * current LED status.
+ */
 void ledind_off(void);
+/**
+ * @brief Toggle LED
+ *
+ * @note This will result in invalidating the previous LED mode set by @ref
+ * ledind_set(). The mode will be changed to @ref LEDIND_STATIC, keeping the
+ * current LED status.
+ */
 void ledind_toggle(void);
 
 #if defined(__cplusplus)
