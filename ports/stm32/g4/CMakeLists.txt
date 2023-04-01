@@ -68,6 +68,7 @@ set(ST_SRCS
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
+	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread_mutex.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/ao.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/semaphore.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/timext.c

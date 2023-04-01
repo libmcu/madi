@@ -53,6 +53,9 @@ target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
 
 set(LIBMCU_ROOT ${PROJECT_SOURCE_DIR}/external/libmcu)
+if ($ENV{IDF_VERSION} VERSION_LESS "5.1.0")
+	list(APPEND PORT_SRCS ${LIBMCU_ROOT}/ports/freertos/semaphore.c)
+endif()
 
 add_executable(${PROJECT_EXECUTABLE}
 	${APP_SRCS}
@@ -60,7 +63,6 @@ add_executable(${PROJECT_EXECUTABLE}
 	${LIBMCU_ROOT}/ports/esp-idf/board.c
 	${LIBMCU_ROOT}/ports/esp-idf/ao.c
 	${LIBMCU_ROOT}/ports/esp-idf/pthread.c
-	${LIBMCU_ROOT}/ports/freertos/semaphore.c
 	${LIBMCU_ROOT}/ports/freertos/timext.c
 	${LIBMCU_ROOT}/ports/posix/button.c
 )

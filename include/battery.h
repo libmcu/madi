@@ -14,6 +14,14 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef enum battery_status {
+	BATTERY_UNKNOWN,
+	BATTERY_DISCONNECTED,
+	BATTERY_CONNECTED,
+	BATTERY_CHARGING,
+	BATTERY_CHARGED,
+} battery_status_t;
+
 struct battery_monitor {
 	int (*enable)(bool enable);
 	int (*get_level_adc)(void);
@@ -58,6 +66,13 @@ uint8_t battery_level_pct(void);
  * @return millivoltage
  */
 int battery_raw_to_millivolts(int raw);
+
+/**
+ * @brief Return battery status
+ *
+ * @return @ref battery_status
+ */
+battery_status_t battery_status(void);
 
 #if defined(__cplusplus)
 }

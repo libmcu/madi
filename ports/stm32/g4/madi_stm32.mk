@@ -68,6 +68,7 @@ ST_SRCS = \
 	\
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
+	$(LIBMCU_ROOT)/ports/freertos/pthread_mutex.c \
 	$(LIBMCU_ROOT)/ports/freertos/ao.c \
 	$(LIBMCU_ROOT)/ports/freertos/semaphore.c \
 	$(LIBMCU_ROOT)/ports/freertos/timext.c \
