@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <string.h>
 #include "i2c.h"
+#include "libmcu/metrics.h"
 
 static int i2c2_read(struct i2c *self, uint8_t addr, uint8_t reg,
 			   void *buf, size_t bufsize)
@@ -12,11 +13,13 @@ static int i2c2_read(struct i2c *self, uint8_t addr, uint8_t reg,
 
 	if (HAL_I2C_Master_Transmit(&hi2c2, addr, &reg, 1, HAL_MAX_DELAY)
 			!= HAL_OK) {
+		metrics_increase(I2CError);
 		return -EIO;
 	}
 
 	if (HAL_I2C_Master_Receive(&hi2c2, addr, buf, bufsize, HAL_MAX_DELAY)
 			!= HAL_OK) {
+		metrics_increase(I2CError);
 		return -EIO;
 	}
 
@@ -36,6 +39,7 @@ static int i2c2_write(struct i2c *self, uint8_t addr, uint8_t reg,
 
 	if (HAL_I2C_Master_Transmit(&hi2c2, addr, buf, data_len+1, HAL_MAX_DELAY)
 			!= HAL_OK) {
+		metrics_increase(I2CError);
 		return -EIO;
 	}
 

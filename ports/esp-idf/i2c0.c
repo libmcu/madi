@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <string.h>
 #include "driver/i2c.h" /* esp-idf */
+#include "libmcu/metrics.h"
 
 #define I2C0_SDA_PIN			17
 #define I2C0_SCL_PIN			18
@@ -12,8 +13,9 @@ static int i2c0_read(struct i2c *self, uint8_t addr, uint8_t reg,
 {
 	(void)self;
 	int rc = i2c_master_write_read_device(I2C_NUM_0,
-				     addr, &reg, 1, buf, bufsize, 0);
+				     addr, &reg, 1, buf, bufsize, 10);
 	if (rc != ESP_OK) {
+		metrics_increase(I2CError);
 		return -EIO;
 	}
 
@@ -27,19 +29,22 @@ static int i2c0_write(struct i2c *self, uint8_t addr, uint8_t reg,
 	size_t len = data_len + 1;
 	uint8_t *buf = (uint8_t *)malloc(len);
 	if (buf == NULL) {
+		metrics_increase(HeapAllocFailure);
 		return -ENOMEM;
 	}
 
 	buf[0] = reg;
 	memcpy(&buf[1], data, data_len);
 
-	int rc =  i2c_master_write_to_device(I2C_NUM_0, addr, buf, len, 0);
-
+	int rc = i2c_master_write_to_device(I2C_NUM_0, addr, buf, len, 10);
 	if (rc != ESP_OK) {
-		return -EIO;
+		metrics_increase(I2CError);
+		rc = -EIO;
 	}
 
-	return 0;
+	free(buf);
+
+	return rc;
 }
 
 static int i2c0_init(struct i2c *self)
@@ -57,6 +62,7 @@ static int i2c0_init(struct i2c *self)
 
 	i2c_param_config(I2C_NUM_0, &conf);
 	if (i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0) != ESP_OK) {
+		metrics_increase(I2CError);
 		return -EIO;
 	}
 

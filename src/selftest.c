@@ -22,34 +22,15 @@
 #include "userbutton.h"
 #include "ledind.h"
 
-static bool test_bq25180(void)
-{
-	uint8_t val;
-	int rc;
-
-	debug("Test BQ25180(I2C)");
-
-	bq25180_reset(0);
-
-	if ((rc = bq25180_read(BQ25180_DEVICE_ADDRESS, 0xC/*MASK_ID*/,
-				&val, sizeof(val))) != 0 ||
-			val != 0xC0/*default reset value*/) {
-		error("%x %d", val, rc);
-		return false; 
-	}
-
-	return true;
-}
-
 static bool test_battery(void)
 {
 	debug("Test Battery Level(ADC)");
 
-	bq25180_enable_battery_charging(true);
+	battery_enable_charging();
 
 	int mV_charging = battery_raw_to_millivolts(battery_level_raw());
 
-	bq25180_enable_battery_charging(false);
+	battery_disable_charging();
 
 	int mV = battery_raw_to_millivolts(battery_level_raw());
 
@@ -63,11 +44,17 @@ static bool test_battery(void)
 
 static bool is_battery_attached(void)
 {
+	bool rc = true;
+
+	battery_disable_charging();
+
 	if (battery_raw_to_millivolts(battery_level_raw()) < 2800) {
-		return false;
+		rc = false;
 	}
 
-	return true;
+	battery_enable_charging();
+
+	return rc;
 }
 
 #define QSPI_TEST_DATA_SIZE		256U
@@ -175,15 +162,12 @@ selftest_error_t selftest(void)
 	int abnormal = 0;
 	selftest_error_t err = SELFTEST_SUCCESS;
 
-	battery_enable_monitor(true);
-
 	if (is_battery_attached()) { /* skip self test */
 		err = SELFTEST_BYPASS;
 		goto out;
 	}
 
-	if (!test_bq25180() ||
-			!test_battery() ||
+	if (!test_battery() ||
 			!test_qspi_flash() ||
 			!test_ble() ||
 			!test_wifi()) {
@@ -202,7 +186,5 @@ selftest_error_t selftest(void)
 	err = selftest_button(SELFTEST_NR_CLICK, SELFTEST_TIMEOUT_MS);
 
 out:
-	battery_enable_monitor(false);
-
 	return err;
 }

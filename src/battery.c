@@ -93,6 +93,22 @@ static void read_samples(int *samples, int n)
 	}
 }
 
+static int enable_monitor(bool enable)
+{
+	int rc = 0;
+	int cnt = enable? 1 : -1;
+
+	pthread_mutex_lock(&monitor_lock);
+	reference_count += cnt;
+	if ((enable && reference_count == 1) ||
+		(!enable && reference_count == 0)) {
+		rc = monitor->enable(enable);
+	}
+	pthread_mutex_unlock(&monitor_lock);
+
+	return rc;
+}
+
 static int read_sample_mean(void)
 {
 	int samples[NR_SAMPLES];
@@ -111,13 +127,26 @@ static int read_sample_mean(void)
 	return avg;
 }
 
+static int read_raw(void)
+{
+	enable_monitor(true);
+	int val = read_sample_mean();
+	enable_monitor(false);
+
+	return val;
+}
+
 static int sample_mean_to_millivolts(int sample_mean)
 {
 	int millivolts;
 
+	enable_monitor(true);
+
 	pthread_mutex_lock(&monitor_lock);
 	millivolts = monitor->adc_to_millivolts(sample_mean);
 	pthread_mutex_unlock(&monitor_lock);
+
+	enable_monitor(false);
 
 	return millivolts;
 }
@@ -140,9 +169,7 @@ int bq25180_write(uint8_t addr, uint8_t reg, const void *data, size_t data_len)
 
 uint8_t battery_level_pct(void)
 {
-	battery_enable_monitor(true);
-	int millivolts = sample_mean_to_millivolts(read_sample_mean());
-	battery_enable_monitor(false);
+	int millivolts = sample_mean_to_millivolts(read_raw());
 
 	millivolts = MAX(millivolts, (int)BATTERY_MIN_MILLIVOLTS);
 	return (uint8_t)
@@ -152,11 +179,7 @@ uint8_t battery_level_pct(void)
 
 int battery_level_raw(void)
 {
-	battery_enable_monitor(true);
-	int val = read_sample_mean();
-	battery_enable_monitor(false);
-
-	return val;
+	return read_raw();
 }
 
 int battery_raw_to_millivolts(int raw)
@@ -166,18 +189,7 @@ int battery_raw_to_millivolts(int raw)
 
 int battery_enable_monitor(bool enable)
 {
-	int rc = 0;
-	int cnt = enable? 1 : -1;
-
-	pthread_mutex_lock(&monitor_lock);
-	reference_count += cnt;
-	if ((enable && reference_count == 1) ||
-		(!enable && reference_count == 0)) {
-		rc = monitor->enable(enable);
-	}
-	pthread_mutex_unlock(&monitor_lock);
-
-	return rc;
+	return enable_monitor(enable);
 }
 
 battery_status_t battery_status(void)
@@ -211,9 +223,9 @@ battery_status_t battery_status(void)
 	int bat_millivolts = 0;
 	if (rc == BATTERY_CHARGED && state.vin_good) {
 		bq25180_enable_battery_charging(false);
-		battery_enable_monitor(true);
+		enable_monitor(true);
 		bat_millivolts = battery_raw_to_millivolts(battery_level_raw());
-		battery_enable_monitor(false);
+		enable_monitor(false);
 		bq25180_enable_battery_charging(true);
 
 		if (bat_millivolts < 2800) {
@@ -224,6 +236,16 @@ battery_status_t battery_status(void)
 #endif
 
 	return rc;
+}
+
+void battery_enable_charging(void)
+{
+	bq25180_enable_battery_charging(true);
+}
+
+void battery_disable_charging(void)
+{
+	bq25180_enable_battery_charging(false);
 }
 
 int battery_init(const struct battery_monitor *battery_monitor)

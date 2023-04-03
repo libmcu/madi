@@ -74,6 +74,9 @@ int battery_raw_to_millivolts(int raw);
  */
 battery_status_t battery_status(void);
 
+void battery_enable_charging(void);
+void battery_disable_charging(void);
+
 #if defined(__cplusplus)
 }
 #endif
