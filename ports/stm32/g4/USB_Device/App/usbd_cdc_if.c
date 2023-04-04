@@ -342,7 +342,7 @@ int usbd_cdc_write(const void *data, size_t datasize)
 	uint16_t len = (uint16_t)datasize;
 
 	uint32_t tout;
-	timeout_set(&tout, MIN(10 * datasize, 1000));
+	timeout_set(&tout, 1);
 
 	while (CDC_Transmit_FS(data, len) != USBD_OK &&
 			!timeout_is_expired(tout)) {

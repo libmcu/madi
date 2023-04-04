@@ -102,6 +102,4 @@ void ledind_disable(void)
 void ledind_init(const struct ledind_api *api)
 {
 	m.api = api;
-	m.on_period_ms = DEFAULT_NEXT_PERIOD_MS;
-	m.off_period_ms = DEFAULT_NEXT_PERIOD_MS;
 }

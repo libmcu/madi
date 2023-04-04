@@ -25,6 +25,7 @@
 
 static const struct battery_monitor *monitor;
 static pthread_mutex_t monitor_lock;
+static pthread_mutex_t bq25180_lock;
 static struct i2c *i2c_handle;
 static int monitor_reference_count;
 
@@ -151,18 +152,32 @@ static int sample_mean_to_millivolts(int sample_mean)
 
 int bq25180_read(uint8_t addr, uint8_t reg, void *buf, size_t bufsize)
 {
+	pthread_mutex_lock(&bq25180_lock);
+
 	if (!i2c_handle) {
 		initialize_i2c();
 	}
-	return i2c_read(i2c_handle, addr, reg, buf, bufsize);
+
+	int rc = i2c_read(i2c_handle, addr, reg, buf, bufsize);
+
+	pthread_mutex_unlock(&bq25180_lock);
+
+	return rc;
 }
 
 int bq25180_write(uint8_t addr, uint8_t reg, const void *data, size_t data_len)
 {
+	pthread_mutex_lock(&bq25180_lock);
+
 	if (!i2c_handle) {
 		initialize_i2c();
 	}
-	return i2c_write(i2c_handle, addr, reg, data, data_len);
+
+	int rc = i2c_write(i2c_handle, addr, reg, data, data_len);
+
+	pthread_mutex_unlock(&bq25180_lock);
+
+	return rc;
 }
 
 uint8_t battery_level_pct(void)
@@ -249,6 +264,7 @@ void battery_disable_charging(void)
 int battery_init(const struct battery_monitor *battery_monitor)
 {
 	pthread_mutex_init(&monitor_lock, NULL);
+	pthread_mutex_init(&bq25180_lock, NULL);
 
 	monitor_reference_count = 0;
 	monitor = battery_monitor;
