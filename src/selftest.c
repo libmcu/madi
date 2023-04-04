@@ -14,28 +14,36 @@
 #include "libmcu/metrics.h"
 #include "libmcu/compiler.h"
 
-#include "bq25180.h"
-#include "bq25180_overrides.h"
 #include "battery.h"
 #include "pble/ble.h"
 #include "mxic_nor_qspi.h"
 #include "userbutton.h"
 #include "ledind.h"
 
+static void wait_for_voltage_settle_out(void)
+{
+	sleep_ms(30);
+}
+
 static bool test_battery(void)
 {
 	debug("Test Battery Level(ADC)");
 
 	battery_enable_charging();
+	wait_for_voltage_settle_out();
 
 	int mV_charging = battery_raw_to_millivolts(battery_level_raw());
 
 	battery_disable_charging();
+	wait_for_voltage_settle_out();
 
-	int mV = battery_raw_to_millivolts(battery_level_raw());
+	int mV_disconnected = battery_raw_to_millivolts(battery_level_raw());
 
-	if (mV_charging < 4000 || mV > 1000) {
-		error("%dmV %dmV", mV_charging, mV);
+	battery_enable_charging();
+
+	if (mV_charging < (int)(BATTERY_MAX_MILLIVOLTS - 200/*margin*/) ||
+			mV_disconnected > (int)BATTERY_MIN_MILLIVOLTS) {
+		error("%dmV %dmV", mV_charging, mV_disconnected);
 		return false;
 	}
 
@@ -47,8 +55,10 @@ static bool is_battery_attached(void)
 	bool rc = true;
 
 	battery_disable_charging();
+	wait_for_voltage_settle_out();
 
-	if (battery_raw_to_millivolts(battery_level_raw()) < 2800) {
+	if (battery_raw_to_millivolts(battery_level_raw()) <
+			(int)BATTERY_MIN_MILLIVOLTS) {
 		rc = false;
 	}
 
@@ -79,7 +89,7 @@ static bool test_qspi_flash(void)
 			offset += sizeof(buf)) {
 		rc |= mxic_read(qspi, QSPI_TEST_ADDR + offset, buf, sizeof(buf));
 		if (memcmp(&src[offset], buf, sizeof(buf)) != 0) {
-			error("not match");
+			error("not match(%d)", rc);
 			return false;
 		}
 	}
@@ -102,6 +112,7 @@ static bool test_ble(void)
 	ble_adv_init(ble, BLE_ADV_IND);
 	ble_adv_start(ble);
 	ble_adv_stop(ble);
+	ble_disable(ble);
 #endif
 	return true;
 }
@@ -162,6 +173,8 @@ selftest_error_t selftest(void)
 	int abnormal = 0;
 	selftest_error_t err = SELFTEST_SUCCESS;
 
+	battery_enable_monitor(true);
+
 	if (is_battery_attached()) { /* skip self test */
 		err = SELFTEST_BYPASS;
 		goto out;
@@ -186,5 +199,7 @@ selftest_error_t selftest(void)
 	err = selftest_button(SELFTEST_NR_CLICK, SELFTEST_TIMEOUT_MS);
 
 out:
+	battery_enable_monitor(false);
+
 	return err;
 }

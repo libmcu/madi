@@ -26,6 +26,7 @@
 #include "padc/adc.h"
 #include "libmcu/metrics.h"
 
+#define VOLTAGE_DIVIDER_RATIO	134 /* R1: 360K, R2: 56K */
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc2;
@@ -71,7 +72,7 @@ void MX_ADC2_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_5;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -165,10 +166,8 @@ static int get_raw(struct adc *self, int channel)
 
 static int get_raw_to_millivolts(struct adc *self, int raw)
 {
-	/* FIXME: Voltage divider resistor should be changed to keep resistance
-	 * less than 50KOhm. */
 	int mv = raw * 3300/*ref. in millivoltage*/ / (4096-1)/*12bit*/;
-	return mv * 1000 / 128/*voltage divider ratio */;
+	return mv * 1000 / VOLTAGE_DIVIDER_RATIO;
 }
 
 static int calibrate(struct adc *self)

@@ -16,6 +16,8 @@
 
 #define ADC_RESOLUTION		ADC_BITWIDTH_12
 
+#define VOLTAGE_DIVIDER_RATIO	134 /* R1: 360K, R2: 56K */
+
 #if defined(esp32s3) || defined(esp32c3)
 #define cal_type		adc_cali_curve_fitting_config_t
 #define cal_func		adc_cali_create_scheme_curve_fitting
@@ -127,7 +129,8 @@ static int get_raw(struct adc *self, int channel)
 static int get_raw_to_millivolts(struct adc *self, int raw)
 {
 	(void)self;
-	return convert_raw_to_millivolts(raw);
+	int mv = convert_raw_to_millivolts(raw);
+	return mv * 1000 / VOLTAGE_DIVIDER_RATIO;
 }
 
 static int calibrate(struct adc *self)

@@ -39,7 +39,7 @@ void MX_QUADSPI1_Init(void)
 
   /* USER CODE END QUADSPI1_Init 1 */
   hqspi1.Instance = QUADSPI;
-  hqspi1.Init.ClockPrescaler = 2;
+  hqspi1.Init.ClockPrescaler = 3;
   hqspi1.Init.FifoThreshold = 1;
   hqspi1.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
   hqspi1.Init.FlashSize = 20;

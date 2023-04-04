@@ -13,6 +13,7 @@
 #include "nrf_gpio.h"
 #include "bsp.h"
 #include "libmcu/metrics.h"
+#include "libmcu/timext.h"
 
 #define I2C0_SDA_PIN		45 /*P1.13*/
 #define I2C0_SCL_PIN		44 /*P1.12*/
@@ -40,6 +41,12 @@ static void on_event(nrf_drv_twi_evt_t const *p_event, void *p_context)
 
 static void prepare_xfer(void)
 {
+	uint32_t tout;
+	timeout_set(&tout, 10);
+	while (nrf_drv_twi_is_busy(&handle) && !timeout_is_expired(tout)) {
+		/* waiting to be available */
+	}
+
 	is_xfer_done = false;
 }
 

@@ -63,8 +63,7 @@ static int get_level_adc(void)
 
 static int adc_to_millivolts(int raw)
 {
-	int mv_raw = adc_raw_to_millivolts(adc, raw);
-	return mv_raw * 1000/134/*scale(R1:360K, R2:56K)*/;
+	return adc_raw_to_millivolts(adc, raw);
 }
 
 struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void))

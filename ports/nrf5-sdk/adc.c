@@ -16,7 +16,7 @@
 #define ADC_RESOLUTION		NRF_SAADC_RESOLUTION_12BIT
 #define ADC_PRIORITY		6
 
-#define VOLTAGE_DIVIDER_RATIO	128 /* R1: 1.5M, R2: 220K */
+#define VOLTAGE_DIVIDER_RATIO	134 /* R1: 360K, R2: 56K */
 
 static nrf_saadc_value_t raw_buffer[1]; /* nRF52840 supports up to 8 channels */
 

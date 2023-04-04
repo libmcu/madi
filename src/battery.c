@@ -5,23 +5,17 @@
  */
 
 #include "battery.h"
-#include "bq25180.h"
 
+#include <pthread.h>
+
+#include "bq25180.h"
 #include "bq25180_overrides.h"
 #if defined(madi_stm32)
 #include "i2c2.h"
 #else
 #include "i2c0.h"
 #endif
-
-#include <pthread.h>
-
-#if !defined(BATTERY_MIN_MILLIVOLTS)
-#define BATTERY_MIN_MILLIVOLTS		3000U
-#endif
-#if !defined(BATTERY_MAX_MILLIVOLTS)
-#define BATTERY_MAX_MILLIVOLTS		4200U
-#endif
+#include "libmcu/logging.h"
 
 #define NR_SAMPLES			20
 
@@ -32,7 +26,7 @@
 static const struct battery_monitor *monitor;
 static pthread_mutex_t monitor_lock;
 static struct i2c *i2c_handle;
-static int reference_count;
+static int monitor_reference_count;
 
 static int calc_average(const int *samples, int n)
 {
@@ -99,9 +93,9 @@ static int enable_monitor(bool enable)
 	int cnt = enable? 1 : -1;
 
 	pthread_mutex_lock(&monitor_lock);
-	reference_count += cnt;
-	if ((enable && reference_count == 1) ||
-		(!enable && reference_count == 0)) {
+	monitor_reference_count += cnt;
+	if ((enable && monitor_reference_count == 1) ||
+		(!enable && monitor_reference_count == 0)) {
 		rc = monitor->enable(enable);
 	}
 	pthread_mutex_unlock(&monitor_lock);
@@ -129,9 +123,12 @@ static int read_sample_mean(void)
 
 static int read_raw(void)
 {
-	enable_monitor(true);
+	if (!monitor_reference_count) {
+		warn("Activate first");
+		return 0;
+	}
+
 	int val = read_sample_mean();
-	enable_monitor(false);
 
 	return val;
 }
@@ -140,13 +137,14 @@ static int sample_mean_to_millivolts(int sample_mean)
 {
 	int millivolts;
 
-	enable_monitor(true);
+	if (!monitor_reference_count) {
+		warn("Activate first");
+		return 0;
+	}
 
 	pthread_mutex_lock(&monitor_lock);
 	millivolts = monitor->adc_to_millivolts(sample_mean);
 	pthread_mutex_unlock(&monitor_lock);
-
-	enable_monitor(false);
 
 	return millivolts;
 }
@@ -228,7 +226,7 @@ battery_status_t battery_status(void)
 		enable_monitor(false);
 		bq25180_enable_battery_charging(true);
 
-		if (bat_millivolts < 2800) {
+		if (bat_millivolts < BATTERY_MIN_MILLIVOLTS) {
 			rc = BATTERY_DISCONNECTED;
 		}
 	}
@@ -252,7 +250,7 @@ int battery_init(const struct battery_monitor *battery_monitor)
 {
 	pthread_mutex_init(&monitor_lock, NULL);
 
-	reference_count = 0;
+	monitor_reference_count = 0;
 	monitor = battery_monitor;
 
 	bq25180_reset(false);
@@ -263,6 +261,8 @@ int battery_init(const struct battery_monitor *battery_monitor)
 	bq25180_set_sys_voltage(BQ25180_SYS_REG_PASS_THROUGH);
 	bq25180_set_battery_regulation_voltage(BATTERY_MAX_MILLIVOLTS);
 	bq25180_set_precharge_threshold(BATTERY_MIN_MILLIVOLTS);
+
+	enable_monitor(true);
 
 	return 0;
 }
