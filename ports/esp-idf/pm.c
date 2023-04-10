@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "libmcu/board/pm.h"
+#include "libmcu/port/pm.h"
 #include "esp_system.h"
 #include "esp_sleep.h"
 
