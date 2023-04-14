@@ -10,11 +10,7 @@
 
 #include "bq25180.h"
 #include "bq25180_overrides.h"
-#if defined(madi_stm32)
-#include "i2c2.h"
-#else
-#include "i2c0.h"
-#endif
+#include "libmcu/i2c.h"
 #include "libmcu/logging.h"
 
 #define NR_SAMPLES			20
@@ -74,11 +70,10 @@ static int calc_average_filtered(const int *samples, int n, int avg, int var)
 static void initialize_i2c(void)
 {
 #if defined(madi_stm32)
-	i2c_handle = i2c2_create();
+	i2c_handle = i2c_create(2);
 #else
-	i2c_handle = i2c0_create();
+	i2c_handle = i2c_create(0);
 #endif
-	i2c_init(i2c_handle);
 }
 
 static void read_samples(int *samples, int n)
