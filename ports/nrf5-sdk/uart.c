@@ -1,10 +1,15 @@
 /*
- * SPDX-FileCopyrightText: 2023 Kyunghwan Kwon <k@mononn.com>
+ * SPDX-FileCopyrightText: 2023 Kyunghwan Kwon <k@libmcu.org>
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "uart0.h"
+#include "libmcu/port/uart.h"
+#include "libmcu/metrics.h"
+
+#include <errno.h>
+#include <string.h>
+
 #include "app_uart.h"
 #include "nrf.h"
 #include "nrf_uarte.h"
@@ -16,6 +21,11 @@
 #define IRQ_PRIO		APP_IRQ_PRIORITY_LOWEST
 
 #define DEFAULT_BAUDRATE	NRF_UARTE_BAUDRATE_115200
+
+struct uart {
+	uint32_t baudrate;
+	bool activated;
+};
 
 static uint8_t rx_buf[UART_RX_BUF_SIZE];
 static uint8_t tx_buf[UART_TX_BUF_SIZE];
@@ -78,11 +88,16 @@ static int initialize_uart0(uint32_t baudrate)
 	return 0;
 }
 
-int uart0_write(const void *data, size_t datasize)
+int uart_port_write(struct uart *self, const void *data, size_t data_len)
 {
+	if (!self || !self->activated) {
+		metrics_increase(UARTErrorPipe);
+		return -EPIPE;
+	}
+
 	int cnt = 0;
 
-	for (size_t i = 0; i < datasize; i++) {
+	for (size_t i = 0; i < data_len; i++) {
 		while (app_uart_put(((const uint8_t *)data)[i]) != NRF_SUCCESS) {
 		}
 		cnt++;
@@ -91,8 +106,13 @@ int uart0_write(const void *data, size_t datasize)
 	return cnt;
 }
 
-int uart0_read(void *buf, size_t bufsize)
+int uart_port_read(struct uart *self, void *buf, size_t bufsize)
 {
+	if (!self || !self->activated) {
+		metrics_increase(UARTErrorPipe);
+		return -EPIPE;
+	}
+
 	int i = 0;
 
 	while (app_uart_get(&((uint8_t *)buf)[i]) == NRF_SUCCESS &&
@@ -103,7 +123,59 @@ int uart0_read(void *buf, size_t bufsize)
 	return i;
 }
 
-void uart0_init(uint32_t baudrate)
+int uart_port_enable(struct uart *self, uint32_t baudrate)
 {
-	initialize_uart0(convert_baud(baudrate));
+	if (!self) {
+		metrics_increase(UARTErrorPipe);
+		return -EPIPE;
+	} else if (self->activated) {
+		metrics_increase(UARTErrorSequence);
+		return -EALREADY;
+	}
+
+	if (initialize_uart0(convert_baud(baudrate)) != 0) {
+		metrics_increase(UARTFault);
+		return -EFAULT;
+	}
+
+	self->baudrate = baudrate;
+	self->activated = true;
+
+	return 0;
+}
+
+int uart_port_disable(struct uart *self)
+{
+	if (!self) {
+		metrics_increase(UARTErrorPipe);
+		return -EPIPE;
+	} else if (!self->activated) {
+		metrics_increase(UARTErrorSequence);
+		return -EALREADY;
+	}
+
+	if (app_uart_close() != NRF_SUCCESS) {
+		metrics_increase(UARTFault);
+		return -EFAULT;
+	}
+
+	self->activated = false;
+
+	return 0;
+}
+
+struct uart *uart_port_create(uint8_t channel)
+{
+	static struct uart uart;
+
+	if (channel != 0 || uart.activated) {
+		return NULL;
+	}
+
+	return &uart;
+}
+
+void uart_port_delete(struct uart *self)
+{
+	memset(self, 0, sizeof(*self));
 }

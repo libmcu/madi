@@ -2,7 +2,7 @@
 
 LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
 LIBMCU_MODULES := ao button cli logging metrics
-LIBMCU_INTERFACES := i2c l4
+LIBMCU_INTERFACES := i2c l4 uart
 include $(LIBMCU_ROOT)/projects/modules.mk
 include $(LIBMCU_ROOT)/projects/interfaces.mk
 

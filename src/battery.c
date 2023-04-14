@@ -74,6 +74,7 @@ static void initialize_i2c(void)
 #else
 	i2c_handle = i2c_create(0);
 #endif
+	i2c_enable(i2c_handle);
 }
 
 static void read_samples(int *samples, int n)

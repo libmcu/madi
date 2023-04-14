@@ -9,7 +9,18 @@
 #if defined(esp32s3)
 #include "usb_serial_jtag.h"
 #else
-#include "uart0.h"
+#include "libmcu/uart.h"
+static struct uart *uart_handle;
+
+static int read_uart(void *buf, size_t bufsize)
+{
+	return uart_read(uart_handle, buf, bufsize);
+}
+
+static int write_uart(void const *data, size_t datasize)
+{
+	return uart_write(uart_handle, data, datasize);
+}
 #endif
 
 struct cli_io const *cli_io_create(void)
@@ -20,7 +31,8 @@ struct cli_io const *cli_io_create(void)
 #if defined(esp32s3)
 		serial_jtag_init();
 #else
-		uart0_init(115200);
+		uart_handle = uart_create(0);
+		uart_enable(uart_handle, 115200);
 #endif
 		initialized = true;
 	}
@@ -30,8 +42,8 @@ struct cli_io const *cli_io_create(void)
 		.read = serial_jtag_read,
 		.write = serial_jtag_write_async,
 #else
-		.read = uart0_read,
-		.write = uart0_write_async,
+		.read = read_uart,
+		.write = write_uart,
 #endif
 	};
 
