@@ -8,7 +8,7 @@
 #include "esp_system.h"
 #include "esp_sleep.h"
 
-int pm_board_enter(pm_mode_t mode)
+int pm_port_enter(pm_mode_t mode)
 {
 	switch (mode) {
 	case PM_SLEEP_DEEP:
