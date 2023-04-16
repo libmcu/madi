@@ -21,12 +21,19 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
-#include <stdbool.h>
+#include <string.h>
 #include <errno.h>
-#include "padc/adc.h"
+
+#include "libmcu/port/adc.h"
 #include "libmcu/metrics.h"
 
 #define VOLTAGE_DIVIDER_RATIO	134 /* R1: 360K, R2: 56K */
+
+struct adc {
+	ADC_HandleTypeDef *handle;
+	bool activated;
+};
+
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc2;
@@ -157,55 +164,127 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-static int get_raw(struct adc *self, int channel)
+int adc_port_convert_to_millivolts(struct adc *self, int value)
 {
-	HAL_ADC_Start(&hadc2);
-	HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
-	return (int)HAL_ADC_GetValue(&hadc2);
-}
+	if (!self || !self->activated) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	}
 
-static int get_raw_to_millivolts(struct adc *self, int raw)
-{
-	int mv = raw * 3300/*ref. in millivoltage*/ / (4096-1)/*12bit*/;
+	int mv = value * 3300/*ref. in millivoltage*/ / (4096-1)/*12bit*/;
 	return mv * 1000 / VOLTAGE_DIVIDER_RATIO;
 }
 
-static int calibrate(struct adc *self)
+int adc_port_read(struct adc *self, adc_channel_t channel)
 {
-	if (HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED) != HAL_OK) {
-		metrics_increase(ADCError);
-		return -EFAULT;
+	if (!self || !self->activated) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	}
+
+	(void)channel;
+	return (int)HAL_ADC_GetValue(self->handle);
+}
+
+int adc_port_measure(struct adc *self)
+{
+	if (!self || !self->activated) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	}
+
+	HAL_ADC_Start(self->handle);
+	HAL_ADC_PollForConversion(self->handle, HAL_MAX_DELAY);
+
+	return 0;
+}
+
+int adc_port_channel_init(struct adc *self, adc_channel_t channel)
+{
+	if (!self || !self->activated) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	}
+
+	(void)channel;
+	return 0;
+}
+
+int adc_port_calibrate(struct adc *self)
+{
+	if (!self || !self->activated) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	}
+
+	if (HAL_ADCEx_Calibration_Start(self->handle, ADC_SINGLE_ENDED)
+			!= HAL_OK) {
+		metrics_increase(ADCErrorCalibration);
+		return -ESTALE;
 	}
 
 	return 0;
 }
 
-static int enable(struct adc *self, bool enable)
+int adc_port_enable(struct adc *self)
 {
-	if (enable) {
-		MX_ADC2_Init();
-		return 0;
+	if (!self) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	} else if (self->activated) {
+		metrics_increase(ADCErrorSequence);
+		return -EALREADY;
 	}
 
-	/* disable */
-	if (HAL_ADC_DeInit(&hadc2) != HAL_OK) {
-		metrics_increase(ADCError);
-		return -EFAULT;
-	}
+	MX_ADC2_Init();
+	self->activated = true;
 
 	return 0;
 }
 
-struct adc *adc_create(void)
+int adc_port_disable(struct adc *self)
 {
-	static struct adc_api api = {
-		.get_raw_to_millivolts = get_raw_to_millivolts,
-		.get_raw = get_raw,
-		.enable = enable,
-		.calibrate = calibrate,
-	};
+	if (!self) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	} else if (!self->activated) {
+		metrics_increase(ADCErrorSequence);
+		return -EALREADY;
+	}
 
-	return (struct adc *)&api;
+	if (HAL_ADC_DeInit(self->handle) != HAL_OK) {
+		metrics_increase(ADCFault);
+		return -EFAULT;
+	}
+
+	self->activated = false;
+	return 0;
+}
+
+struct adc *adc_port_create(uint8_t adc_num)
+{
+	static struct adc adc;
+
+	if (adc_num != 2 || adc.activated) {
+		return NULL;
+	}
+
+	adc.handle = &hadc2;
+
+	return &adc;
+}
+
+int adc_port_delete(struct adc *self)
+{
+	if (!self) {
+		metrics_increase(ADCErrorPipe);
+		return -EPIPE;
+	} else if (self->activated) {
+		adc_port_disable(self);
+	}
+
+	memset(self, 0, sizeof(*self));
+	return 0;
 }
 
 /* USER CODE END 1 */

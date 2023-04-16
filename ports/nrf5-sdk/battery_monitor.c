@@ -5,13 +5,13 @@
  */
 
 #include "battery.h"
-#include "adc.h"
+#include "libmcu/adc.h"
 #include "nrf_gpio.h"
 #include "nrfx_gpiote.h"
 
 #define MONITOR_ENABLE_GPIO_NUMBER		27 /* P0.27 */
 #define MONITOR_INTR_GPIO_NUMBER		26 /* P0.26 */
-#define ADC_CHANNEL				7 /* P0.31, AIN7 */
+#define ADC_CHANNEL				ADC_CH_7 /* P0.31, AIN7 */
 
 static struct adc *adc;
 static void (*dispatch_callback)(void);
@@ -43,13 +43,17 @@ static void initialize_monitor_gpio(void)
 
 static int enable_monitor(bool enable)
 {
-	adc_enable(adc, enable);
+	if (enable) {
+		adc_enable(adc);
+	} else {
+		adc_disable(adc);
+	}
 
 	if (enable) {
 		nrf_gpio_pin_set(MONITOR_ENABLE_GPIO_NUMBER);
 
 		adc_calibrate(adc);
-		adc_channel_init(ADC_CHANNEL);
+		adc_channel_init(adc, ADC_CHANNEL);
 	} else {
 		nrf_gpio_pin_clear(MONITOR_ENABLE_GPIO_NUMBER);
 	}
@@ -59,12 +63,13 @@ static int enable_monitor(bool enable)
 
 static int get_level_adc(void)
 {
-	return adc_get_raw(adc, ADC_CHANNEL);
+	adc_measure(adc);
+	return adc_read(adc, ADC_CHANNEL);
 }
 
 static int adc_to_millivolts(int raw)
 {
-	return adc_raw_to_millivolts(adc, raw);
+	return adc_convert_to_millivolts(adc, raw);
 }
 
 struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void))
@@ -78,7 +83,7 @@ struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void))
 	initialize_monitor_gpio();
 	dispatch_callback = on_event_callback;
 
-	if ((adc = adc_create()) == NULL) {
+	if ((adc = adc_create(0)) == NULL) {
 		return NULL;
 	}
 

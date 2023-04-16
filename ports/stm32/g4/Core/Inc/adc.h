@@ -41,7 +41,6 @@ extern ADC_HandleTypeDef hadc2;
 void MX_ADC2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-struct adc *adc_create(void);
 
 /* USER CODE END Prototypes */
 

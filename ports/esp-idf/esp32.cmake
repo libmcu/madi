@@ -8,11 +8,11 @@ set(ESP_COMPONENTS freertos esptool_py esp-tls bt)
 
 if ($ENV{IDF_VERSION} VERSION_GREATER_EQUAL "5.0.0")
 	list(APPEND ESP_COMPONENTS esp_adc)
-	get_filename_component(tmp_abs_file_path ${CMAKE_CURRENT_LIST_DIR}/adc1_legacy.c ABSOLUTE)
+	get_filename_component(tmp_abs_file_path ${CMAKE_CURRENT_LIST_DIR}/adc_legacy.c ABSOLUTE)
 	list(REMOVE_ITEM PORT_SRCS ${tmp_abs_file_path})
 else()
 	list(APPEND ESP_COMPONENTS esp_adc_cal)
-	get_filename_component(tmp_abs_file_path ${CMAKE_CURRENT_LIST_DIR}/adc1.c ABSOLUTE)
+	get_filename_component(tmp_abs_file_path ${CMAKE_CURRENT_LIST_DIR}/adc.c ABSOLUTE)
 	list(REMOVE_ITEM PORT_SRCS ${tmp_abs_file_path})
 endif()
 

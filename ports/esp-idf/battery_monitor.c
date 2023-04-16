@@ -5,14 +5,14 @@
  */
 
 #include "battery.h"
-#include "adc1.h"
+#include "libmcu/adc.h"
 #include "driver/gpio.h"
 #include "esp_attr.h"
 
 #define MONITOR_ENABLE_GPIO_NUMBER		4
 #define MONITOR_GPIO_NUMBER			7 /* ADC1_6 */
 #define MONITOR_INTR_GPIO_NUMBER		14
-#define ADC_CHANNEL				6
+#define ADC_CHANNEL				ADC_CH_6
 
 static struct adc *adc;
 static void (*dispatch_callback)(void);
@@ -44,11 +44,15 @@ static void initialize_monitor_gpio(void)
 
 static int enable_monitor(bool enable)
 {
-	adc_enable(adc, enable);
+	if (enable) {
+		adc_enable(adc);
+	} else {
+		adc_disable(adc);
+	}
 
 	if (enable) {
 		adc_calibrate(adc);
-		adc1_channel_init(6, 3/*11dB*/);
+		adc_channel_init(adc, ADC_CHANNEL);
 	}
 
 	gpio_set_level(MONITOR_ENABLE_GPIO_NUMBER, enable);
@@ -58,12 +62,13 @@ static int enable_monitor(bool enable)
 
 static int get_level_adc(void)
 {
-	return adc_get_raw(adc, ADC_CHANNEL);
+	adc_measure(adc);
+	return adc_read(adc, ADC_CHANNEL);
 }
 
 static int adc_to_millivolts(int raw)
 {
-	return adc_raw_to_millivolts(adc, raw);
+	return adc_convert_to_millivolts(adc, raw);
 }
 
 struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void))
@@ -77,7 +82,7 @@ struct battery_monitor *battery_monitor_init(void (*on_event_callback)(void))
 	initialize_monitor_gpio();
 	dispatch_callback = on_event_callback;
 
-	if ((adc = adc1_create()) == NULL) {
+	if ((adc = adc_create(1)) == NULL) {
 		return NULL;
 	}
 

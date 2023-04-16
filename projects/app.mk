@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 LIBMCU_ROOT ?= $(BASEDIR)/external/libmcu
-LIBMCU_MODULES := ao button cli logging metrics
-LIBMCU_INTERFACES := i2c l4 uart
+LIBMCU_MODULES := ao button cli logging metrics pm
+LIBMCU_INTERFACES := adc i2c l4 uart
 include $(LIBMCU_ROOT)/projects/modules.mk
 include $(LIBMCU_ROOT)/projects/interfaces.mk
 

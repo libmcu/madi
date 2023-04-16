@@ -1,65 +1,80 @@
 /*
- * SPDX-FileCopyrightText: 2023 Kyunghwan Kwon <k@mononn.com>
+ * SPDX-FileCopyrightText: 2023 Kyunghwan Kwon <k@libmcu.org>
  *
  * SPDX-License-Identifier: MIT
  */
 
-#include "libmcu/port/adc.h"
-#include "libmcu/metrics.h"
-
 #include <errno.h>
 #include <string.h>
 
-#include "nrfx_saadc.h"
+#include "esp_adc/adc_oneshot.h"
+#include "esp_adc/adc_cali.h"
+#include "esp_adc/adc_cali_scheme.h"
 
-#define ADC_RESOLUTION		NRF_SAADC_RESOLUTION_12BIT
-#define ADC_PRIORITY		6
+#include "libmcu/port/adc.h"
+#include "libmcu/metrics.h"
+
+#define ADC_MAX			2
+#define ADC_RESOLUTION		ADC_BITWIDTH_12
+#define ADC_ATTEN		ADC_ATTEN_DB_11
 
 #define VOLTAGE_DIVIDER_RATIO	134 /* R1: 360K, R2: 56K */
 
+#if defined(esp32s3) || defined(esp32c3)
+#define cal_type		adc_cali_curve_fitting_config_t
+#define cal_func		adc_cali_create_scheme_curve_fitting
+#define cal_del			adc_cali_delete_scheme_curve_fitting
+#else
+#define cal_type		adc_cali_line_fitting_config_t
+#define cal_func		adc_cali_create_scheme_line_fitting
+#define cal_del			adc_cali_delete_scheme_line_fitting
+#endif
+
 struct adc {
-	/* nRF52840 supports up to 8 channels */
-	nrf_saadc_value_t raw_buffer[1];
+	adc_oneshot_unit_handle_t handle;
+	adc_cali_handle_t cal_handle;
 	uint8_t unit;
 	bool activated;
 };
 
-static nrf_saadc_input_t channel_to_nrf(adc_channel_t channel)
+static int channel_to_esp(adc_channel_t channel)
 {
-	return (nrf_saadc_input_t)(channel? __builtin_ctz(channel) + 2 : 1);
-}
-
-static int initialize_adc_mode(int channel)
-{
-	return (int)nrfx_saadc_simple_mode_set((uint32_t)(channel << 1),
-			ADC_RESOLUTION, NRF_SAADC_OVERSAMPLE_DISABLED, NULL);
+	return channel? __builtin_ctz(channel) + 1 : 0;
 }
 
 int adc_port_convert_to_millivolts(struct adc *self, int value)
 {
+	int mv;
+
 	if (!self || !self->activated) {
 		metrics_increase(ADCErrorPipe);
 		return -EPIPE;
 	}
 
-	int mv = value * (600/*=ref0.6V*1000mV*/) / 1/*gain*/ / (4096-1)/*12bit*/;
+	if (adc_cali_raw_to_voltage(self->cal_handle, value, &mv) != ESP_OK) {
+		metrics_increase(ADCErrorConversion);
+		return -ENOSR;
+	}
+
 	return mv * 1000 / VOLTAGE_DIVIDER_RATIO;
 }
 
 int adc_port_read(struct adc *self, adc_channel_t channel)
 {
+	int adc;
+
 	if (!self || !self->activated) {
 		metrics_increase(ADCErrorPipe);
 		return -EPIPE;
 	}
 
-	if (nrfx_saadc_mode_trigger() != NRFX_SUCCESS) {
+	if (adc_oneshot_read(self->handle, channel_to_esp(channel), &adc)
+			!= ESP_OK) {
 		metrics_increase(ADCErrorRead);
 		return -ENOMSG;
 	}
 
-	(void)channel;
-	return (int)self->raw_buffer[0];
+	return adc;
 }
 
 int adc_port_measure(struct adc *self)
@@ -79,36 +94,19 @@ int adc_port_channel_init(struct adc *self, adc_channel_t channel)
 		return -EPIPE;
 	}
 
-	nrf_saadc_input_t ch = channel_to_nrf(channel);
-	nrfx_saadc_channel_t cfg = {
-		.channel_config = {
-			.resistor_p = NRF_SAADC_RESISTOR_DISABLED,
-			.resistor_n = NRF_SAADC_RESISTOR_DISABLED,
-			.gain = NRF_SAADC_GAIN1, /* ~ 600mA */
-			.reference = NRF_SAADC_REFERENCE_INTERNAL, /* 0.6V */
-			.acq_time = NRF_SAADC_ACQTIME_15US, /* 192kOhm */
-			.mode = NRF_SAADC_MODE_SINGLE_ENDED,
-			.burst = NRF_SAADC_BURST_DISABLED,
-			.pin_p = ch,
-			.pin_n = NRF_SAADC_INPUT_DISABLED,
-		},
-		.pin_p = ch,
-		.pin_n = NRF_SAADC_INPUT_DISABLED,
-		.channel_index = (uint8_t)(ch-1),
+	/* 100mV ~ 950mV  : No attenuation
+	 * 100mV ~ 1250mV : 2.5dB
+	 * 150mV ~ 1750mV : 6dB
+	 * 150mV ~ 2450mV : 11dB */
+	adc_oneshot_chan_cfg_t cfg = {
+		.bitwidth = ADC_RESOLUTION,
+		.atten = ADC_ATTEN,
 	};
 
-	if (nrfx_saadc_channels_config(&cfg, 1) != NRFX_SUCCESS) {
+	if (adc_oneshot_config_channel(self->handle,
+			channel_to_esp(channel), &cfg) != ESP_OK) {
 		metrics_increase(ADCErrorParam);
 		return -EINVAL;
-	}
-	if (initialize_adc_mode(channel) != NRFX_SUCCESS) {
-		metrics_increase(ADCFault);
-		return -EFAULT;
-	}
-	if (nrfx_saadc_buffer_set(self->raw_buffer, sizeof(self->raw_buffer) /
-				sizeof(self->raw_buffer[0])) != NRFX_SUCCESS) {
-		metrics_increase(ADCFault);
-		return -ENOSPC;
 	}
 
 	return 0;
@@ -121,7 +119,13 @@ int adc_port_calibrate(struct adc *self)
 		return -EPIPE;
 	}
 
-	if (nrfx_saadc_offset_calibrate(NULL) != NRFX_SUCCESS) {
+	cal_type cfg = {
+		.unit_id = self->unit,
+		.atten = ADC_ATTEN,
+		.bitwidth = ADC_RESOLUTION,
+	};
+
+	if (cal_func(&cfg, &self->cal_handle) != ESP_OK) {
 		metrics_increase(ADCErrorCalibration);
 		return -ESTALE;
 	}
@@ -139,7 +143,11 @@ int adc_port_enable(struct adc *self)
 		return -EALREADY;
 	}
 
-	if (nrfx_saadc_init(ADC_PRIORITY) != NRFX_SUCCESS) {
+	adc_oneshot_unit_init_cfg_t cfg = {
+		.unit_id = self->unit,
+	};
+
+	if (adc_oneshot_new_unit(&cfg, &self->handle) != ESP_OK) {
 		metrics_increase(ADCFault);
 		return -EFAULT;
 	}
@@ -147,7 +155,6 @@ int adc_port_enable(struct adc *self)
 	self->activated = true;
 	return 0;
 }
-
 
 int adc_port_disable(struct adc *self)
 {
@@ -159,7 +166,8 @@ int adc_port_disable(struct adc *self)
 		return -EALREADY;
 	}
 
-	nrfx_saadc_uninit();
+	adc_oneshot_del_unit(self->handle);
+	cal_del(self->cal_handle);
 
 	self->activated = false;
 	return 0;
@@ -167,13 +175,15 @@ int adc_port_disable(struct adc *self)
 
 struct adc *adc_port_create(uint8_t adc_num)
 {
-	static struct adc adc;
+	static struct adc adc[ADC_MAX];
 
-	if (adc_num != 0 || adc.activated) {
+	if (--adc_num >= ADC_MAX || adc[adc_num].activated) {
 		return NULL;
 	}
 
-	return &adc;
+	adc[adc_num].unit = adc_num;
+
+	return &adc[adc_num];
 }
 
 int adc_port_delete(struct adc *self)
