@@ -12,30 +12,29 @@ static const void *user_btn_handle;
 static button_handler_t active_handler;
 static void *userctx;
 
-static void on_button_event(enum button_event event,
-		const struct button_data *info, void *ctx)
+static void on_button_event(button_event_t event, const struct button *button, void *ctx)
 {
 	unused(ctx);
 
 	switch (event) {
 	case BUTTON_EVT_CLICK:
-		debug("click %u %u", info->time_released, info->click);
+		debug("click %u %u", button->time_released, button->click);
 		break;
 	case BUTTON_EVT_PRESSED:
-		debug("pressed %u", info->time_pressed);
+		debug("pressed %u", button->time_pressed);
 		break;
 	case BUTTON_EVT_RELEASED:
-		debug("released %u", info->time_released);
+		debug("released %u", button->time_released);
 		break;
 	case BUTTON_EVT_HOLDING:
-		debug("holding %u", info->time_repeat);
+		debug("holding %u", button->time_repeat);
 		break;
 	default:
 		break;
 	}
 
 	if (active_handler) {
-		(*active_handler)(event, info, userctx);
+		(*active_handler)(event, button, userctx);
 	}
 }
 

@@ -124,12 +124,11 @@ static bool test_wifi(void)
 	return true;
 }
 
-static void on_userbutton_event(enum button_event event,
-		const struct button_data *info, void *ctx)
+static void on_userbutton_event(button_event_t event, const struct button *button, void *ctx)
 {
 	uint8_t *expected_clicks = (uint8_t *)ctx;
 
-	if (event == BUTTON_EVT_CLICK && info->click == *expected_clicks) {
+	if (event == BUTTON_EVT_CLICK && button->click == *expected_clicks) {
 		*expected_clicks = 0;
 	}
 }
