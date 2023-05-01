@@ -47,37 +47,6 @@ else()
 	)
 endif()
 
-set(TINYUSB_ROOT ${CMAKE_SOURCE_DIR}/external/tinyusb)
-
-if (NOT EXISTS ${TINYUSB_ROOT})
-	message(INFO "Downloading tinyusb")
-	set(FETCHCONTENT_QUIET FALSE)
-	include(FetchContent)
-	FetchContent_Declare(tinyusb
-		URL "https://github.com/hathach/tinyusb/archive/refs/tags/0.15.0.zip"
-		SOURCE_DIR "${TINYUSB_ROOT}"
-	)
-	FetchContent_MakeAvailable(tinyusb)
-endif()
-
-list(APPEND NRF_SRCS
-	${TINYUSB_ROOT}/src/tusb.c
-	${TINYUSB_ROOT}/src/common/tusb_fifo.c
-	${TINYUSB_ROOT}/src/device/usbd.c
-	${TINYUSB_ROOT}/src/device/usbd_control.c
-	${TINYUSB_ROOT}/src/class/cdc/cdc_device.c
-	${CMAKE_CURRENT_LIST_DIR}/tinyusb/dcd_nrf5x.c
-	${CMAKE_CURRENT_LIST_DIR}/tinyusb/usb_descriptors.c
-	${CMAKE_CURRENT_LIST_DIR}/tinyusb/usbd_cdc.c
-)
-list(APPEND NRF_INCS
-	${TINYUSB_ROOT}/src
-	${CMAKE_CURRENT_LIST_DIR}/tinyusb
-)
-list(APPEND NRF_DEFS
-	CFG_TUSB_MCU=OPT_MCU_NRF5X
-)
-
 list(APPEND NRF_SRCS
 	${SDK_ROOT}/components/ble/ble_advertising/ble_advertising.c
 	${SDK_ROOT}/components/ble/common/ble_advdata.c
@@ -256,6 +225,7 @@ target_compile_definitions(nrf52 PUBLIC ${NRF_DEFS})
 target_link_libraries(nrf52 PUBLIC libmcu bq25180)
 
 target_link_libraries(pble PRIVATE nrf52)
+target_link_libraries(tinyusb PRIVATE nrf52)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nrf52)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})

@@ -28,23 +28,6 @@ NRF_DEFS += \
 	CUSTOM_BOARD_INC=redbear
 endif
 
-TINYUSB_ROOT ?= $(BASEDIR)/external/tinyusb
-TINYUSB_SRCS := \
-	$(TINYUSB_ROOT)/src/tusb.c \
-	$(TINYUSB_ROOT)/src/common/tusb_fifo.c \
-	$(TINYUSB_ROOT)/src/device/usbd.c \
-	$(TINYUSB_ROOT)/src/device/usbd_control.c \
-	$(TINYUSB_ROOT)/src/class/cdc/cdc_device.c \
-	$(wildcard $(PORT_ROOT)/tinyusb/*.c)
-TINYUSB_INCS := $(TINYUSB_ROOT)/src $(PORT_ROOT)/tinyusb
-TINYUSB_DEFS := CFG_TUSB_MCU=OPT_MCU_NRF5X
-$(SRCS): $(TINYUSB_ROOT)
-$(TINYUSB_ROOT):
-	$(Q)git clone https://github.com/hathach/tinyusb.git $@
-NRF_SRCS += $(TINYUSB_SRCS)
-NRF_INCS += $(TINYUSB_INCS)
-NRF_DEFS += $(TINYUSB_DEFS)
-
 NRF_SRCS += \
 	$(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
 	$(SDK_ROOT)/components/ble/common/ble_advdata.c \
@@ -211,7 +194,9 @@ NRF_DEFS += \
 	FREERTOS \
 	__HEAP_SIZE=8192 \
 	__STACK_SIZE=8192 \
-	_POSIX_C_SOURCE=200809L
+	_POSIX_C_SOURCE=200809L \
+	\
+	CFG_TUSB_MCU=OPT_MCU_NRF5X
 
 $(addprefix $(OUTDIR)/, $(NRF_SRCS:%=%.o)): CFLAGS+=-Wno-error
 $(addprefix $(OUTDIR)/, $(PBLE_SRCS:%=%.o)): CFLAGS+=-Wno-error

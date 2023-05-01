@@ -10,6 +10,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	pl4
 	pmqtt
 	bq25180
+	tinyusb
+	lwip
 
 	-Wl,--cref
 	-Wl,--Map=\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map\"

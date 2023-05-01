@@ -16,6 +16,10 @@ PMQTT_ROOT := $(BASEDIR)/external/pmqtt
 include $(PMQTT_ROOT)/sources.mk
 BQ25180_ROOT := $(BASEDIR)/external/bq25180
 include $(BQ25180_ROOT)/sources.mk
+TINYUSB_PORT_ROOT := $(BASEDIR)/ports/tinyusb
+include $(TINYUSB_PORT_ROOT)/sources.mk
+LWIP_PORT_ROOT := $(BASEDIR)/ports/lwip
+include $(LWIP_PORT_ROOT)/sources.mk
 
 SRCS += $(LIBMCU_MODULES_SRCS) \
 	$(LIBMCU_INTERFACES_SRCS) \
@@ -24,6 +28,8 @@ SRCS += $(LIBMCU_MODULES_SRCS) \
 	$(PL4_SRCS) \
 	$(PMQTT_SRCS) \
 	$(BQ25180_SRCS) \
+	$(TINYUSB_SRCS) \
+	$(LWIP_SRCS) \
 
 INCS += $(LIBMCU_MODULES_INCS) \
 	$(LIBMCU_INTERFACES_INCS) \
@@ -32,6 +38,8 @@ INCS += $(LIBMCU_MODULES_INCS) \
 	$(PL4_INCS) \
 	$(PMQTT_INCS) \
 	$(BQ25180_INCS) \
+	$(TINYUSB_INCS) \
+	$(LWIP_INCS) \
 
 DEFS += METRICS_USER_DEFINES=\"$(BASEDIR)/include/metrics.def\" \
 	TARGET_PLATFORM=$(TARGET_PLATFORM) \
