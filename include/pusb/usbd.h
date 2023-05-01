@@ -13,9 +13,12 @@ extern "C" {
 
 #include <stddef.h>
 
-int usbd_cdc_init(void);
-int usbd_cdc_enable(void);
-int usbd_cdc_disable(void);
+int usbd_port_init(void);
+
+int usbd_init(void);
+int usbd_enable(void);
+int usbd_disable(void);
+int usbd_step(void);
 int usbd_cdc_write(const void *data, size_t datasize);
 int usbd_cdc_read(void *buf, size_t bufsize);
 

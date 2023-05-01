@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2019 Ha Thach (tinyusb.org)
@@ -25,9 +25,33 @@
 
 #include "tusb.h"
 
-#define USB_PID   0xE000 
-#define USB_VID   0x1209
-#define USB_BCD   0x0200
+#define USB_PID		0xE000 
+#define USB_VID		0x1209
+#define USB_BCD		0x0200
+
+enum {
+	ITF_NUM_CDC = 0,
+	ITF_NUM_CDC_DATA,
+	ITF_NUM_CDC_ACM,
+	ITF_NUM_CDC_ACM_DATA,
+	ITF_NUM_TOTAL
+};
+
+enum str_desc_index {
+	STRID_LANGID			= 0,
+	STRID_MANUFACTURER,
+	STRID_PRODUCT,
+	STRID_SERIAL,
+	STRID_INTERFACE_ECM,
+	STRID_INTERFACE_ACM,
+	STRID_MAC,
+};
+
+enum cfg_desc_index {
+	CFGID_ECM			= 0,
+	CFGID_RNDIS,
+	CFGID_COUNT,
+};
 
 //--------------------------------------------------------------------+
 // Device Descriptors
@@ -50,11 +74,11 @@ tusb_desc_device_t const desc_device =
     .idProduct          = USB_PID,
     .bcdDevice          = 0x0100,
 
-    .iManufacturer      = 0x01,
-    .iProduct           = 0x02,
-    .iSerialNumber      = 0x03,
+    .iManufacturer      = STRID_MANUFACTURER,
+    .iProduct           = STRID_PRODUCT,
+    .iSerialNumber      = STRID_SERIAL,
 
-    .bNumConfigurations = 0x01
+    .bNumConfigurations = CFGID_COUNT,
 };
 
 // Invoked when received GET DEVICE DESCRIPTOR
@@ -67,103 +91,56 @@ uint8_t const * tud_descriptor_device_cb(void)
 //--------------------------------------------------------------------+
 // Configuration Descriptor
 //--------------------------------------------------------------------+
-
-enum
-{
-  ITF_NUM_CDC = 0,
-  ITF_NUM_CDC_DATA,
-  ITF_NUM_TOTAL
-};
+#define ECM_CFG_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_ECM_DESC_LEN + TUD_CDC_DESC_LEN)
+#define RNDIS_CFG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_RNDIS_DESC_LEN + TUD_CDC_DESC_LEN)
 
 #define EPNUM_CDC_NOTIF   0x81
 #define EPNUM_CDC_OUT     0x02
 #define EPNUM_CDC_IN      0x82
 
-#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN)
+#define EPNUM_NET_NOTIF   0x83
+#define EPNUM_NET_OUT     0x04
+#define EPNUM_NET_IN      0x84
 
-uint8_t const desc_fs_configuration[] =
+static uint8_t const ecm_configuration[] =
 {
-  // Config number, interface count, string index, total length, attribute, power in mA
-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
+  // Config number (index+1), interface count, string index, total length, attribute, power in mA
+  TUD_CONFIG_DESCRIPTOR(CFGID_ECM+1, ITF_NUM_TOTAL, 0, ECM_CFG_TOTAL_LEN, 0, 100),
+
+  // Interface number, description string index, MAC address string index, EP notification address and size, EP data address (out, in), and size, max segment size.
+  TUD_CDC_ECM_DESCRIPTOR(ITF_NUM_CDC, STRID_INTERFACE_ECM, STRID_MAC, EPNUM_NET_NOTIF, 64, EPNUM_NET_OUT, EPNUM_NET_IN, CFG_TUD_NET_ENDPOINT_SIZE, CFG_TUD_NET_MTU),
 
   // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
-  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
+  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_ACM, STRID_INTERFACE_ACM, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
 };
 
-#if TUD_OPT_HIGH_SPEED
-// Per USB specs: high speed capable device must report device_qualifier and other_speed_configuration
-
-// high speed configuration
-uint8_t const desc_hs_configuration[] =
+static uint8_t const rndis_configuration[] =
 {
-  // Config number, interface count, string index, total length, attribute, power in mA
-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
+  // Config number (index+1), interface count, string index, total length, attribute, power in mA
+  TUD_CONFIG_DESCRIPTOR(CFGID_RNDIS+1, ITF_NUM_TOTAL, 0, RNDIS_CFG_TOTAL_LEN, 0, 100),
 
   // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
-  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 512),
+  TUD_RNDIS_DESCRIPTOR(ITF_NUM_CDC, STRID_INTERFACE_ECM, EPNUM_NET_NOTIF, 8, EPNUM_NET_OUT, EPNUM_NET_IN, CFG_TUD_NET_ENDPOINT_SIZE),
+
+  // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
+  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_ACM, STRID_INTERFACE_ACM, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
 };
-
-// other speed configuration
-uint8_t desc_other_speed_config[CONFIG_TOTAL_LEN];
-
-// device qualifier is mostly similar to device descriptor since we don't change configuration based on speed
-tusb_desc_device_qualifier_t const desc_device_qualifier =
-{
-  .bLength            = sizeof(tusb_desc_device_qualifier_t),
-  .bDescriptorType    = TUSB_DESC_DEVICE_QUALIFIER,
-  .bcdUSB             = USB_BCD,
-
-  .bDeviceClass       = TUSB_CLASS_MISC,
-  .bDeviceSubClass    = MISC_SUBCLASS_COMMON,
-  .bDeviceProtocol    = MISC_PROTOCOL_IAD,
-
-  .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
-  .bNumConfigurations = 0x01,
-  .bReserved          = 0x00
-};
-
-// Invoked when received GET DEVICE QUALIFIER DESCRIPTOR request
-// Application return pointer to descriptor, whose contents must exist long enough for transfer to complete.
-// device_qualifier descriptor describes information about a high-speed capable device that would
-// change if the device were operating at the other speed. If not highspeed capable stall this request.
-uint8_t const* tud_descriptor_device_qualifier_cb(void)
-{
-  return (uint8_t const*) &desc_device_qualifier;
-}
-
-// Invoked when received GET OTHER SEED CONFIGURATION DESCRIPTOR request
-// Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
-// Configuration descriptor in the other speed e.g if high speed then this is for full speed and vice versa
-uint8_t const* tud_descriptor_other_speed_configuration_cb(uint8_t index)
-{
-  (void) index; // for multiple configurations
-
-  // if link speed is high return fullspeed config, and vice versa
-  // Note: the descriptor type is OHER_SPEED_CONFIG instead of CONFIG
-  memcpy(desc_other_speed_config,
-         (tud_speed_get() == TUSB_SPEED_HIGH) ? desc_fs_configuration : desc_hs_configuration,
-         CONFIG_TOTAL_LEN);
-
-  desc_other_speed_config[1] = TUSB_DESC_OTHER_SPEED_CONFIG;
-
-  return desc_other_speed_config;
-}
-
-#endif // highspeed
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
 uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 {
-  (void) index; // for multiple configurations
+	static uint8_t const *tbl[] = {
+		[CFGID_ECM] = ecm_configuration,
+		[CFGID_RNDIS] = rndis_configuration,
+	};
 
-#if TUD_OPT_HIGH_SPEED
-  // Although we are highspeed, host may be fullspeed.
-  return (tud_speed_get() == TUSB_SPEED_HIGH) ?  desc_hs_configuration : desc_fs_configuration;
-#else
-  return desc_fs_configuration;
-#endif
+	if (index >= CFGID_COUNT) {
+		return NULL;
+	}
+
+	return tbl[index];
 }
 
 //--------------------------------------------------------------------+
@@ -172,13 +149,16 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 
 // array of pointer to string descriptors
 static char serial_number[16+1];
-char const* string_desc_arr [] =
+static char const* string_desc_arr [] =
 {
-  (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
-  "libmcu",                     // 1: Manufacturer
-  "MADI",              // 2: Product
-  serial_number,                // 3: Serials, should use chip ID
-  "MADI CDC",                 // 4: CDC Interface
+  [STRID_LANGID]       = (const char[]) { 0x09, 0x04 }, // supported language is English (0x0409)
+  [STRID_MANUFACTURER] = "libmcu",                     // Manufacturer
+  [STRID_PRODUCT]      = "MADI",              // Product
+  [STRID_SERIAL]       = serial_number,                      // Serial
+  [STRID_INTERFACE_ECM]    = "MADI Network Interface",    // Interface Description
+  [STRID_INTERFACE_ACM]    = "MADI CDC",    // Interface Description
+
+  // STRID_MAC index is handled separately
 };
 
 static uint16_t _desc_str[32];
@@ -194,13 +174,24 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 
   (void) langid;
 
-  uint8_t chr_count;
+  unsigned int chr_count = 0;
 
-  if ( index == 0)
+  if (STRID_LANGID == index)
   {
-    memcpy(&_desc_str[1], string_desc_arr[0], 2);
+    memcpy(&_desc_str[1], string_desc_arr[STRID_LANGID], 2);
     chr_count = 1;
-  }else
+  }
+  else if (STRID_MAC == index)
+  {
+    // Convert MAC address into UTF-16
+
+    for (unsigned i=0; i<sizeof(tud_network_mac_address); i++)
+    {
+      _desc_str[1+chr_count++] = "0123456789ABCDEF"[(tud_network_mac_address[i] >> 4) & 0xf];
+      _desc_str[1+chr_count++] = "0123456789ABCDEF"[(tud_network_mac_address[i] >> 0) & 0xf];
+    }
+  }
+  else
   {
     // Note: the 0xEE index string is a Microsoft OS 1.0 Descriptors.
     // https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/microsoft-defined-usb-descriptors
@@ -211,10 +202,10 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 
     // Cap at max char
     chr_count = (uint8_t) strlen(str);
-    if ( chr_count > 31 ) chr_count = 31;
+    if ( chr_count > (TU_ARRAY_SIZE(_desc_str) - 1)) chr_count = TU_ARRAY_SIZE(_desc_str) - 1;
 
     // Convert ASCII string into UTF-16
-    for(uint8_t i=0; i<chr_count; i++)
+    for (unsigned int i=0; i<chr_count; i++)
     {
       _desc_str[1+i] = str[i];
     }

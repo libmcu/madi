@@ -16,3 +16,6 @@
 [submodule "external/bq25180"]
 	path = external/bq25180
 	url = https://github.com/libmcu/bq25180.git
+[submodule "external/tinyusb"]
+	path = external/tinyusb
+	url = https://github.com/hathach/tinyusb.git
