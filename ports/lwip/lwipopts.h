@@ -61,7 +61,7 @@
 
 #define PBUF_POOL_SIZE                  2
 
-#define HTTPD_USE_CUSTOM_FSDATA         0
+#define HTTPD_USE_CUSTOM_FSDATA         1
 
 #define LWIP_MULTICAST_PING             1
 #define LWIP_BROADCAST_PING             1
