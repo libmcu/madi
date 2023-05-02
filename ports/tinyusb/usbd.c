@@ -1,13 +1,6 @@
 #include "pusb/usbd.h"
-
 #include <semaphore.h>
-
 #include "tusb.h"
-
-#include "nrf_sdm.h"
-#include "nrf_sdh.h"
-#include "nrfx_power.h"
-
 #include "libmcu/ringbuf.h"
 
 enum status {
