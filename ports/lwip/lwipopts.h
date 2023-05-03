@@ -53,34 +53,41 @@
 
 #define ETHARP_SUPPORT_STATIC_ENTRIES   1
 
-#define LWIP_HTTPD_CGI                  0
-#define LWIP_HTTPD_SSI                  0
+#define LWIP_HTTPD_CGI                  1
+#define LWIP_HTTPD_SSI                  1
 #define LWIP_HTTPD_SSI_INCLUDE_TAG      0
+#define LWIP_HTTPD_SSI_MULTIPART        1
 
 #define LWIP_SINGLE_NETIF               1
 
 #define PBUF_POOL_SIZE                  2
 
+#define HTTPD_SERVER_AGENT              "MADI (https://libmcu.org)"
 #define HTTPD_USE_CUSTOM_FSDATA         1
+#define LWIP_HTTPD_CUSTOM_FILES         1
+#define LWIP_HTTPD_DYNAMIC_HEADERS      1
+#define LWIP_HTTPD_DYNAMIC_FILE_READ    0
+#define LWIP_HTTPD_SUPPORT_V09          0
 
 #define LWIP_MULTICAST_PING             1
 #define LWIP_BROADCAST_PING             1
 #define LWIP_IPV6_MLD                   0
 #define LWIP_IPV6_SEND_ROUTER_SOLICIT   0
 
-#define LWIP_DEBUG 1
+//#define LWIP_DEBUG                      1
 #define ETHARP_DEBUG                    LWIP_DBG_ON
 #define NETIF_DEBUG                     LWIP_DBG_ON
 #define PBUF_DEBUG                      LWIP_DBG_ON
 #define IP_DEBUG                        LWIP_DBG_ON
 #define RAW_DEBUG                       LWIP_DBG_ON
 #define SYS_DEBUG                       LWIP_DBG_ON
-#define MEM_DEBUG                LWIP_DBG_ON
-#define MEMP_DEBUG               LWIP_DBG_ON
-#define TCPIP_DEBUG              LWIP_DBG_ON
+#define MEM_DEBUG                       LWIP_DBG_ON
+#define MEMP_DEBUG                      LWIP_DBG_ON
+#define TCPIP_DEBUG                     LWIP_DBG_ON
+#define HTTPD_DEBUG                     LWIP_DBG_ON
 
 //#define MEM_SIZE
-#define LWIP_STATS 1
-#define LWIP_STATS_DISPLAY 1
+#define LWIP_STATS                      1
+#define LWIP_STATS_DISPLAY              1
 
 #endif /* __LWIPOPTS_H__ */
