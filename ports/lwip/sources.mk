@@ -43,7 +43,9 @@ LWIP_SRCS := \
 	$(LWIP_ROOT)/src/netif/ethernet.c \
 	$(LWIP_ROOT)/src/netif/slipif.c \
 	$(LWIP_ROOT)/src/apps/http/httpd.c \
-	$(LWIP_ROOT)/src/apps/http/fs.c
+	$(LWIP_ROOT)/src/apps/http/fs.c \
+	\
+	$(LWIP_PORT_ROOT)/fs_custom.c
 
 LWIP_INCS := \
 	$(LWIP_ROOT)/src/include \

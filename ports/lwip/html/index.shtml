@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>MADI</title>
+</head>
+<body>
+  <header>
+    <h3>마디</h3>
+  </header>
+
+  <main>
+    <form id="wifiForm" action="/save-wifi">
+      <label>Select your network</label>
+      <button type="button" id="scan" onclick="scanWifi()">Scan</button>
+      <select name="ssid" id="ssid" required>
+      </select>
+      <input type="password" name="password" id="password" placeholder="Password" required>
+      <button type="submit">Save</button>
+    </form>
+    <!--#SavedNet-->
+  </main>
+
+  <footer>
+    <a href="https://libmcu.org"><img src="https://libmcu.org/libmcu-icon.png" width="60px"/></a>
+  </footer>
+  <script>
+    function scanWifi() {
+            var scanBtn = document.getElementById("scan");
+            var req = new XMLHttpRequest();
+            req.open("GET", "/scan-wifi", true);
+            req.onreadystatechange = function() {
+      	      scanBtn.disabled = false;
+      	      if (this.readyState !== XMLHttpRequest.DONE ||
+      			this.status !== 200) {
+      		      return;
+      	      }
+              document.getElementById("ssid").innerHTML = this.responseText;
+            };
+            req.send();
+            scanBtn.disabled = true;
+    }
+    window.history.replaceState({}, document.title, "/");
+  </script>
+</body>
+</html>

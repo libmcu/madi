@@ -48,6 +48,8 @@ add_library(${PROJECT_NAME} OBJECT
 	${LWIP_ROOT}/src/netif/slipif.c
 	${LWIP_ROOT}/src/apps/http/httpd.c
 	${LWIP_ROOT}/src/apps/http/fs.c
+
+	${CMAKE_CURRENT_LIST_DIR}/fs_custom.c
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
 	${LWIP_ROOT}/src/include

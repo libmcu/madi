@@ -63,7 +63,7 @@
 
 // can be defined by compiler in DEBUG build
 #ifndef CFG_TUSB_DEBUG
-#define CFG_TUSB_DEBUG        2
+#define CFG_TUSB_DEBUG        0
 #endif
 
 //#define CFG_TUSB_DEBUG_PRINTF my_printf
