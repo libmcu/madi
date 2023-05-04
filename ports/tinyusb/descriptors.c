@@ -24,6 +24,7 @@
  */
 
 #include "tusb.h"
+#include "libmcu/board.h"
 
 #define USB_PID		0xE000 
 #define USB_VID		0x1209
@@ -41,10 +42,10 @@ enum str_desc_index {
 	STRID_LANGID			= 0,
 	STRID_MANUFACTURER,
 	STRID_PRODUCT,
-	STRID_SERIAL,
 	STRID_INTERFACE_ECM,
 	STRID_INTERFACE_ACM,
 	STRID_MAC,
+	STRID_SERIAL,
 };
 
 enum cfg_desc_index {
@@ -148,13 +149,11 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 //--------------------------------------------------------------------+
 
 // array of pointer to string descriptors
-static char serial_number[16+1];
 static char const* string_desc_arr [] =
 {
   [STRID_LANGID]       = (const char[]) { 0x09, 0x04 }, // supported language is English (0x0409)
   [STRID_MANUFACTURER] = "libmcu",                     // Manufacturer
   [STRID_PRODUCT]      = "MADI",              // Product
-  [STRID_SERIAL]       = serial_number,                      // Serial
   [STRID_INTERFACE_ECM]    = "MADI Network Interface",    // Interface Description
   [STRID_INTERFACE_ACM]    = "MADI CDC",    // Interface Description
 
@@ -167,22 +166,20 @@ static uint16_t _desc_str[32];
 // Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
 uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 {
-	if (!serial_number[0]) {
-		sprintf(serial_number, "%08lx%08lx",
-			NRF_FICR->DEVICEADDR[0], NRF_FICR->DEVICEADDR[1]);
-	}
-
   (void) langid;
 
   unsigned int chr_count = 0;
 
-  if (STRID_LANGID == index)
-  {
+  if (STRID_LANGID == index) {
     memcpy(&_desc_str[1], string_desc_arr[STRID_LANGID], 2);
     chr_count = 1;
-  }
-  else if (STRID_MAC == index)
-  {
+  } else if (index == STRID_SERIAL) {
+    const char *p = board_get_serial_number_string();
+    chr_count = MIN(strlen(p), TU_ARRAY_SIZE(_desc_str) - 1);
+    for (size_t i = 0; i < chr_count; i++) {
+      _desc_str[1+i] = p[i];
+    }
+  } else if (STRID_MAC == index) {
     // Convert MAC address into UTF-16
 
     for (unsigned i=0; i<sizeof(tud_network_mac_address); i++)

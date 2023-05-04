@@ -12,12 +12,14 @@
 #include "lwip/sys.h"
 #include "lwip/timeouts.h"
 #include "lwip/stats.h"
+#include "lwip/apps/httpd.h"
+#include "lwip/apps/mdns.h"
 #include "dhserver.h"
-#include "httpd.h"
-
-#include "pusb/usbd.h"
 
 #include "libmcu/board.h"
+#include "libmcu/logging.h"
+
+#include "pusb/usbd.h"
 
 static dhcp_entry_t entries[] = {
 	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 7, 2))}, 24 * 60 * 60 },
@@ -71,7 +73,8 @@ static uint16_t handle_ssi_ajax(char *buf, int buflen,
 {
 	(void)current_part;
 	(void)next_part;
-	snprintf(buf, (size_t)buflen, "<option value=\"%s\">%s</option>", "test", "test");
+	snprintf(buf, (size_t)buflen,
+			"<option value=\"%s\">%s</option>", "test", "test");
 	return (uint16_t)strlen(buf);
 }
 
@@ -86,7 +89,9 @@ static uint16_t ssi_handler(int idx, char *buf, int buflen,
 		break;
 	case 1: /* SavedNet */
 		if (saved_wifi) {
-		snprintf(buf, (size_t)buflen, "<p>Saved network: <i><b>%s</b></i></p>", saved_wifi);
+		snprintf(buf, (size_t)buflen,
+				"<p>Saved network: <i><b>%s</b></i></p>",
+				saved_wifi);
 		len = (uint16_t)strlen(buf);
 		}
 		break;
@@ -120,6 +125,21 @@ int net_step(void)
 	return 0;
 }
 
+static void on_mdns_report(struct netif* netif, u8_t result, s8_t slot)
+
+{
+	debug("mdns status[netif %d]: %d, %d", netif->num, result, slot);
+}
+
+static void on_mdns_service_set(struct mdns_service *service, void *txt_userdata)
+{
+	(void)txt_userdata;
+
+	if (mdns_resp_add_service_txtitem(service, "path=/", 6) != ERR_OK) {
+		error("mdns add service txt failed");
+	}
+}
+
 int net_init(void)
 {
 	usbd_init();
@@ -145,6 +165,13 @@ int net_init(void)
 			ssi_tags, sizeof(ssi_tags) / sizeof(ssi_tags[0]));
 	http_set_cgi_handlers(cgi_handlers,
 			sizeof(cgi_handlers) / sizeof(cgi_handlers[0]));
+
+	mdns_resp_register_name_result_cb(on_mdns_report);
+	mdns_resp_init();
+	mdns_resp_add_netif(iface, "madi");
+	mdns_resp_add_service(iface, "madi", "_http", DNSSD_PROTO_TCP, 80,
+			on_mdns_service_set, NULL);
+	mdns_resp_announce(iface);
 
 	return 0;
 //stats_display();

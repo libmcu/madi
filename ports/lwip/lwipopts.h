@@ -74,6 +74,15 @@
 #define LWIP_IPV6_MLD                   0
 #define LWIP_IPV6_SEND_ROUTER_SOLICIT   0
 
+#define MEMP_NUM_UDP_PCB                4
+#define MEMP_NUM_SYS_TIMEOUT            (LWIP_NUM_SYS_TIMEOUT_INTERNAL + 3)
+
+#define LWIP_MDNS_RESPONDER             1
+#define LWIP_NUM_NETIF_CLIENT_DATA      1
+#define LWIP_IGMP                       1
+#define LWIP_AUTOIP                     1
+#define LWIP_RAND()			board_random()
+
 //#define LWIP_DEBUG                      1
 #define ETHARP_DEBUG                    LWIP_DBG_ON
 #define NETIF_DEBUG                     LWIP_DBG_ON
@@ -84,7 +93,7 @@
 #define MEM_DEBUG                       LWIP_DBG_ON
 #define MEMP_DEBUG                      LWIP_DBG_ON
 #define TCPIP_DEBUG                     LWIP_DBG_ON
-#define HTTPD_DEBUG                     LWIP_DBG_ON
+//#define HTTPD_DEBUG                     LWIP_DBG_ON
 
 //#define MEM_SIZE
 #define LWIP_STATS                      1

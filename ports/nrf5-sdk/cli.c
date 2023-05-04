@@ -5,14 +5,14 @@
  */
 
 #include "libmcu/cli_overrides.h"
-#include "pusb/usbd_cdc.h"
+#include "pusb/usbd.h"
 
 struct cli_io const *cli_io_create(void)
 {
 	static bool initialized;
 
 	if (!initialized) {
-		usbd_cdc_init();
+		usbd_init();
 		initialized = true;
 	}
 

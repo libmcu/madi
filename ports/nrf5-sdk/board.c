@@ -49,6 +49,18 @@ static void initialize_ble(void)
 	nrf_sdh_freertos_init(0, 0);
 }
 
+const char *board_get_serial_number_string(void)
+{
+	static char sn[16+1];
+
+	if (!sn[0]) {
+		sprintf(sn, "%08lx%08lx",
+			NRF_FICR->DEVICEADDR[0], NRF_FICR->DEVICEADDR[1]);
+	}
+
+	return sn;
+}
+
 void board_reboot(void)
 {
 	NVIC_SystemReset();

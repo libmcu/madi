@@ -16,8 +16,6 @@
 static struct netif usb_iface;
 static struct pbuf *received_frame;
 
-const uint8_t tud_network_mac_address[6] = {0x02,0x02,0x84,0x6A,0x96,0x00};
-
 static err_t linkoutput_fn(struct netif *netif, struct pbuf *p)
 {
 	(void)netif;
@@ -35,10 +33,10 @@ static err_t init_cb(struct netif *netif)
 	LWIP_ASSERT("netif != NULL", (netif != NULL));
 	netif->mtu = MTU;
 	netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP |
-		NETIF_FLAG_LINK_UP | NETIF_FLAG_UP;
+		NETIF_FLAG_LINK_UP | NETIF_FLAG_UP | NETIF_FLAG_IGMP;
 	netif->state = NULL;
-	netif->name[0] = 'E';
-	netif->name[1] = 'X';
+	netif->name[0] = 'e';
+	netif->name[1] = 'n';
 	netif->linkoutput = linkoutput_fn;
 	netif->output = ip4_output_fn;
 
@@ -94,10 +92,8 @@ int netif_usb_step(void)
 
 void *netif_usb_create(const struct net_iface_param *param)
 {
-	usb_iface.hwaddr_len = sizeof(tud_network_mac_address);
-	memcpy(usb_iface.hwaddr, tud_network_mac_address,
-			sizeof(tud_network_mac_address));
-	usb_iface.hwaddr[5] ^= 0x01;
+	usb_iface.hwaddr_len = 6;
+	netif_usb_get_mac(&usb_iface, usb_iface.hwaddr);
 
 	return (void *)netif_add(&usb_iface,
 			(const ip4_addr_t *)&param->ip,
