@@ -96,7 +96,7 @@
 //#define HTTPD_DEBUG                     LWIP_DBG_ON
 
 //#define MEM_SIZE
-#define LWIP_STATS                      1
-#define LWIP_STATS_DISPLAY              1
+//#define LWIP_STATS                      1
+//#define LWIP_STATS_DISPLAY              1
 
 #endif /* __LWIPOPTS_H__ */

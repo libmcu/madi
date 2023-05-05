@@ -22,15 +22,13 @@
 #include "pusb/usbd.h"
 
 static dhcp_entry_t entries[] = {
-	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 7, 2))}, 24 * 60 * 60 },
-	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 7, 3))}, 24 * 60 * 60 },
-	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 7, 4))}, 24 * 60 * 60 },
+	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 2))}, 24 * 60 * 60 },
 };
 
 static const dhcp_config_t dhcp_config = {
 	.router = {PP_HTONL(LWIP_MAKEU32(0, 0, 0, 0))},
 	.port = 67,
-	.dns = {PP_HTONL(LWIP_MAKEU32(192, 168, 7, 1))},
+	.dns = {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 1))},
 	.domain = "usb",
 	.num_entry = sizeof(entries) / sizeof(entries[0]),
 	.entries = entries,
@@ -102,29 +100,6 @@ static uint16_t ssi_handler(int idx, char *buf, int buflen,
 	return len;
 }
 
-sys_prot_t sys_arch_protect(void)
-{
-	return 0;
-}
-
-void sys_arch_unprotect(sys_prot_t pval)
-{
-	(void)pval;
-}
-
-uint32_t sys_now(void)
-{
-	return board_get_time_since_boot_ms();
-}
-
-int net_step(void)
-{
-	usbd_step();
-	sys_check_timeouts();
-
-	return 0;
-}
-
 static void on_mdns_report(struct netif* netif, u8_t result, s8_t slot)
 
 {
@@ -140,17 +115,35 @@ static void on_mdns_service_set(struct mdns_service *service, void *txt_userdata
 	}
 }
 
+sys_prot_t sys_arch_protect(void)
+{
+	return 0;
+}
+
+void sys_arch_unprotect(sys_prot_t pval)
+{
+	(void)pval;
+}
+
+uint32_t sys_now(void)
+{
+	return board_get_time_since_boot_ms();
+}
+
+void usbd_cdc_net_step(void)
+{
+	sys_check_timeouts();
+}
+
 int net_init(void)
 {
-	usbd_init();
+	lwip_init();
 
 	struct net_iface_param param = {
-		.ip = PP_HTONL(LWIP_MAKEU32(192,168,7,1)),
+		.ip = PP_HTONL(LWIP_MAKEU32(192,168,13,1)),
 		.netmask = PP_HTONL(LWIP_MAKEU32(255,255,255,0)),
 		.gateway = PP_HTONL(LWIP_MAKEU32(0,0,0,0)),
 	};
-
-	lwip_init();
 	struct netif *iface = (struct netif *)netif_usb_create(&param);
 #if LWIP_IPV6
 	netif_create_ip6_linklocal_address(iface, 1);
@@ -174,5 +167,4 @@ int net_init(void)
 	mdns_resp_announce(iface);
 
 	return 0;
-//stats_display();
 }

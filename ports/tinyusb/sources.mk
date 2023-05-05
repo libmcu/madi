@@ -14,6 +14,8 @@ TINYUSB_SRCS := \
 	$(TINYUSB_ROOT)/lib/networking/rndis_reports.c \
 	$(TINYUSB_PORT_ROOT)/descriptors.c \
 	$(TINYUSB_PORT_ROOT)/usbd.c \
+	$(TINYUSB_PORT_ROOT)/usbd_cdc_acm.c \
+	$(TINYUSB_PORT_ROOT)/usbd_cdc_net.c \
 	$(TINYUSB_PORT_ROOT)/usbd_nrf5x.c \
 	$(TINYUSB_PORT_ROOT)/dcd_nrf5x.c
 

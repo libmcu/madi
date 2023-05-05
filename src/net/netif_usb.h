@@ -17,13 +17,6 @@ extern "C" {
 
 void *netif_usb_create(const struct net_iface_param *param);
 void netif_usb_delete(void *p);
-int netif_usb_input(const void *data, uint16_t datasize);
-int netif_usb_clean_input(bool xfer);
-void netif_usb_input_done(void);
-int netif_usb_output(const void *data, uint16_t datasize);
-int netif_usb_clean_output(const void *p, void *q);
-int netif_usb_step(void);
-void netif_usb_get_mac(void *iface, uint8_t mac[6]);
 
 #if defined(__cplusplus)
 }

@@ -12,15 +12,26 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 
 int usbd_port_init(void);
 
 int usbd_init(void);
 int usbd_enable(void);
 int usbd_disable(void);
-int usbd_step(void);
-int usbd_cdc_write(const void *data, size_t datasize);
-int usbd_cdc_read(void *buf, size_t bufsize);
+
+void usbd_cdc_acm_init(void);
+void usbd_cdc_acm_step(void);
+int usbd_cdc_acm_read(void *buf, size_t bufsize);
+int usbd_cdc_acm_write(const void *data, size_t datasize);
+
+void usbd_cdc_net_init(void);
+void usbd_cdc_net_step(void);
+int usbd_cdc_net_send(const void *data, uint16_t datasize);
+int usbd_cdc_net_send_post(const void *p, void *q);
+int usbd_cdc_net_received(const void *data, uint16_t datasize);
+void usbd_cdc_net_received_post(void);
+void usbd_cdc_net_get_mac(uint8_t mac[6]);
 
 #if defined(__cplusplus)
 }

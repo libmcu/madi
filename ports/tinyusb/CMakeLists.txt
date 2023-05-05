@@ -32,6 +32,8 @@ add_library(${PROJECT_NAME} OBJECT
 	${TINYUSB_ROOT}/lib/networking/rndis_reports.c
 	${CMAKE_CURRENT_LIST_DIR}/descriptors.c
 	${CMAKE_CURRENT_LIST_DIR}/usbd.c
+	${CMAKE_CURRENT_LIST_DIR}/usbd_cdc_acm.c
+	${CMAKE_CURRENT_LIST_DIR}/usbd_cdc_net.c
 	${TINYUSB_SRCS}
 )
 target_include_directories(${PROJECT_NAME} PUBLIC

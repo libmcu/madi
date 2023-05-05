@@ -19,6 +19,7 @@
 #include "battery.h"
 #include "selftest.h"
 #include "net.h"
+#include "pusb/usbd.h"
 
 #define AO_STACK_SIZE_BYTES		4096U
 #define AO_PRIORITY			1U
@@ -41,7 +42,6 @@ static struct ao ao_handle;
 static void process_led(void *ctx);
 static void process_button(void *ctx);
 static void process_battery(void *ctx);
-static void process_net(void *ctx);
 
 static struct ao_event led_event = {
 	.handler = process_led,
@@ -53,9 +53,6 @@ static struct ao_event button_event = {
 
 static struct ao_event battery_event = {
 	.handler = process_battery,
-};
-static struct ao_event net_event = {
-	.handler = process_net,
 };
 
 static void on_userbutton_state_change(void)
@@ -91,13 +88,6 @@ static void process_led(void *ctx)
 	unused(ctx);
 	uint32_t msec = ledind_step();
 	ao_post_defer(&ao_handle, &led_event, msec);
-}
-
-static void process_net(void *ctx)
-{
-	unused(ctx);
-	net_step();
-	ao_post_defer(&ao_handle, &net_event, 10);
 }
 
 static void dispatch(struct ao * const ao, const struct ao_event * const event)
@@ -159,30 +149,37 @@ static void run_selftest(void)
 			led_blink_interval - LED_BLINK_ON_TIME_MS);
 }
 
-int main(void)
+static void system_init(void)
 {
-	board_init(); /* should be called very first. */
-
 	metrics_init(0);
 	logging_init(board_get_time_since_boot_ms);
-	logging_stdout_backend_init();
 
 	ao_timer_init();
 	ao_create(&ao_handle, AO_STACK_SIZE_BYTES, AO_PRIORITY);
 	ao_start(&ao_handle, dispatch);
 
-	battery_init(battery_monitor_init(on_battery_status_change));
-	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
-	ledind_init(ledind_gpio_create());
 	net_init();
+	usbd_init();
+	usbd_enable();
+}
+
+int main(void)
+{
+	board_init(); /* should be called very first. */
+	system_init();
+
+	logging_stdout_backend_init();
 
 	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),
 			board_get_version_string());
 
+	battery_init(battery_monitor_init(on_battery_status_change));
+	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
+	ledind_init(ledind_gpio_create());
+
 	ledind_enable();
 	ao_post(&ao_handle, &led_event);
-	ao_post(&ao_handle, &net_event);
 	run_selftest();
 
 	shell_start();

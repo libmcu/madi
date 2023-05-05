@@ -7,19 +7,21 @@
 #include "netif_usb.h"
 #include <errno.h>
 #include <string.h>
+#include <semaphore.h>
 #include "lwip/netif.h"
 #include "lwip/etharp.h"
 #include "netif/ethernet.h"
+#include "pusb/usbd.h"
 
 #define MTU		1514U
 
 static struct netif usb_iface;
-static struct pbuf *received_frame;
+static sem_t rx_processing;
 
 static err_t linkoutput_fn(struct netif *netif, struct pbuf *p)
 {
 	(void)netif;
-	return netif_usb_output(p, p->tot_len) == ERR_OK? ERR_OK : ERR_USE;
+	return usbd_cdc_net_send(p, p->tot_len) == ERR_OK? ERR_OK : ERR_USE;
 }
 
 static err_t ip4_output_fn(struct netif *netif,
@@ -43,22 +45,9 @@ static err_t init_cb(struct netif *netif)
 	return ERR_OK;
 }
 
-int netif_usb_clean_input(bool xfer)
+int usbd_cdc_net_received(const void *data, uint16_t datasize)
 {
-	if (received_frame) {
-		pbuf_free(received_frame);
-		received_frame = NULL;
-		if (xfer) {
-			netif_usb_input_done();
-		}
-	}
-
-	return 0;
-}
-
-int netif_usb_input(const void *data, uint16_t datasize)
-{
-	if (received_frame) {
+	if (sem_timedwait(&rx_processing, 0) != 0) {
 		return -EALREADY;
 	}
 
@@ -67,33 +56,29 @@ int netif_usb_input(const void *data, uint16_t datasize)
 
 		if (p) {
 			memcpy(p->payload, data, datasize);
-			received_frame = p;
+			usb_iface.input(p, &usb_iface);
+			pbuf_free(p);
+			usbd_cdc_net_received_post();
 		}
 	}
+
+	sem_post(&rx_processing);
 
 	return 0;
 }
 
-int netif_usb_clean_output(const void *p, void *q)
+int usbd_cdc_net_send_post(const void *p, void *q)
 {
 	const struct pbuf *pbuf = (const struct pbuf *)p;
 	return (int)pbuf_copy_partial(pbuf, q, pbuf->tot_len, 0);
 }
 
-int netif_usb_step(void)
-{
-	if (received_frame) {
-		usb_iface.input(received_frame, &usb_iface);
-		netif_usb_clean_input(true);
-	}
-
-	return 0;
-}
-
 void *netif_usb_create(const struct net_iface_param *param)
 {
+	sem_init(&rx_processing, 0, 1);
+
 	usb_iface.hwaddr_len = 6;
-	netif_usb_get_mac(&usb_iface, usb_iface.hwaddr);
+	usbd_cdc_net_get_mac(usb_iface.hwaddr);
 
 	return (void *)netif_add(&usb_iface,
 			(const ip4_addr_t *)&param->ip,
