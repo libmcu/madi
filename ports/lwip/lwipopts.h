@@ -68,6 +68,7 @@
 #define LWIP_HTTPD_DYNAMIC_HEADERS      1
 #define LWIP_HTTPD_DYNAMIC_FILE_READ    0
 #define LWIP_HTTPD_SUPPORT_V09          0
+#define LWIP_HTTPD_SUPPORT_POST         1
 
 #define LWIP_MULTICAST_PING             1
 #define LWIP_BROADCAST_PING             1
