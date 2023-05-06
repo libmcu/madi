@@ -6,6 +6,9 @@
 
 #include "libmcu/board.h"
 #include "libmcu/assert.h"
+
+#include <string.h>
+
 #include "nrf_pwr_mgmt.h"
 #include "app_timer.h"
 #include "nrf_drv_ppi.h"
@@ -53,7 +56,7 @@ const char *board_get_serial_number_string(void)
 {
 	static char sn[16+1];
 
-	if (!sn[0]) {
+	if (strnlen(sn, sizeof(sn)) == 0) {
 		sprintf(sn, "%08lx%08lx",
 			NRF_FICR->DEVICEADDR[0], NRF_FICR->DEVICEADDR[1]);
 	}
