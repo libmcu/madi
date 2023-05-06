@@ -53,6 +53,7 @@ LWIP_SRCS := \
 
 LWIP_INCS := \
 	$(LWIP_ROOT)/src/include \
-	$(LWIP_PORT_ROOT)
+	$(LWIP_PORT_ROOT) \
+	$(BASEDIR)/external/libmcu/modules/common/include
 
 $(addprefix $(OUTDIR)/, $(LWIP_SRCS:%=%.o)): CFLAGS+=-Wno-error

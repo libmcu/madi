@@ -17,7 +17,10 @@ static void poll_power_event(void *ctx)
 			(soc_evt == NRF_EVT_POWER_USB_REMOVED) ? NRFX_POWER_USB_EVT_REMOVED : -1;
 
 		if (usbevt >= 0) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
 			tusb_hal_nrf_power_event(usbevt);
+#pragma GCC diagnostic pop
 		}
 	}
 }

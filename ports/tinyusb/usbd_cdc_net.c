@@ -73,7 +73,10 @@ int usbd_cdc_net_send(const void *data, uint16_t datasize)
 			return -8;
 
 		if (tud_network_can_xmit(datasize)) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 			tud_network_xmit(data, 0);
+#pragma GCC diagnostic pop
 			return 0;
 		}
 

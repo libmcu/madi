@@ -58,5 +58,6 @@ add_library(${PROJECT_NAME} OBJECT
 target_include_directories(${PROJECT_NAME} PUBLIC
 	${LWIP_ROOT}/src/include
 	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include
 )
 target_compile_features(${PROJECT_NAME} PRIVATE c_std_99)

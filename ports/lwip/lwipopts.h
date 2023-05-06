@@ -82,6 +82,7 @@
 #define LWIP_NUM_NETIF_CLIENT_DATA      1
 #define LWIP_IGMP                       1
 #define LWIP_AUTOIP                     1
+#include "libmcu/board.h"
 #define LWIP_RAND()			board_random()
 
 //#define LWIP_DEBUG                      1
