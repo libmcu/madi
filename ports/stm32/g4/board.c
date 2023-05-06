@@ -18,7 +18,7 @@
 static void start_scheduler(void)
 {
 	extern int main(void);
-	if (xTaskCreate(main, "Main",
+	if (xTaskCreate((void (*)(void *))main, "Main",
 			MAIN_TASK_STACK_SIZE / sizeof(StackType_t), 0,
 			MAIN_TASK_PRIORITY, 0) != pdPASS) {
 		assert(0);

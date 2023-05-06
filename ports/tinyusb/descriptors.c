@@ -26,6 +26,10 @@
 #include "tusb.h"
 #include "libmcu/board.h"
 
+#if !defined(MIN)
+#define MIN(a, b)	(((a) > (b))? (b) : (a))
+#endif
+
 #define USB_PID		0xE000 
 #define USB_VID		0x1209
 #define USB_BCD		0x0200

@@ -16,8 +16,19 @@ TINYUSB_SRCS := \
 	$(TINYUSB_PORT_ROOT)/usbd.c \
 	$(TINYUSB_PORT_ROOT)/usbd_cdc_acm.c \
 	$(TINYUSB_PORT_ROOT)/usbd_cdc_net.c \
+
+ifeq ($(BOARD), madi_esp32)
+else ifeq ($(BOARD), madi_nrf52)
+TINYUSB_SRCS += \
 	$(TINYUSB_PORT_ROOT)/usbd_nrf5x.c \
 	$(TINYUSB_PORT_ROOT)/dcd_nrf5x.c
+else ifeq ($(BOARD), madi_stm32)
+TINYUSB_SRCS += \
+	$(TINYUSB_ROOT)/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c \
+	$(TINYUSB_PORT_ROOT)/usbd_stm32g4.c
+else
+$(error "BOARD not specified")
+endif
 
 TINYUSB_INCS := \
 	$(TINYUSB_ROOT)/src \

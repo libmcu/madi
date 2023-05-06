@@ -4,6 +4,10 @@
 #include "libmcu/ringbuf.h"
 #include "libmcu/board.h"
 
+#if !defined(MIN)
+#define MIN(a, b)	(((a) > (b))? (b) : (a))
+#endif
+
 static struct ringbuf cdc_acm_rxhandle;
 static uint8_t cdc_acm_rxbuf[512];
 static sem_t cdc_acm_rxevt;

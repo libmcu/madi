@@ -6,18 +6,22 @@ project(tinyusb LANGUAGES C CXX)
 
 set(TINYUSB_ROOT ${CMAKE_SOURCE_DIR}/external/tinyusb)
 
-if (${BOARD} STREQUAL "madi_nrf52")
+if (${BOARD} STREQUAL "esp32s3")
+	set(TUSB_MCU OPT_MCU_ESP32S3)
+elseif (${BOARD} STREQUAL "madi_nrf52")
 	set(TUSB_MCU OPT_MCU_NRF5X)
 	set(TINYUSB_SRCS
-		${CMAKE_CURRENT_LIST_DIR}/usbd_nrf5x.c
 		${CMAKE_CURRENT_LIST_DIR}/dcd_nrf5x.c
+		${CMAKE_CURRENT_LIST_DIR}/usbd_nrf5x.c
 	)
 elseif (${BOARD} STREQUAL "madi_stm32")
 	set(TUSB_MCU OPT_MCU_STM32G4)
-elseif (${BOARD} STREQUAL "esp32s3")
-	set(TUSB_MCU OPT_MCU_ESP32S3)
+	set(TINYUSB_SRCS
+		${TINYUSB_ROOT}/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c
+		${CMAKE_CURRENT_LIST_DIR}/usbd_stm32g4.c
+	)
 else()
-	message(FATAL_ERROR "CFG_TUSB_MCU not specified")
+	message(FATAL_ERROR "BOARD not specified")
 endif()
 
 add_library(${PROJECT_NAME} OBJECT
