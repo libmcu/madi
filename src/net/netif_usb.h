@@ -14,6 +14,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include "net.h"
+#include "pusb/usbd.h"
 
 void *netif_usb_create(const struct net_iface_param *param);
 void netif_usb_delete(void *p);

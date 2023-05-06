@@ -12,14 +12,13 @@
 #include "lwip/sys.h"
 #include "lwip/timeouts.h"
 #include "lwip/stats.h"
-#include "lwip/apps/httpd.h"
 #include "lwip/apps/mdns.h"
 #include "dhserver.h"
 
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
 
-#include "pusb/usbd.h"
+#include "httpsrv.h"
 
 static dhcp_entry_t entries[] = {
 	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 2))}, 24 * 60 * 60 },
@@ -34,79 +33,14 @@ static const dhcp_config_t dhcp_config = {
 	.entries = entries,
 };
 
-static const char *ssi_tags[] = {
-	"AjaxCall",
-	"SavedNet",
-};
-
-static const char *scan_wifi(int iIndex, int iNumParams,
-		char *pcParam[], char *pcValue[])
-{
-	(void)iIndex;
-	(void)iNumParams;
-	(void)pcParam;
-	(void)pcValue;
-	return "/ajax.shtml";
-}
-
-static const char *saved_wifi;
-static const char *save_wifi_info(int iIndex, int iNumParams,
-		char *pcParam[], char *pcValue[])
-{
-	(void)iIndex;
-	(void)iNumParams;
-	(void)pcParam;
-	(void)pcValue;
-	saved_wifi = "Hello";
-	return "/index.shtml";
-}
-
-static const tCGI cgi_handlers[] = {
-	{ .pcCGIName = "/save-wifi", .pfnCGIHandler = save_wifi_info },
-	{ .pcCGIName = "/scan-wifi", .pfnCGIHandler = scan_wifi },
-};
-
-static uint16_t handle_ssi_ajax(char *buf, int buflen,
-		uint16_t current_part, uint16_t *next_part)
-{
-	(void)current_part;
-	(void)next_part;
-	snprintf(buf, (size_t)buflen,
-			"<option value=\"%s\">%s</option>", "test", "test");
-	return (uint16_t)strlen(buf);
-}
-
-static uint16_t ssi_handler(int idx, char *buf, int buflen,
-		uint16_t current_part, uint16_t *next_part)
-{
-	uint16_t len = 0;
-
-	switch (idx) {
-	case 0: /* AjaxCall */
-		len = handle_ssi_ajax(buf, buflen, current_part, next_part);
-		break;
-	case 1: /* SavedNet */
-		if (saved_wifi) {
-		snprintf(buf, (size_t)buflen,
-				"<p>Saved network: <i><b>%s</b></i></p>",
-				saved_wifi);
-		len = (uint16_t)strlen(buf);
-		}
-		break;
-	default:
-		return 0;
-	}
-
-	return len;
-}
-
 static void on_mdns_report(struct netif* netif, u8_t result, s8_t slot)
 
 {
 	debug("mdns status[netif %d]: %d, %d", netif->num, result, slot);
 }
 
-static void on_mdns_service_set(struct mdns_service *service, void *txt_userdata)
+static void on_mdns_service_set(struct mdns_service *service,
+		void *txt_userdata)
 {
 	(void)txt_userdata;
 
@@ -153,18 +87,14 @@ int net_init(void)
 	while (!netif_is_up(iface));
 	while (dhserv_init(&dhcp_config) != ERR_OK);
 
-	httpd_init();
-	http_set_ssi_handler(ssi_handler,
-			ssi_tags, sizeof(ssi_tags) / sizeof(ssi_tags[0]));
-	http_set_cgi_handlers(cgi_handlers,
-			sizeof(cgi_handlers) / sizeof(cgi_handlers[0]));
-
 	mdns_resp_register_name_result_cb(on_mdns_report);
 	mdns_resp_init();
 	mdns_resp_add_netif(iface, "madi");
 	mdns_resp_add_service(iface, "madi", "_http", DNSSD_PROTO_TCP, 80,
 			on_mdns_service_set, NULL);
 	mdns_resp_announce(iface);
+
+	httpsrv_init();
 
 	return 0;
 }

@@ -57,7 +57,6 @@ add_library(${PROJECT_NAME} OBJECT
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
 	${LWIP_ROOT}/src/include
-	${LWIP_ROOT}/src/include/lwip/apps
 	${CMAKE_CURRENT_LIST_DIR}
 )
 target_compile_features(${PROJECT_NAME} PRIVATE c_std_99)

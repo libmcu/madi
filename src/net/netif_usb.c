@@ -11,7 +11,6 @@
 #include "lwip/netif.h"
 #include "lwip/etharp.h"
 #include "netif/ethernet.h"
-#include "pusb/usbd.h"
 
 #define MTU		1514U
 

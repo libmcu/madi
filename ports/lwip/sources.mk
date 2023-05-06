@@ -53,7 +53,6 @@ LWIP_SRCS := \
 
 LWIP_INCS := \
 	$(LWIP_ROOT)/src/include \
-	$(LWIP_ROOT)/src/include/lwip/apps \
 	$(LWIP_PORT_ROOT)
 
 $(addprefix $(OUTDIR)/, $(LWIP_SRCS:%=%.o)): CFLAGS+=-Wno-error
