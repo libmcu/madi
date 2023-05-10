@@ -18,7 +18,7 @@
 #include "userbutton.h"
 #include "battery.h"
 #include "selftest.h"
-#include "net.h"
+#include "pnet/net.h"
 #include "pusb/usbd.h"
 
 #define AO_STACK_SIZE_BYTES		4096U
@@ -158,9 +158,10 @@ static void system_init(void)
 	ao_create(&ao_handle, AO_STACK_SIZE_BYTES, AO_PRIORITY);
 	ao_start(&ao_handle, dispatch);
 
-	net_init();
 	usbd_init();
 	usbd_enable();
+
+	net_init();
 }
 
 int main(void)

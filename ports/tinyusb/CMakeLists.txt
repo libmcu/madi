@@ -8,17 +8,24 @@ set(TINYUSB_ROOT ${CMAKE_SOURCE_DIR}/external/tinyusb)
 
 if (${BOARD} STREQUAL "esp32s3")
 	set(TUSB_MCU OPT_MCU_ESP32S3)
+	set(TINYUSB_SRCS
+		${TINYUSB_ROOT}/src/portable/synopsys/dwc2/dcd_dwc2.c
+		${CMAKE_CURRENT_LIST_DIR}/usbd_esp32.c
+		${CMAKE_CURRENT_LIST_DIR}/netif_usb_esp32.c
+	)
 elseif (${BOARD} STREQUAL "madi_nrf52")
 	set(TUSB_MCU OPT_MCU_NRF5X)
 	set(TINYUSB_SRCS
 		${CMAKE_CURRENT_LIST_DIR}/dcd_nrf5x.c
 		${CMAKE_CURRENT_LIST_DIR}/usbd_nrf5x.c
+		${CMAKE_CURRENT_LIST_DIR}/netif_usb.c
 	)
 elseif (${BOARD} STREQUAL "madi_stm32")
 	set(TUSB_MCU OPT_MCU_STM32G4)
 	set(TINYUSB_SRCS
 		${TINYUSB_ROOT}/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c
 		${CMAKE_CURRENT_LIST_DIR}/usbd_stm32g4.c
+		${CMAKE_CURRENT_LIST_DIR}/netif_usb.c
 	)
 else()
 	message(FATAL_ERROR "BOARD not specified")
@@ -49,4 +56,3 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 	CFG_TUSB_MCU=${TUSB_MCU}
 )
 target_compile_features(${PROJECT_NAME} PRIVATE c_std_99)
-target_link_libraries(${PROJECT_NAME} PRIVATE lwip)

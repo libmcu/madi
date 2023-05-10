@@ -1,8 +1,10 @@
 #include "pusb/usbd.h"
 #include <pthread.h>
+#include <errno.h>
 #include "tusb.h"
 
 #define USBD_STACK_SIZE_BYTES		2048U
+#define USBD_PERIODIC_CALLBACKS_LEN	3
 
 enum status {
 	STATUS_UNKNOWN,
@@ -11,6 +13,11 @@ enum status {
 };
 static volatile int status;
 
+static struct periodic_callback {
+	usbd_periodic_callback_t func;
+	void *arg;
+} periodic_callbacks[USBD_PERIODIC_CALLBACKS_LEN];
+
 static void *usbd_task(void *e)
 {
 	(void)e;
@@ -18,8 +25,12 @@ static void *usbd_task(void *e)
 	while (status) {
 		tud_task();
 
-		usbd_cdc_acm_step();
-		usbd_cdc_net_step();
+		for (int i = 0; i < USBD_PERIODIC_CALLBACKS_LEN; i++) {
+			struct periodic_callback *p = &periodic_callbacks[i];
+			if (p->func) {
+				(*p->func)(p->arg);
+			}
+		}
 	}
 
 	pthread_exit(NULL);
@@ -32,6 +43,7 @@ void tud_resume_cb(void)
 
 void tud_suspend_cb(bool remote_wakeup_en)
 {
+	(void)remote_wakeup_en;
 }
 
 void tud_umount_cb(void)
@@ -42,6 +54,26 @@ void tud_umount_cb(void)
 void tud_mount_cb(void)
 {
 	status = STATUS_PLUGGED;
+}
+
+int usbd_register_periodic_callback(usbd_periodic_callback_t cb, void *arg)
+{
+	struct periodic_callback *p;
+
+	for (int i = 0; i < USBD_PERIODIC_CALLBACKS_LEN; i++) {
+		p = &periodic_callbacks[i];
+		if (p->func == NULL) {
+			p->func = cb;
+			p->arg = arg;
+			break;
+		}
+	}
+
+	if (p->func != cb) {
+		return -ENOENT;
+	}
+
+	return 0;
 }
 
 int usbd_enable(void)
@@ -66,8 +98,11 @@ int usbd_disable(void)
 
 int usbd_init(void)
 {
+	memset(periodic_callbacks, 0, sizeof(periodic_callbacks));
+
 	usbd_cdc_acm_init();
 	usbd_cdc_net_init();
+
 	usbd_port_init();
 
 	tud_init(BOARD_TUD_RHPORT);

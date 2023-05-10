@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "net.h"
-#include "netif_usb.h"
+#include "pnet/net.h"
+#include "pnet/iface_usb.h"
+#include "pusb/usbd.h"
 
 #include "lwip/init.h"
 #include "lwip/netif.h"
@@ -20,6 +21,8 @@
 
 #include "httpsrv.h"
 
+/* TODO: A random third-part IP address would help avoid conflicts on the host
+ * side. */
 static dhcp_entry_t entries[] = {
 	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 2))}, 24 * 60 * 60 },
 };
@@ -33,6 +36,8 @@ static const dhcp_config_t dhcp_config = {
 	.entries = entries,
 };
 
+/* NOTE: For ESP32S3, LWIP integrated into ESP-IDF used. */
+#if !defined(esp32s3)
 static void on_mdns_report(struct netif* netif, u8_t result, s8_t slot)
 
 {
@@ -49,36 +54,31 @@ static void on_mdns_service_set(struct mdns_service *service,
 	}
 }
 
-sys_prot_t sys_arch_protect(void)
+static void check_lwip_timeouts(void *ctx)
 {
-	return 0;
-}
-
-void sys_arch_unprotect(sys_prot_t pval)
-{
-	(void)pval;
+	(void)ctx;
+	sys_check_timeouts();
 }
 
 uint32_t sys_now(void)
 {
 	return board_get_time_since_boot_ms();
 }
-
-void usbd_cdc_net_step(void)
-{
-	sys_check_timeouts();
-}
+#endif /* End of !defined(esp32s3) */
 
 int net_init(void)
 {
+#if !defined(esp32s3)
 	lwip_init();
+	usbd_register_periodic_callback(check_lwip_timeouts, 0);
+#endif
 
-	struct net_iface_param param = {
+	struct netif_param param = {
 		.ip = PP_HTONL(LWIP_MAKEU32(192,168,13,1)),
 		.netmask = PP_HTONL(LWIP_MAKEU32(255,255,255,0)),
 		.gateway = PP_HTONL(LWIP_MAKEU32(0,0,0,0)),
 	};
-	struct netif *iface = (struct netif *)netif_usb_create(&param);
+	struct netif *iface = netif_create_usb(&param);
 #if LWIP_IPV6
 	netif_create_ip6_linklocal_address(iface, 1);
 #endif
@@ -87,6 +87,7 @@ int net_init(void)
 	while (!netif_is_up(iface));
 	while (dhserv_init(&dhcp_config) != ERR_OK);
 
+#if !defined(esp32s3)
 	mdns_resp_register_name_result_cb(on_mdns_report);
 	mdns_resp_init();
 	mdns_resp_add_netif(iface, "madi");
@@ -95,6 +96,7 @@ int net_init(void)
 	mdns_resp_announce(iface);
 
 	httpsrv_init();
+#endif
 
 	return 0;
 }

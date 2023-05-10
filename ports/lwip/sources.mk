@@ -49,7 +49,8 @@ LWIP_SRCS := \
 	$(LWIP_ROOT)/src/apps/mdns/mdns_domain.c \
 	$(LWIP_ROOT)/src/apps/mdns/mdns_out.c \
 	\
-	$(LWIP_PORT_ROOT)/fs_custom.c
+	$(LWIP_PORT_ROOT)/fs_custom.c \
+	$(LWIP_PORT_ROOT)/sys.c \
 
 LWIP_INCS := \
 	$(LWIP_ROOT)/src/include \

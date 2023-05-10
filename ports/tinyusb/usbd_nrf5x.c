@@ -53,4 +53,6 @@ int usbd_port_init(void)
 	if (usb_reg & POWER_USBREGSTATUS_OUTPUTRDY_Msk) {
 		tusb_hal_nrf_power_event(2);
 	}
+
+	return 0;
 }

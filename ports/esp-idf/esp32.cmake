@@ -48,6 +48,9 @@ target_link_libraries(pmqtt core_mqtt)
 target_link_libraries(pble idf::bt)
 target_link_libraries(pwifi idf::esp_wifi)
 target_link_libraries(pl4 idf::esp-tls)
+target_link_libraries(tinyusb idf::freertos idf::driver idf::esp_netif libmcu)
+target_include_directories(tinyusb PUBLIC ${APP_INCS})
+target_compile_options(tinyusb PUBLIC ${COMPILE_OPTIONS} ${COMPILE_DEFINITIONS})
 
 target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
@@ -68,7 +71,6 @@ add_executable(${PROJECT_EXECUTABLE}
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
-target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options})
 target_compile_definitions(${PROJECT_EXECUTABLE}
 	PRIVATE
 		ESP_PLATFORM=1
@@ -97,6 +99,7 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	pl4
 	pmqtt
 	bq25180
+	tinyusb
 
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"

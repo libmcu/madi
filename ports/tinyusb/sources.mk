@@ -18,14 +18,20 @@ TINYUSB_SRCS := \
 	$(TINYUSB_PORT_ROOT)/usbd_cdc_net.c \
 
 ifeq ($(BOARD), madi_esp32)
+TINYUSB_SRCS += \
+	$(TINYUSB_ROOT)/src/portable/synopsys/dwc2/dcd_dwc2.c \
+	$(TINYUSB_PORT_ROOT)/usbd_esp32.c \
+	$(TINYUSB_PORT_ROOT)/netif_usb_esp32.c
 else ifeq ($(BOARD), madi_nrf52)
 TINYUSB_SRCS += \
 	$(TINYUSB_PORT_ROOT)/usbd_nrf5x.c \
-	$(TINYUSB_PORT_ROOT)/dcd_nrf5x.c
+	$(TINYUSB_PORT_ROOT)/dcd_nrf5x.c \
+	$(TINYUSB_PORT_ROOT)/netif_usb.c
 else ifeq ($(BOARD), madi_stm32)
 TINYUSB_SRCS += \
 	$(TINYUSB_ROOT)/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c \
-	$(TINYUSB_PORT_ROOT)/usbd_stm32g4.c
+	$(TINYUSB_PORT_ROOT)/usbd_stm32g4.c \
+	$(TINYUSB_PORT_ROOT)/netif_usb.c
 else
 $(error "BOARD not specified")
 endif

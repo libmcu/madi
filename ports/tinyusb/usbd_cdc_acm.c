@@ -12,6 +12,20 @@ static struct ringbuf cdc_acm_rxhandle;
 static uint8_t cdc_acm_rxbuf[512];
 static sem_t cdc_acm_rxevt;
 
+static void usbd_cdc_acm_step(void *ctx)
+{
+	(void)ctx;
+
+	if (tud_cdc_available()) {
+		uint8_t buf[CFG_TUD_CDC_RX_BUFSIZE];
+		size_t len = (size_t)tud_cdc_read(buf, sizeof(buf));
+		ringbuf_write(&cdc_acm_rxhandle, buf, len);
+		sem_post(&cdc_acm_rxevt);
+	}
+
+	tud_cdc_write_flush();
+}
+
 void tud_cdc_rx_cb(uint8_t itf)
 {
 }
@@ -56,21 +70,11 @@ int usbd_cdc_acm_read(void *buf, size_t bufsize)
 	return (int)ringbuf_read(&cdc_acm_rxhandle, 0, buf, len);
 }
 
-void usbd_cdc_acm_step(void)
-{
-	if (tud_cdc_available()) {
-		uint8_t buf[CFG_TUD_CDC_RX_BUFSIZE];
-		size_t len = (size_t)tud_cdc_read(buf, sizeof(buf));
-		ringbuf_write(&cdc_acm_rxhandle, buf, len);
-		sem_post(&cdc_acm_rxevt);
-	}
-
-	tud_cdc_write_flush();
-}
-
 void usbd_cdc_acm_init(void)
 {
 	sem_init(&cdc_acm_rxevt, 0, 0);
 	ringbuf_create_static(&cdc_acm_rxhandle,
 			cdc_acm_rxbuf, sizeof(cdc_acm_rxbuf));
+
+	usbd_register_periodic_callback(usbd_cdc_acm_step, 0);
 }

@@ -54,6 +54,7 @@ add_library(${PROJECT_NAME} OBJECT
 	${LWIP_ROOT}/src/apps/mdns/mdns_out.c
 
 	${CMAKE_CURRENT_LIST_DIR}/fs_custom.c
+	${CMAKE_CURRENT_LIST_DIR}/sys.c
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
 	${LWIP_ROOT}/src/include
