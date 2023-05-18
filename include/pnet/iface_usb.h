@@ -13,11 +13,6 @@ extern "C" {
 
 #include <stdint.h>
 
-#if defined(esp32s3)
-#define netif_create_usb	netif_create_usb_esp32
-#define netif_delete_usb	netif_delete_usb_esp32
-#endif
-
 struct netif_param {
 	uint32_t ip;
 	uint32_t netmask;

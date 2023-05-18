@@ -11,7 +11,6 @@ if (${BOARD} STREQUAL "esp32s3")
 	set(TINYUSB_SRCS
 		${TINYUSB_ROOT}/src/portable/synopsys/dwc2/dcd_dwc2.c
 		${CMAKE_CURRENT_LIST_DIR}/usbd_esp32.c
-		${CMAKE_CURRENT_LIST_DIR}/netif_usb_esp32.c
 	)
 elseif (${BOARD} STREQUAL "madi_nrf52")
 	set(TUSB_MCU OPT_MCU_NRF5X)

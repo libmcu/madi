@@ -21,23 +21,6 @@
 
 #include "httpsrv.h"
 
-/* TODO: A random third-part IP address would help avoid conflicts on the host
- * side. */
-static dhcp_entry_t entries[] = {
-	{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 2))}, 24 * 60 * 60 },
-};
-
-static const dhcp_config_t dhcp_config = {
-	.router = {PP_HTONL(LWIP_MAKEU32(0, 0, 0, 0))},
-	.port = 67,
-	.dns = {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 1))},
-	.domain = "usb",
-	.num_entry = sizeof(entries) / sizeof(entries[0]),
-	.entries = entries,
-};
-
-/* NOTE: For ESP32S3, LWIP integrated into ESP-IDF used. */
-#if !defined(esp32s3)
 static void on_mdns_report(struct netif* netif, u8_t result, s8_t slot)
 
 {
@@ -60,18 +43,36 @@ static void check_lwip_timeouts(void *ctx)
 	sys_check_timeouts();
 }
 
+static void run_dhcp_server(void)
+{
+	/* TODO: A random third-part IP address would help avoid conflicts on
+	 * the host side. */
+	static dhcp_entry_t entries[] = {
+		{ {0}, {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 2))}, 24 * 60 * 60 },
+	};
+
+	static const dhcp_config_t dhcp_config = {
+		.router = {PP_HTONL(LWIP_MAKEU32(0, 0, 0, 0))},
+		.port = 67,
+		.dns = {PP_HTONL(LWIP_MAKEU32(192, 168, 13, 1))},
+		.domain = "usb",
+		.num_entry = sizeof(entries) / sizeof(entries[0]),
+		.entries = entries,
+	};
+
+	while (dhserv_init(&dhcp_config) != ERR_OK);
+}
+
 uint32_t sys_now(void)
 {
 	return board_get_time_since_boot_ms();
 }
-#endif /* End of !defined(esp32s3) */
 
+__attribute__((visibility("default")))
 int net_init(void)
 {
-#if !defined(esp32s3)
 	lwip_init();
 	usbd_register_periodic_callback(check_lwip_timeouts, 0);
-#endif
 
 	struct netif_param param = {
 		.ip = PP_HTONL(LWIP_MAKEU32(192,168,13,1)),
@@ -83,11 +84,10 @@ int net_init(void)
 	netif_create_ip6_linklocal_address(iface, 1);
 #endif
 	netif_set_default(iface);
-
 	while (!netif_is_up(iface));
-	while (dhserv_init(&dhcp_config) != ERR_OK);
 
-#if !defined(esp32s3)
+	run_dhcp_server();
+
 	mdns_resp_register_name_result_cb(on_mdns_report);
 	mdns_resp_init();
 	mdns_resp_add_netif(iface, "madi");
@@ -95,8 +95,8 @@ int net_init(void)
 			on_mdns_service_set, NULL);
 	mdns_resp_announce(iface);
 
+	/* TODO: implement portable http server */
 	httpsrv_init();
-#endif
 
 	return 0;
 }

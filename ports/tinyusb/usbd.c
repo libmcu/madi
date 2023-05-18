@@ -3,7 +3,7 @@
 #include <errno.h>
 #include "tusb.h"
 
-#define USBD_STACK_SIZE_BYTES		2048U
+#define USBD_STACK_SIZE_BYTES		3072U
 #define USBD_PERIODIC_CALLBACKS_LEN	3
 
 enum status {
@@ -18,19 +18,23 @@ static struct periodic_callback {
 	void *arg;
 } periodic_callbacks[USBD_PERIODIC_CALLBACKS_LEN];
 
+static void run_periodic_callbacks(void)
+{
+	for (int i = 0; i < USBD_PERIODIC_CALLBACKS_LEN; i++) {
+		struct periodic_callback *p = &periodic_callbacks[i];
+		if (p->func) {
+			(*p->func)(p->arg);
+		}
+	}
+}
+
 static void *usbd_task(void *e)
 {
 	(void)e;
 
 	while (status) {
 		tud_task();
-
-		for (int i = 0; i < USBD_PERIODIC_CALLBACKS_LEN; i++) {
-			struct periodic_callback *p = &periodic_callbacks[i];
-			if (p->func) {
-				(*p->func)(p->arg);
-			}
-		}
+		run_periodic_callbacks();
 	}
 
 	pthread_exit(NULL);

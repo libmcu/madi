@@ -15,11 +15,11 @@
 #include "lwip/etharp.h"
 #include "netif/ethernet.h"
 
-#include "tusb.h"
 #include "libmcu/board.h"
 
 #define MTU		1514U
 
+__attribute__((visibility("default")))
 uint8_t tud_network_mac_address[6];
 
 static struct netif usb_iface;
