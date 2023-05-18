@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <unistd.h>
+#include <stdio.h>
 
 #include "libmcu/board.h"
 #include "libmcu/logging.h"
@@ -108,7 +108,7 @@ static size_t logging_stdout_writer(const void *data, size_t size)
 	buf[len++] = '\n';
 	buf[len] = '\0';
 
-	write(1, buf, len);
+	fwrite(buf, len, 1, stdout);
 
 	return len;
 }

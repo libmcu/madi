@@ -79,7 +79,7 @@ target_include_directories(lwip PRIVATE
 )
 add_custom_command(TARGET modified_lwip POST_BUILD
 	COMMAND ${_CMAKE_TOOLCHAIN_PREFIX}ld -r $<TARGET_OBJECTS:lwip> -o $<TARGET_FILE:modified_lwip>
-	COMMAND ${_CMAKE_TOOLCHAIN_PREFIX}objcopy --localize-hidden $<TARGET_FILE:modified_lwip> $<TARGET_FILE:modified_lwip>
+	COMMAND ${_CMAKE_TOOLCHAIN_PREFIX}objcopy --localize-hidden --strip-unneeded $<TARGET_FILE:modified_lwip> $<TARGET_FILE:modified_lwip>
 	COMMAND_EXPAND_LISTS
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
