@@ -225,7 +225,7 @@ target_compile_definitions(nrf52 PUBLIC ${NRF_DEFS})
 target_link_libraries(nrf52 PUBLIC libmcu bq25180)
 
 target_link_libraries(pble PRIVATE nrf52)
-target_link_libraries(tinyusb PRIVATE nrf52)
+target_link_libraries(tinyusb PRIVATE nrf52 lwip)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nrf52)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})

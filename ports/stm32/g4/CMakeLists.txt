@@ -107,7 +107,7 @@ target_include_directories(stm32 PUBLIC ${ST_INCS} ${APP_INCS})
 target_compile_definitions(stm32 PUBLIC ${ST_DEFS})
 target_link_libraries(stm32 PUBLIC libmcu bq25180)
 
-target_link_libraries(tinyusb PRIVATE stm32)
+target_link_libraries(tinyusb PRIVATE stm32 lwip)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE stm32)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})
