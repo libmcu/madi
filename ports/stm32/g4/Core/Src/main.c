@@ -22,7 +22,6 @@
 #include "i2c.h"
 #include "quadspi.h"
 #include "usart.h"
-#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/

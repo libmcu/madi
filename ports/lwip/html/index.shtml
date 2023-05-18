@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>MADI</title>
+    <style>
+.tabcontent {
+  animation: fadeEffect 1s; /* Fading effect takes 1 second */
+}
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+.tab {
+  overflow: hidden;
+  border: 1px dotted var(--border);
+  border-bottom: none;
+  background-color: var(--accent-bg);
+}
+.tab button {
+  background-color: var(--accent-bg);
+  color: var(--text-light);
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.tab button.active {
+  color: var(--text);
+  cursor: auto;
+}
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px dotted var(--border);
+  border-top: none;
+}
+    </style>
+</head>
+<body>
+  <header>
+    <h3>마디</h3>
+  </header>
+  <main>
+    <section>
+    <p>Device Firmware Update</p>
+    <form id="dfuForm" action="/dfu" enctype="multipart/form-data" method="post">
+      <div class="tab">
+        <button class="tablinks" onclick="upload(event, 'Remote')" id="defaultOpen">Remote</button>
+        <button class="tablinks" onclick="upload(event, 'Local')">Local</button>
+      </div>
+
+      <div id="Remote" class="tabcontent">
+        <label>Enter the URL of the image:</label>
+        <input style="width:100%" type="url" name="url" id="url" />
+      </div>
+
+      <div id="Local" class="tabcontent">
+        <label>Upload the image file:</label>
+        <input type="file" name="file" id="file" />
+      </div>
+
+      <button type="submit">Update</button>
+    </form>
+    <!--#Result-->
+    </section>
+  </main>
+  <footer>
+    <a href="https://libmcu.org"><img src="https://libmcu.org/libmcu-icon.png" width="60px"/></a>
+  </footer>
+  <script type="text/javascript">
+document.getElementById("defaultOpen").click();
+function upload(evt, type) {
+	var i, tabcontent, tablinks;
+
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+		tablinks[i].disabled = false;
+	}
+
+	document.getElementById(type).style.display = "block";
+	evt.currentTarget.className += " active";
+	evt.currentTarget.disabled = true;
+
+	if (type === "Remote") {
+		document.getElementById("url").required = true;
+		document.getElementById("url").disabled = false;
+		document.getElementById("file").disabled = true;
+	} else {
+		document.getElementById("url").disabled = true;
+		document.getElementById("file").disabled = false;
+		document.getElementById("file").required = true;
+	}
+}
+  </script>
+</body>
+</html>

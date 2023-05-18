@@ -6,6 +6,9 @@
 
 #include "libmcu/board.h"
 #include "libmcu/assert.h"
+
+#include <string.h>
+
 #include "nrf_pwr_mgmt.h"
 #include "app_timer.h"
 #include "nrf_drv_ppi.h"
@@ -23,7 +26,7 @@
 static void start_scheduler(void)
 {
 	extern int main(void);
-	xTaskCreate(main, "Main",
+	xTaskCreate((void (*)(void *))main, "Main",
 			MAIN_TASK_STACK_SIZE / sizeof(StackType_t), 0,
 			MAIN_TASK_PRIORITY, 0);
 	vTaskStartScheduler();
@@ -47,6 +50,18 @@ static void initialize_ble(void)
 {
 	nrf_sdh_enable_request();
 	nrf_sdh_freertos_init(0, 0);
+}
+
+const char *board_get_serial_number_string(void)
+{
+	static char sn[16+1];
+
+	if (strnlen(sn, sizeof(sn)) == 0) {
+		sprintf(sn, "%08lx%08lx",
+			NRF_FICR->DEVICEADDR[0], NRF_FICR->DEVICEADDR[1]);
+	}
+
+	return sn;
 }
 
 void board_reboot(void)

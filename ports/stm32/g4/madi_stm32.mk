@@ -44,11 +44,6 @@ ST_SRCS = \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
-	$(SDK_ROOT)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
-	$(SDK_ROOT)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
-	$(SDK_ROOT)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
-	$(SDK_ROOT)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
-	\
 	$(wildcard $(PORT_ROOT)/g4/*.c) \
 	$(wildcard $(PORT_ROOT)/g4/*.cpp) \
 	$(PORT_ROOT)/g4/Core/Src/main.c \
@@ -60,11 +55,6 @@ ST_SRCS = \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_hal_msp.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_hal_timebase_tim.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_it.c \
-	\
-	$(PORT_ROOT)/g4/USB_Device/App/usb_device.c \
-	$(PORT_ROOT)/g4/USB_Device/App/usbd_cdc_if.c \
-	$(PORT_ROOT)/g4/USB_Device/App/usbd_desc.c \
-	$(PORT_ROOT)/g4/USB_Device/Target/usbd_conf.c \
 	\
 	$(LIBMCU_ROOT)/ports/freertos/board.c \
 	$(LIBMCU_ROOT)/ports/freertos/pthread.c \
@@ -83,17 +73,16 @@ ST_INCS = \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/include \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 	$(SDK_ROOT)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
-	$(SDK_ROOT)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
-	$(SDK_ROOT)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 	\
 	$(PORT_ROOT)/g4 \
 	$(PORT_ROOT)/g4/Core/Inc \
-	$(PORT_ROOT)/g4/USB_Device/App \
-	$(PORT_ROOT)/g4/USB_Device/Target \
 
 ST_DEFS = \
 	USE_HAL_DRIVER \
 	STM32G473xx \
+	\
+	CFG_TUSB_MCU=OPT_MCU_STM32G4 \
+	asm=__asm__ \
 
 $(addprefix $(OUTDIR)/, $(ST_SRCS:%=%.o)): CFLAGS+=-Wno-error
 

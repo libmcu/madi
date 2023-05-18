@@ -18,6 +18,8 @@
 #include "userbutton.h"
 #include "battery.h"
 #include "selftest.h"
+#include "pnet/net.h"
+#include "pusb/usbd.h"
 
 #define AO_STACK_SIZE_BYTES		4096U
 #define AO_PRIORITY			1U
@@ -101,7 +103,7 @@ static size_t logging_stdout_writer(const void *data, size_t size)
 {
 	unused(size);
 	static char buf[LOGGING_MESSAGE_MAXLEN];
-	size_t len = logging_stringify(buf, sizeof(buf), data);
+	size_t len = logging_stringify(buf, sizeof(buf)-1, data);
 
 	buf[len++] = '\n';
 	buf[len] = '\0';
@@ -147,25 +149,35 @@ static void run_selftest(void)
 			led_blink_interval - LED_BLINK_ON_TIME_MS);
 }
 
-int main(void)
+static void system_init(void)
 {
-	board_init(); /* should be called very first. */
-
 	metrics_init(0);
 	logging_init(board_get_time_since_boot_ms);
-	logging_stdout_backend_init();
 
 	ao_timer_init();
 	ao_create(&ao_handle, AO_STACK_SIZE_BYTES, AO_PRIORITY);
 	ao_start(&ao_handle, dispatch);
 
-	battery_init(battery_monitor_init(on_battery_status_change));
-	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
-	ledind_init(ledind_gpio_create());
+	usbd_init();
+	usbd_enable();
+
+	net_init();
+}
+
+int main(void)
+{
+	board_init(); /* should be called very first. */
+	system_init();
+
+	logging_stdout_backend_init();
 
 	info("[%s] %s %s", board_get_reboot_reason_string(),
 			board_get_serial_number_string(),
 			board_get_version_string());
+
+	battery_init(battery_monitor_init(on_battery_status_change));
+	userbutton_init(userbutton_gpio_init(on_userbutton_state_change));
+	ledind_init(ledind_gpio_create());
 
 	ledind_enable();
 	ao_post(&ao_handle, &led_event);

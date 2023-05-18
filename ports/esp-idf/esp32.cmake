@@ -4,7 +4,7 @@
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 
 AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} PORT_SRCS)
-set(ESP_COMPONENTS freertos esptool_py esp-tls bt)
+set(ESP_COMPONENTS freertos esptool_py esp-tls bt esp_http_server)
 
 if ($ENV{IDF_VERSION} VERSION_GREATER_EQUAL "5.0.0")
 	list(APPEND ESP_COMPONENTS esp_adc)
@@ -48,6 +48,9 @@ target_link_libraries(pmqtt core_mqtt)
 target_link_libraries(pble idf::bt)
 target_link_libraries(pwifi idf::esp_wifi)
 target_link_libraries(pl4 idf::esp-tls)
+target_link_libraries(tinyusb idf::freertos idf::driver idf::esp_netif libmcu)
+target_include_directories(tinyusb PUBLIC ${APP_INCS})
+target_compile_options(tinyusb PUBLIC ${COMPILE_OPTIONS} ${COMPILE_DEFINITIONS})
 
 target_include_directories(libmcu PUBLIC
 	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix)
@@ -56,6 +59,30 @@ set(LIBMCU_ROOT ${PROJECT_SOURCE_DIR}/external/libmcu)
 if ($ENV{IDF_VERSION} VERSION_LESS "5.1.0")
 	list(APPEND PORT_SRCS ${LIBMCU_ROOT}/ports/freertos/semaphore.c)
 endif()
+
+list(REMOVE_ITEM APP_SRCS "src/net/net.c" "src/net/httpsrv.c")
+target_sources(lwip PRIVATE
+	${CMAKE_SOURCE_DIR}/src/net/net.c
+	${CMAKE_SOURCE_DIR}/src/net/httpsrv.c
+	${CMAKE_SOURCE_DIR}/ports/tinyusb/netif_usb.c
+	${CMAKE_SOURCE_DIR}/external/tinyusb/lib/networking/dhserver.c
+)
+add_library(modified_lwip STATIC)
+target_link_libraries(modified_lwip lwip)
+set_target_properties(lwip PROPERTIES CXX_VISIBILITY_PRESET hidden C_VISIBILITY_PRESET hidden)
+target_compile_definitions(lwip PRIVATE ${APP_DEFS})
+target_include_directories(lwip PRIVATE
+	${APP_INCS}
+	${CMAKE_SOURCE_DIR}/external/tinyusb/lib/networking
+	${CMAKE_SOURCE_DIR}/external/libmcu/modules/logging/include
+	${CMAKE_SOURCE_DIR}/external/libmcu/modules/common/include/libmcu/posix
+)
+add_custom_command(TARGET modified_lwip POST_BUILD
+	COMMAND ${_CMAKE_TOOLCHAIN_PREFIX}ld -r $<TARGET_OBJECTS:lwip> -o $<TARGET_FILE:modified_lwip>
+	COMMAND ${_CMAKE_TOOLCHAIN_PREFIX}objcopy --localize-hidden $<TARGET_FILE:modified_lwip> $<TARGET_FILE:modified_lwip>
+	COMMAND_EXPAND_LISTS
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 add_executable(${PROJECT_EXECUTABLE}
 	${APP_SRCS}
@@ -68,7 +95,6 @@ add_executable(${PROJECT_EXECUTABLE}
 )
 
 set(mapfile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.map")
-target_compile_options(${PROJECT_EXECUTABLE} PRIVATE ${compile_options})
 target_compile_definitions(${PROJECT_EXECUTABLE}
 	PRIVATE
 		ESP_PLATFORM=1
@@ -90,6 +116,7 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	idf::nvs_flash
 	idf::driver
 	idf::pthread
+	idf::esp_http_server
 
 	libmcu
 	pble
@@ -97,6 +124,8 @@ target_link_libraries(${PROJECT_EXECUTABLE}
 	pl4
 	pmqtt
 	bq25180
+	tinyusb
+	modified_lwip
 
 	-Wl,--cref
 	-Wl,--Map=\"${mapfile}\"

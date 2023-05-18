@@ -7,6 +7,7 @@
 #include "libmcu/cli.h"
 #include <string.h>
 #include <stdio.h>
+#include <inttypes.h>
 #include "libmcu/metrics.h"
 #include "libmcu/compiler.h"
 
@@ -21,7 +22,7 @@ static void print_metric(metric_key_t key, int32_t value, void *ctx)
 	}
 
 	cli->io->write(str, strlen(str));
-	snprintf(buf, sizeof(buf)-1, ": %ld\n", value);
+	snprintf(buf, sizeof(buf)-1, ": %" PRId32 "\n", value);
 	cli->io->write(buf, strlen(buf));
 }
 

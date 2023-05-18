@@ -45,10 +45,6 @@ set(ST_SRCS
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/timers.c
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
-	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
-	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
-	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
 
 	${PORT_SRCS}
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/main.c
@@ -60,11 +56,6 @@ set(ST_SRCS
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_hal_msp.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_hal_timebase_tim.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_it.c
-
-	${CMAKE_CURRENT_LIST_DIR}/USB_Device/App/usb_device.c
-	${CMAKE_CURRENT_LIST_DIR}/USB_Device/App/usbd_cdc_if.c
-	${CMAKE_CURRENT_LIST_DIR}/USB_Device/App/usbd_desc.c
-	${CMAKE_CURRENT_LIST_DIR}/USB_Device/Target/usbd_conf.c
 
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/board.c
 	${CMAKE_SOURCE_DIR}/external/libmcu/ports/freertos/pthread.c
@@ -83,17 +74,16 @@ set(ST_INCS
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/include
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 	${SDK_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
-	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-	${SDK_ROOT}/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
 
 	${CMAKE_CURRENT_LIST_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/Core/Inc
-	${CMAKE_CURRENT_LIST_DIR}/USB_Device/App
-	${CMAKE_CURRENT_LIST_DIR}/USB_Device/Target
 )
 set(ST_DEFS
 	USE_HAL_DRIVER
 	STM32G473xx
+
+	CFG_TUSB_MCU=OPT_MCU_STM32G4
+	asm=__asm__
 )
 
 if (NOT EXISTS ${SDK_ROOT})
@@ -116,6 +106,8 @@ add_library(stm32 OBJECT ${ST_SRCS})
 target_include_directories(stm32 PUBLIC ${ST_INCS} ${APP_INCS})
 target_compile_definitions(stm32 PUBLIC ${ST_DEFS})
 target_link_libraries(stm32 PUBLIC libmcu bq25180)
+
+target_link_libraries(tinyusb PRIVATE stm32 lwip)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE stm32)
 target_link_options(${PROJECT_NAME} PRIVATE -T${LD_SCRIPT})

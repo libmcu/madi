@@ -210,8 +210,11 @@ static int write_reg(uint32_t cmd, bool addr,
 	}
 
 	if (!addr && data && bytes_to_write != 0) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 		if (HAL_QSPI_Transmit(&hqspi1, data,
 				HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK) {
+#pragma GCC diagnostic pop
 			return -EIO;
 		}
 	}
@@ -240,8 +243,11 @@ static int write_data(uint32_t cmd, uint32_t addr,
 			!= HAL_OK) {
 		return -EIO;
 	}
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 	if (HAL_QSPI_Transmit(&hqspi1, data, HAL_QSPI_TIMEOUT_DEFAULT_VALUE)
 			!= HAL_OK) {
+#pragma GCC diagnostic pop
 		return -EIO;
 	}
 
