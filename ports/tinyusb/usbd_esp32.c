@@ -5,7 +5,13 @@
 #include "hal/gpio_ll.h"
 #include "hal/usb_hal.h"
 #include "soc/usb_periph.h"
+
+#include "esp_idf_version.h"
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 #include "esp_private/periph_ctrl.h"
+#else
+#include "driver/periph_ctrl.h"
+#endif
 
 static void configure_pins(usb_hal_context_t *usb)
 {
@@ -22,7 +28,12 @@ static void configure_pins(usb_hal_context_t *usb)
 			} else {
 				esp_rom_gpio_connect_in_signal(iopin->pin,
 						iopin->func, false);
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 				if ((iopin->pin != GPIO_MATRIX_CONST_ZERO_INPUT) && (iopin->pin != GPIO_MATRIX_CONST_ONE_INPUT)) {
+#else
+				if ((iopin->pin != GPIO_FUNC_IN_LOW) && (iopin->pin != GPIO_FUNC_IN_HIGH)) {
+#endif
+
 					gpio_ll_input_enable(&GPIO, iopin->pin);
 				}
 			}
