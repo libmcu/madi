@@ -70,8 +70,8 @@ jobs:
         uses: docker://espressif/idf:release-v4.4
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && idf.py set-target esp32s3 && idf.py build"
-      - name: Build on latest
-        uses: docker://espressif/idf:latest
+      - name: Build on stable
+        uses: docker://espressif/idf:v5.0.2
         with:
           args: /bin/bash -c "git config --global --add safe.directory /github/workspace && rm -rf build sdkconfig && idf.py set-target esp32s3 && idf.py build"
   # build-with-zephyr:
