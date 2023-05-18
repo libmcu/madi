@@ -11,6 +11,7 @@
 #include "esp_private/periph_ctrl.h"
 #else
 #include "driver/periph_ctrl.h"
+#include "esp_rom_gpio.h"
 #endif
 
 static void configure_pins(usb_hal_context_t *usb)
