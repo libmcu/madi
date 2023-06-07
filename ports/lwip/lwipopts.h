@@ -47,9 +47,8 @@
 #define ETH_PAD_SIZE                    0
 #define LWIP_IP_ACCEPT_UDP_PORT(p)      ((p) == PP_NTOHS(67))
 
-#define TCP_MSS                         (1500 /*mtu*/ - 20 /*iphdr*/ - 20 /*tcphhr*/)
-#define TCP_SND_BUF                     (2 * TCP_MSS)
-#define TCP_WND                         (TCP_MSS)
+#define TCP_WND                         (16384)
+#define MEM_SIZE                        (50*1024)
 
 #define ETHARP_SUPPORT_STATIC_ENTRIES   1
 
@@ -60,7 +59,7 @@
 
 #define LWIP_SINGLE_NETIF               1
 
-#define PBUF_POOL_SIZE                  2
+#define PBUF_POOL_SIZE                  32
 
 #define HTTPD_SERVER_AGENT              "MADI (https://libmcu.org)"
 #define HTTPD_USE_CUSTOM_FSDATA         1
@@ -96,9 +95,13 @@
 #define MEMP_DEBUG                      LWIP_DBG_ON
 #define TCPIP_DEBUG                     LWIP_DBG_ON
 //#define HTTPD_DEBUG                     LWIP_DBG_ON
+#define ALTCP_MBEDTLS_DEBUG             LWIP_DBG_ON
 
-//#define MEM_SIZE
 //#define LWIP_STATS                      1
 //#define LWIP_STATS_DISPLAY              1
+
+#define LWIP_ALTCP			1
+#define LWIP_ALTCP_TLS			1
+#define LWIP_ALTCP_TLS_MBEDTLS		1
 
 #endif /* __LWIPOPTS_H__ */

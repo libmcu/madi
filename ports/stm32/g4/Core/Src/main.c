@@ -21,6 +21,7 @@
 #include "adc.h"
 #include "i2c.h"
 #include "quadspi.h"
+#include "rng.h"
 #include "usart.h"
 #include "gpio.h"
 

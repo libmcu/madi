@@ -14,7 +14,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define MAIN_TASK_STACK_SIZE		2048U
+#define MAIN_TASK_STACK_SIZE		3072U
 #define MAIN_TASK_PRIORITY		1U
 
 static void start_scheduler(void)

@@ -3,7 +3,7 @@
 #include <errno.h>
 #include "tusb.h"
 
-#define USBD_STACK_SIZE_BYTES		3072U
+#define USBD_STACK_SIZE_BYTES		4096U
 #define USBD_PERIODIC_CALLBACKS_LEN	3
 
 enum status {

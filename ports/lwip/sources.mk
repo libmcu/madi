@@ -49,6 +49,9 @@ LWIP_SRCS := \
 	$(LWIP_ROOT)/src/apps/mdns/mdns_domain.c \
 	$(LWIP_ROOT)/src/apps/mdns/mdns_out.c \
 	\
+	$(LWIP_ROOT)/src/apps/altcp_tls/altcp_tls_mbedtls.c \
+	$(LWIP_ROOT)/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c \
+	\
 	$(LWIP_PORT_ROOT)/fs_custom.c \
 	$(LWIP_PORT_ROOT)/sys.c \
 

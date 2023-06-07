@@ -12,6 +12,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	bq25180
 	tinyusb
 	lwip
+	mbedtls
+	mbedx509
+	mbedcrypto
 
 	-Wl,--cref
 	-Wl,--Map=\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map\"

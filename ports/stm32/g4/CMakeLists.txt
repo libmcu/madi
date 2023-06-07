@@ -17,6 +17,7 @@ set(ST_SRCS
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash.c
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ex.c
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ramfunc.c
+	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rng.c
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_gpio.c
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_exti.c
 	${SDK_ROOT}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dma.c
@@ -52,6 +53,7 @@ set(ST_SRCS
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/gpio.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/i2c.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/adc.c
+	${CMAKE_CURRENT_LIST_DIR}/Core/Src/rng.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/quadspi.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_hal_msp.c
 	${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32g4xx_hal_timebase_tim.c

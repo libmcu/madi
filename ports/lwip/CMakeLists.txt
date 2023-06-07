@@ -53,6 +53,9 @@ add_library(${PROJECT_NAME} OBJECT
 	${LWIP_ROOT}/src/apps/mdns/mdns_domain.c
 	${LWIP_ROOT}/src/apps/mdns/mdns_out.c
 
+	${LWIP_ROOT}/src/apps/altcp_tls/altcp_tls_mbedtls.c
+	${LWIP_ROOT}/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c
+
 	${CMAKE_CURRENT_LIST_DIR}/fs_custom.c
 	${CMAKE_CURRENT_LIST_DIR}/sys.c
 )

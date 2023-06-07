@@ -16,6 +16,7 @@ ST_SRCS = \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash.c \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ex.c \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ramfunc.c \
+	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rng.c \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_gpio.c \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_exti.c \
 	$(SDK_ROOT)/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dma.c \
@@ -51,6 +52,7 @@ ST_SRCS = \
 	$(PORT_ROOT)/g4/Core/Src/gpio.c \
 	$(PORT_ROOT)/g4/Core/Src/i2c.c \
 	$(PORT_ROOT)/g4/Core/Src/adc.c \
+	$(PORT_ROOT)/g4/Core/Src/rng.c \
 	$(PORT_ROOT)/g4/Core/Src/quadspi.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_hal_msp.c \
 	$(PORT_ROOT)/g4/Core/Src/stm32g4xx_hal_timebase_tim.c \

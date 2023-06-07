@@ -8,9 +8,12 @@ add_subdirectory(external/pmqtt)
 add_subdirectory(external/bq25180)
 add_subdirectory(ports/tinyusb)
 add_subdirectory(ports/lwip)
+add_subdirectory(ports/mbedtls)
 
 target_compile_definitions(libmcu PUBLIC
 	METRICS_USER_DEFINES=\"${PROJECT_SOURCE_DIR}/include/metrics.def\"
 	_POSIX_THREADS
 	_POSIX_C_SOURCE=200809L
 )
+
+target_link_libraries(lwip PUBLIC mbedtls)
