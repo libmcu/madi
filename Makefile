@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 
-PROJECT := $(BOARD)
+PROJECT := template
 BASEDIR := $(shell pwd)
 BUILDIR := build
 
@@ -17,34 +17,37 @@ export BUILDIR
 export Q
 
 include projects/version.mk
-ifneq ($(BOARD),)
 include projects/defines.mk
-include projects/boards/$(BOARD).mk
-include projects/sources.mk
-include projects/app.mk
-ifneq ($(PLATFORM_SPECIFIC_MAKE),)
-include $(PLATFORM_SPECIFIC_MAKE)
-endif
+
+include projects/platforms/madi_nrf52840.mk
+
 include projects/toolchain.mk
 include projects/rules.mk
-else
-all:
-	$(info Specify BOARD or target)
-endif
 
+.PHONY: confirm
+confirm:
+	@echo 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
+
+## help: print this help message
+.PHONY: help
+help:
+	@echo 'Usage:'
+	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
+
+## test
 .PHONY: test
 test:
 	$(Q)$(MAKE) -C tests
+## coverage
 .PHONY: coverage
 coverage:
 	$(Q)$(MAKE) -C tests $@
+## clean
 .PHONY: clean
 clean:
 	$(Q)rm -fr $(BUILDIR)
 	$(Q)$(MAKE) -C tests $@
-.PHONY: docs
-docs:
-	@LD_LIBRARY_PATH=$$(llvm-config --libdir) $(MAKE) -C $@ html
+## version: print firmware version
 .PHONY: version
 version:
 	$(info $(VERSION_TAG), $(VERSION))

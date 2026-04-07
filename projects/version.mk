@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 
 VERSION ?= $(shell git describe --long --tags --dirty --always)
 VERSION_STR := $(subst -, , $(VERSION))

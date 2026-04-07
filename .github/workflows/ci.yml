@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-with-make-cmake:
+    name: Build with Make and CMake
+    runs-on: ubuntu-latest
+    container: libmcu/ci:latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Prepare
+        run: |
+          git config --system --add safe.directory '*'
+          echo "CODECHECKER_RESULT=$(echo .github/codechecker_result.txt)" >> $GITHUB_ENV
+          echo "CODECHECKER_BASE=$(echo .github/codechecker.baseline)" >> $GITHUB_ENV
+          echo "CODECHECKER_BASE_TMP=$(echo .github/codechecker_tmp.baseline)" >> $GITHUB_ENV
+          echo "MEMSEG_RESULT=$(echo .github/memsize.txt)" >> $GITHUB_ENV
+          echo "MEMSEG_BASE=$(echo .github/memsize.baseline)" >> $GITHUB_ENV
+          echo "MEMSEG_BASE_TMP=$(echo .github/memsize_tmp.baseline)" >> $GITHUB_ENV
+      - name: Build with Make
+        run: |
+          make
+          make clean
+      - name: Build with CMake
+        run: |
+          cmake -S . -B build -DTARGET_PLATFORM=madi_nrf52840 -DCMAKE_TOOLCHAIN_FILE=projects/arch/arm/arm-none-eabi-gcc.cmake
+          cmake --build build
+      - name: Process Memory Usage
+        continue-on-error: true
+        run: |
+          git checkout origin/main -- $MEMSEG_BASE || cp $MEMSEG_BASE.template $MEMSEG_BASE
+          arm-none-eabi-size build/*.elf > $MEMSEG_BASE_TMP
+          echo -en "\`\`\`\n        " > $MEMSEG_RESULT
+          cat $MEMSEG_BASE_TMP | sed -n 1p >> $MEMSEG_RESULT
+          echo -n "current " >> $MEMSEG_RESULT
+          cat $MEMSEG_BASE_TMP | sed -n 2p >> $MEMSEG_RESULT
+          echo -n "base    " >> $MEMSEG_RESULT
+          cat $MEMSEG_BASE | sed -n 2p >> $MEMSEG_RESULT
+          echo -n "diff    " >> $MEMSEG_RESULT
+          paste $MEMSEG_BASE $MEMSEG_BASE_TMP | \
+            sed -n 2p | \
+            awk '{printf "%7d %7d %7d", $7-$1, $8-$2, $9-$3}' >> $MEMSEG_RESULT
+          echo -e "\n\`\`\`" >> $MEMSEG_RESULT
+          cp $MEMSEG_BASE_TMP $MEMSEG_BASE
+      - name: Comment Memory Size
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require("fs");
+            const filepath = "${{ env.MEMSEG_RESULT }}";
+            const body = fs.readFileSync(filepath, "utf-8");
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            })
+      - name: Static Analysis
+        id: analysis
+        run: |
+          sed -i 's/-fno-tree-switch-conversion//g' build/compile_commands.json
+          sed -i 's/-fstrict-volatile-bitfields//g' build/compile_commands.json
+          sed -i 's/-std=gnu17//g' build/compile_commands.json
+          CodeChecker analyze ./build/compile_commands.json --enable sensitive \
+            --ctu --output ./reports --ignore .codechecker.exclude
+          git checkout origin/main $CODECHECKER_BASE || touch $CODECHECKER_BASE
+          CodeChecker parse ./reports -e baseline -o $CODECHECKER_BASE_TMP || true
+          CodeChecker cmd diff -b $CODECHECKER_BASE \
+            -n ./reports --new > $CODECHECKER_RESULT
+      - name: Process Analysis Result
+        if: always()
+        run: |
+          sed -i '1s/^/```\n/' $CODECHECKER_RESULT
+          echo -e "\n\`\`\`" >> $CODECHECKER_RESULT
+          cp $CODECHECKER_BASE_TMP $CODECHECKER_BASE
+      - name: Comment Static Analysis Result
+        if: always() && github.event_name == 'pull_request' && steps.analysis.outcome != 'success'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require("fs");
+            const filepath = "${{ env.CODECHECKER_RESULT }}";
+            const body = fs.readFileSync(filepath, "utf-8");
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            })
+      - name: Store codechecker baseline
+        if: always() && github.event_name == 'pull_request'
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: '[${{ env.CODECHECKER_BASE }}, ${{ env.MEMSEG_BASE }}]'
+          default_author: github_actions
+          push: origin HEAD:${{ github.head_ref }} --force

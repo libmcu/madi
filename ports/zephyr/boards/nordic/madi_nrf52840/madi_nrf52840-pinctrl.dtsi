@@ -1,0 +1,64 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Kyunghwan Kwon <k@libmcu.org>
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Pin assignments for MADI nRF52840:
+ *   UART0 TX  : P0.23
+ *   UART0 RX  : P0.25
+ *   LED       : P0.20  (gpio-leds node, not pinctrl)
+ *   QSPI CS   : P0.07
+ *   QSPI SCK  : P0.08
+ *   QSPI IO0  : P1.09
+ *   QSPI IO1  : P1.08
+ *   QSPI IO2  : P0.12
+ *   QSPI IO3  : P0.06
+ */
+
+&pinctrl {
+	qspi_default: qspi_default {
+		group1 {
+			psels = <NRF_PSEL(QSPI_SCK, 0, 8)>,
+			        <NRF_PSEL(QSPI_IO0, 1, 9)>,
+			        <NRF_PSEL(QSPI_IO1, 1, 8)>,
+			        <NRF_PSEL(QSPI_IO2, 0, 12)>,
+			        <NRF_PSEL(QSPI_IO3, 0, 6)>;
+			nordic,drive-mode = <NRF_DRIVE_H0H1>;
+		};
+		group2 {
+			psels = <NRF_PSEL(QSPI_CSN, 0, 7)>;
+			bias-disable;
+			nordic,drive-mode = <NRF_DRIVE_H0H1>;
+		};
+	};
+
+	qspi_sleep: qspi_sleep {
+		group1 {
+			psels = <NRF_PSEL(QSPI_SCK, 0, 8)>,
+			        <NRF_PSEL(QSPI_IO0, 1, 9)>,
+			        <NRF_PSEL(QSPI_IO1, 1, 8)>,
+			        <NRF_PSEL(QSPI_IO2, 0, 12)>,
+			        <NRF_PSEL(QSPI_IO3, 0, 6)>,
+			        <NRF_PSEL(QSPI_CSN, 0, 7)>;
+			low-power-enable;
+		};
+	};
+
+	uart0_default: uart0_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 23)>;
+		};
+		group2 {
+			psels = <NRF_PSEL(UART_RX, 0, 25)>;
+			bias-pull-up;
+		};
+	};
+
+	uart0_sleep: uart0_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 23)>,
+			        <NRF_PSEL(UART_RX, 0, 25)>;
+			low-power-enable;
+		};
+	};
+};

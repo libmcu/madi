@@ -1,0 +1,133 @@
+/*
+ * SPDX-FileCopyrightText: 2026 권경환 Kyunghwan Kwon <k@libmcu.org>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+#include "madi_nrf52840-pinctrl.dtsi"
+
+/ {
+	model = "MADI nRF52840";
+	compatible = "libmcu,madi-nrf52840";
+
+	chosen {
+		zephyr,sram           = &sram0;
+		zephyr,flash          = &flash0;
+		zephyr,code-partition = &slot0_partition;
+		zephyr,uart-mcumgr    = &cdc_acm_uart0;
+		nordic,pm-ext-flash   = &mx25r16;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio0 20 GPIO_ACTIVE_LOW>;
+			label = "LED";
+		};
+	};
+
+	aliases {
+		led0      = &led0;
+		watchdog0 = &wdt0;
+	};
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*
+		 * MCUboot bootloader + primary slot layout.
+		 *
+		 * nRF52840 internal flash: 1 MiB total
+		 *   0x00000000   48 KiB  MCUboot bootloader
+		 *   0x0000C000  976 KiB  Slot 0 (pad 512B + app 975.5KiB)
+		 */
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 0x0000C000>; /* 48 KiB */
+		};
+
+		slot0_partition: partition@c000 {
+			label = "image-0";
+			reg = <0x0000C000 0x000F4000>; /* 976 KiB */
+		};
+	};
+};
+
+&qspi {
+	status = "okay";
+	pinctrl-0 = <&qspi_default>;
+	pinctrl-1 = <&qspi_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	mx25r16: mx25r1635f@0 {
+		compatible = "nordic,qspi-nor";
+		reg = <0>;
+		writeoc = "pp4io";
+		readoc = "read4io";
+		sck-frequency = <8000000>;
+		jedec-id = [c2 28 15];
+		size-in-bytes = <2097152>; /* 16 Mbit = 2 MiB */
+		has-dpd;
+		t-enter-dpd = <10000>;
+		t-exit-dpd = <35000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			/*
+			 * External flash (MX25R1635F, 2 MiB):
+			 *   0x00000000  976 KiB  Slot 1 (MCUboot secondary / OTA)
+			 *   0x000F4000    1 MiB  Storage (LittleFS)
+			 *
+			 * Slot 1 == Slot 0 in size (0xF4000) required for swap-using-move.
+			 */
+			slot1_partition: partition@0 {
+				label = "image-1";
+				reg = <0x00000000 0x000F4000>; /* 976 KiB */
+			};
+
+			storage_partition: partition@f4000 {
+				label = "storage";
+				reg = <0x000F4000 0x00100000>; /* 1 MiB */
+			};
+		};
+	};
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&uart0 {
+	compatible = "nordic,nrf-uarte";
+	status = "disabled";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+zephyr_udc0: &usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};

@@ -1,0 +1,112 @@
+name: Zephyr Builds
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  ZEPHYR_REV: v4.3.0
+  NCS_REV: main
+  ZSDK_VERSION: 0.17.4
+
+jobs:
+  build-upstream-zephyr:
+    name: Build with Upstream Zephyr
+    runs-on: ubuntu-latest
+    container: ghcr.io/zephyrproject-rtos/ci:v0.28.7
+    defaults:
+      run:
+        shell: bash
+    env:
+      ZEPHYR_WORKSPACE: /tmp/zephyr-upstream
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Prepare
+        run: |
+          git config --system --add safe.directory '*'
+          echo "ZEPHYR_TOOLCHAIN_VARIANT=zephyr" >> $GITHUB_ENV
+          echo "ZEPHYR_SDK_INSTALL_DIR=/opt/toolchains/zephyr-sdk-${ZSDK_VERSION}" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=/opt/toolchains/zephyr-sdk-${ZSDK_VERSION}" >> $GITHUB_ENV
+      - name: Initialize Zephyr workspace
+        run: |
+          west init -m https://github.com/zephyrproject-rtos/zephyr --mr ${ZEPHYR_REV} ${ZEPHYR_WORKSPACE}
+          cd ${ZEPHYR_WORKSPACE}
+          west update --narrow --fetch-opt=--depth=1
+          west zephyr-export
+          echo "ZEPHYR_BASE=${ZEPHYR_WORKSPACE}/zephyr" >> $GITHUB_ENV
+      - name: Ensure signing key
+        run: |
+          mkdir -p secrets
+          if [ ! -f secrets/dfu_signing_dev.key ]; then
+            openssl ecparam -genkey -name prime256v1 -noout -out secrets/dfu_signing_dev.key
+          fi
+      - name: Build MCUboot (upstream)
+        run: |
+          cd ${ZEPHYR_WORKSPACE}
+          west build -b madi_nrf52840 -d build/mcuboot \
+            ${ZEPHYR_WORKSPACE}/bootloader/mcuboot/boot/zephyr \
+            -- -DBOARD_ROOT=${GITHUB_WORKSPACE}/ports/zephyr \
+            "-DEXTRA_CONF_FILE=${GITHUB_WORKSPACE}/ports/zephyr/mcuboot.conf" \
+            "-DCONFIG_BOOT_SIGNATURE_KEY_FILE=\"${GITHUB_WORKSPACE}/secrets/dfu_signing_dev.key\""
+      - name: Build app (upstream)
+        run: |
+          cd ${ZEPHYR_WORKSPACE}
+          west build -b madi_nrf52840 -d build/app \
+            ${GITHUB_WORKSPACE} \
+            -- -DBOARD_ROOT=${GITHUB_WORKSPACE}/ports/zephyr
+      - name: Validate upstream outputs
+        run: |
+          test -f ${ZEPHYR_WORKSPACE}/build/mcuboot/zephyr/zephyr.hex
+          test -f ${ZEPHYR_WORKSPACE}/build/app/zephyr/zephyr.signed.hex || \
+            test -f ${ZEPHYR_WORKSPACE}/build/app/zephyr/madi.signed.hex
+
+  build-ncs-sysbuild:
+    name: Build with NCS sysbuild
+    runs-on: ubuntu-latest
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      NCS_WORKSPACE: /tmp/ncs
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Prepare
+        run: |
+          git config --system --add safe.directory '*'
+      - name: Initialize NCS workspace
+        run: |
+          west init -m https://github.com/nrfconnect/sdk-nrf --mr ${NCS_REV} ${NCS_WORKSPACE}
+          cd ${NCS_WORKSPACE}
+          west update --narrow --fetch-opt=--depth=1
+          west zephyr-export
+          echo "ZEPHYR_BASE=${NCS_WORKSPACE}/zephyr" >> $GITHUB_ENV
+      - name: Ensure signing key
+        run: |
+          mkdir -p secrets
+          if [ ! -f secrets/dfu_signing_dev.key ]; then
+            openssl ecparam -genkey -name prime256v1 -noout -out secrets/dfu_signing_dev.key
+          fi
+      - name: Build app (NCS sysbuild)
+        run: |
+          cd ${NCS_WORKSPACE}
+          west build -b madi_nrf52840 -d build/sysbuild \
+            --sysbuild \
+            ${GITHUB_WORKSPACE} \
+            -- -DCONF_FILE=${GITHUB_WORKSPACE}/ports/zephyr/prj.conf \
+            -DBOARD_ROOT=${GITHUB_WORKSPACE}/ports/zephyr
+      - name: Validate NCS outputs
+        run: |
+          test -f ${NCS_WORKSPACE}/build/sysbuild/merged.hex
+          test -f ${NCS_WORKSPACE}/build/sysbuild/dfu_application.zip
