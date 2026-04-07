@@ -1,0 +1,16 @@
+/*
+ * SPDX-License-Identifier: MIT
+ *
+ * MCUboot DTS overlay for madi-nrf52.
+ * Follows the official NCS Matter template:
+ *   samples/matter/template/sysbuild/mcuboot/app.overlay
+ *
+ * Sets the code partition to boot_partition so MCUboot links and runs
+ * from the correct flash region (0x0 on internal flash).
+ */
+
+/ {
+	chosen {
+		zephyr,code-partition = &boot_partition;
+	};
+};

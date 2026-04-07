@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 
 .DEFAULT_GOAL :=
 all: $(OUTPUT)
-	$(info done $(PROJECT)_$(VERSION)-$(BOARD))
+	$(info done $(PROJECT)_$(VERSION)-$(PROJECT))
 
 $(OUTELF): $(OBJS) $(EXTRA_OBJS) $(LD_SCRIPT) $(GENERATED_LIBS)
 	$(info linking     $@)

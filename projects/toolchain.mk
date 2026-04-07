@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 
 ifneq ($(CROSS_COMPILE),)
 	CROSS_COMPILE_PREFIX := $(CROSS_COMPILE)-
@@ -11,7 +11,6 @@ OC := $(CROSS_COMPILE_PREFIX)objcopy
 OD := $(CROSS_COMPILE_PREFIX)objdump
 NM := $(CROSS_COMPILE_PREFIX)nm
 
-## Compiler options
 MY_CFLAGS ?= \
 	-std=c99 \
 	-static \
@@ -27,7 +26,6 @@ ifndef NDEBUG
 	MY_CFLAGS += -g3
 endif
 
-## Compiler warnings
 STACK_LIMIT ?= 384
 MY_WARNING_FLAGS ?= \
 	-Werror \
@@ -60,13 +58,11 @@ MY_WARNING_FLAGS ?= \
 	-Wswitch-default \
 	-Wstack-usage=$(STACK_LIMIT) \
 
-## Linker options
 MY_LDFLAGS ?= \
 	-flto \
 	-Wl,--gc-sections \
 	-Wl,--print-memory-usage \
 
-## Archiver options
 MY_ARFLAGS ?= crsu
 
 CFLAGS += $(MY_CFLAGS) $(MY_WARNING_FLAGS)

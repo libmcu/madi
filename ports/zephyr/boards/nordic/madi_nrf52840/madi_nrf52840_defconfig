@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+
+# nRF52840 MPU
+CONFIG_ARM_MPU=y
+
+# GPIO subsystem
+CONFIG_GPIO=y
+
+# Pin control (mandatory for nRF52840 peripherals)
+CONFIG_PINCTRL=y

@@ -1,35 +1,31 @@
-name: release
+name: Release
 
 on:
   push:
     tags:
       - 'v*'
 
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   build:
-    name: Create Release
+    name: Release
     runs-on: ubuntu-latest
-    steps:
-      - name: Clone Repository
-        uses: actions/checkout@latest
-        with:
-          submodules: 'recursive'
-          fetch-depth: 0
-      - name: Get Version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-            ${{ steps.get_version.outputs.VERSION }}
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
 
-            ## Features
-            ## Bug Fixes
-          draft: false
-          prerelease: false
+    steps:
+      - name: Create or reuse release
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ github.ref_name }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists. Skipping creation."
+          else
+            gh release create "$TAG" --title "$TAG" --generate-notes
+          fi

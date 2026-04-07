@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 
-OUTDIR := $(BUILDIR)/$(BOARD)
-OUTELF := $(OUTDIR)/$(BOARD)
-OUTBIN := $(OUTDIR)/$(BOARD).bin
-OUTHEX := $(OUTDIR)/$(BOARD).hex
+OUTDIR := $(BUILDIR)/$(PROJECT)
+OUTELF := $(OUTDIR)/$(PROJECT)
+OUTBIN := $(OUTDIR)/$(PROJECT).bin
+OUTHEX := $(OUTDIR)/$(PROJECT).hex
 OUTDEF := $(OUTDIR)/defines.txt
 OUTSRC := $(OUTDIR)/sources.txt
 OUTINC := $(OUTDIR)/includes.txt

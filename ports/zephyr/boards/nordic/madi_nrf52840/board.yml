@@ -1,0 +1,6 @@
+board:
+  name: madi_nrf52840
+  full_name: MADI nRF52840
+  vendor: nordic
+  socs:
+    - name: nrf52840
